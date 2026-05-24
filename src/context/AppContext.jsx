@@ -30,7 +30,16 @@ export function AppProvider({ children }) {
 
   /* ── Users & Auth ── */
   const [users,        setUsers]        = useState(mockUsers)
-  const [currentUser,  setCurrentUser]  = useState(null)
+  const [currentUser,  setCurrentUser]  = useState(() => {
+    try {
+      const saved = localStorage.getItem('xflow_user')
+      if (!saved) return null
+      const parsed = JSON.parse(saved)
+      // Validate the saved user still exists and is active
+      const found = mockUsers.find(u => u.id === parsed.id && u.active !== false)
+      return found || null
+    } catch { return null }
+  })
   const [activityLog,  setActivityLog]  = useState(mockActivityLog)
 
   /* ── Tester sandbox: completely isolated empty state ── */
@@ -41,6 +50,15 @@ export function AppProvider({ children }) {
   const [tTransfers,  setTTransfers]  = useState([])
 
   const isTester = currentUser?.role === 'tester'
+
+  /* ── Persist current user to localStorage ── */
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('xflow_user', JSON.stringify(currentUser))
+    } else {
+      localStorage.removeItem('xflow_user')
+    }
+  }, [currentUser])
 
   /* ── Logout ── */
   const logout = useCallback(() => {
