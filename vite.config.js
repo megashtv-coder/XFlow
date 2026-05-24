@@ -8,6 +8,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon-192.png', 'icon-512.png'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB limit
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      },
       manifest: {
         name: 'XFlow - Menaxhimi Financiar',
         short_name: 'XFlow',
@@ -32,9 +36,6 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
   ]
