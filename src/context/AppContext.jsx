@@ -9,6 +9,7 @@ import {
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
+  /* ── Real data states ── */
   const [invoices,        setInvoices]        = useState(mockInvoices)
   const [customers,       setCustomers]       = useState(mockCustomers)
   const [expenses,        setExpenses]        = useState(mockExpenses)
@@ -31,6 +32,21 @@ export function AppProvider({ children }) {
   const [users,        setUsers]        = useState(mockUsers)
   const [currentUser,  setCurrentUser]  = useState(null)
   const [activityLog,  setActivityLog]  = useState(mockActivityLog)
+
+  /* ── Tester sandbox: completely isolated empty state ── */
+  const [tInvoices,   setTInvoices]   = useState([])
+  const [tCustomers,  setTCustomers]  = useState([])
+  const [tExpenses,   setTExpenses]   = useState([])
+  const [tPayments,   setTPayments]   = useState([])
+  const [tTransfers,  setTTransfers]  = useState([])
+
+  const isTester = currentUser?.role === 'tester'
+
+  /* ── Logout ── */
+  const logout = useCallback(() => {
+    setCurrentUser(null)
+    setPage('dashboard')
+  }, [])
 
   /* ── Dark mode: sync to <html> class ── */
   useEffect(() => {
@@ -82,13 +98,20 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider value={{
-      invoices,        setInvoices,
-      customers,       setCustomers,
-      expenses,        setExpenses,
+      /* For tester users, expose their own isolated empty state instead of real data */
+      invoices:        isTester ? tInvoices   : invoices,
+      setInvoices:     isTester ? setTInvoices : setInvoices,
+      customers:       isTester ? tCustomers   : customers,
+      setCustomers:    isTester ? setTCustomers : setCustomers,
+      expenses:        isTester ? tExpenses    : expenses,
+      setExpenses:     isTester ? setTExpenses  : setExpenses,
+      payments:        isTester ? tPayments    : payments,
+      setPayments:     isTester ? setTPayments  : setPayments,
+      transfers:       isTester ? tTransfers   : transfers,
+      setTransfers:    isTester ? setTTransfers : setTransfers,
+      /* Shared states (read-only product catalogue is fine to share) */
       items,           setItems,
       vendors,         setVendors,
-      payments,        setPayments,
-      transfers,       setTransfers,
       paymentModes,    setPaymentModes,
       depositAccounts, setDepositAccounts,
       currency,        setCurrency,
@@ -105,6 +128,8 @@ export function AppProvider({ children }) {
       logActivity,
       showToast,
       fmt,
+      logout,
+      isTester,
     }}>
       {children}
     </AppContext.Provider>

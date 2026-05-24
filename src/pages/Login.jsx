@@ -105,20 +105,6 @@ export default function Login({ users = [], onLogin }) {
           ) : 'Kyçu në sistem'}
         </button>
 
-        {/* Demo users */}
-        <div className="mt-5 p-3 bg-blue-50 rounded-xl">
-          <p className="text-xs text-blue-700 font-bold mb-2">Kredencialet demo:</p>
-          {users.map(u => (
-            <button
-              key={u.id}
-              className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-blue-100 transition-colors text-left"
-              onClick={() => { setUsername(u.username); setPassword(u.password) }}
-            >
-              <span className="text-xs text-blue-800 font-semibold">{u.name}</span>
-              <span className="text-[10px] text-blue-500 font-mono">{u.username} / {u.password}</span>
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   )

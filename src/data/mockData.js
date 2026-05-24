@@ -83,6 +83,7 @@ export const mockUsers = [
   { id: 'USR-001', name: 'Enndy', username: 'xpmx',  password: 'enndy123', role: 'admin',  active: true, createdAt: '2026-01-01', color: '#7c3aed' },
   { id: 'USR-002', name: 'Belti', username: 'belti', password: 'belti123', role: 'editor', active: true, createdAt: '2026-02-01', color: '#2563eb' },
   { id: 'USR-003', name: 'Samki', username: 'samki', password: 'samki123', role: 'editor', active: true, createdAt: '2026-03-01', color: '#059669' },
+  { id: 'USR-004', name: 'Test',  username: 'test',  password: 'test',     role: 'tester', active: true, createdAt: '2026-01-01', color: '#6b7280' },
 ]
 
 export const mockActivityLog = [

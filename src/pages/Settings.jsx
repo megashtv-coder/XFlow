@@ -51,7 +51,7 @@ function FieldRow({ fieldKey, label, value, editField, editVal, onStart, onSave,
 }
 
 export default function Settings() {
-  const { showToast, paymentModes, setPaymentModes, depositAccounts, setDepositAccounts } = useApp()
+  const { showToast, paymentModes, setPaymentModes, depositAccounts, setDepositAccounts, logout } = useApp()
   const [newMode,    setNewMode]    = useState('')
   const [newAccount, setNewAccount] = useState('')
 
@@ -270,7 +270,7 @@ export default function Settings() {
                 <p className="text-sm font-semibold text-gray-800">Dilni nga sistemi</p>
                 <p className="text-xs text-gray-400 mt-0.5">Do të dilni nga paneli</p>
               </div>
-              <button className="btn btn-danger btn-sm flex items-center gap-1.5">
+              <button className="btn btn-danger btn-sm flex items-center gap-1.5" onClick={logout}>
                 <LogOut size={13}/> Dilni
               </button>
             </div>

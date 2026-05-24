@@ -1,14 +1,14 @@
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, HelpCircle, ChevronRight, X, Bell,
-  Truck, Zap, ChevronLeft, UserCog,
+  Truck, Zap, ChevronLeft, UserCog, LogOut,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 export default function Sidebar() {
   const {
     page, navigate, sidebarOpen, setSidebarOpen,
-    invoices, sidebarCollapsed, setSidebarCollapsed, currentUser,
+    invoices, sidebarCollapsed, setSidebarCollapsed, currentUser, logout,
   } = useApp()
 
   const today          = new Date().toISOString().slice(0, 10)
@@ -141,6 +141,18 @@ export default function Sidebar() {
             </div>
           </div>
         )}
+
+        {/* Logout button */}
+        <div className={`px-2 py-2 border-t border-gray-100 dark:border-gray-800 ${sidebarCollapsed ? '' : ''}`}>
+          <button
+            className={`sidebar-item w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+            onClick={logout}
+            title="Dilni nga sistemi"
+          >
+            <LogOut size={18} className="flex-shrink-0" />
+            {!sidebarCollapsed && <span>Dilni</span>}
+          </button>
+        </div>
 
         {/* Collapse toggle — visible only on desktop */}
         <button
