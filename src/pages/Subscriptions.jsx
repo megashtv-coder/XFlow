@@ -168,10 +168,10 @@ function Section({ title, color, items, today, sentIds }) {
         }`}>{items.length}</span>
       </div>
       <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-auto">
           <table className="w-full">
-            <thead>
-              <tr className="border-b-2 border-gray-50">
+            <thead className="sticky top-0 z-10">
+              <tr className="border-b-2 border-gray-50 bg-white dark:bg-gray-800">
                 <th className="table-th">Klienti</th>
                 <th className="table-th">Skadon</th>
                 <th className="table-th">Njoftim</th>

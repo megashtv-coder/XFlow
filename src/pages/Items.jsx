@@ -384,9 +384,10 @@ export default function Items() {
         />
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/60">
+            <thead className="sticky top-0 z-10">
+              <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">
                   <button
                     className="flex items-center gap-1 hover:text-gray-700 transition-colors"
@@ -530,7 +531,7 @@ export default function Items() {
               })}
             </tbody>
           </table>
-
+          </div>
           <Pagination page={pg} total={filtered.length} perPage={PER_PAGE} onChange={setPg} />
         </div>
       )}
