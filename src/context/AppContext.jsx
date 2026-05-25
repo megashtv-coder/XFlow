@@ -46,7 +46,7 @@ export function AppProvider({ children }) {
   const [darkMode,         setDarkMode]         = useState(() => localStorage.getItem('xflow_dark') === 'true')
   const [toast,            setToast]            = useState(null)
   const [modal,            setModal]            = useState(null)
-  const [page,             setPage]             = useState('dashboard')
+  const [page,             setPage]             = useState(() => localStorage.getItem('xflow_page') || 'dashboard')
   const [loading,          setLoading]          = useState(false)
   const [dbLoading,        setDbLoading]        = useState(!!supabase) // loading initial kur ka Supabase
   const [sidebarOpen,      setSidebarOpen]      = useState(false)
@@ -241,6 +241,7 @@ export function AppProvider({ children }) {
   const logout = useCallback(() => {
     setCurrentUser(null)
     setPage('dashboard')
+    localStorage.removeItem('xflow_page')
   }, [])
 
   /* ── Log activity ── */
@@ -264,6 +265,7 @@ export function AppProvider({ children }) {
 
   const navigate = useCallback((p) => {
     setPage(p)
+    localStorage.setItem('xflow_page', p)
     setSidebarOpen(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 350)
