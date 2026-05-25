@@ -141,12 +141,12 @@ export function AppProvider({ children }) {
         return d
       }
 
-      const loadedInvoices  = load(inv,  [])
-      const loadedCustomers = load(cust, [])
-      const loadedExpenses  = load(exp,  [])
-      const loadedPayments  = load(pay,  [])
-      const loadedTransfers = load(tran, [])
-      const loadedVendors   = load(vend, mockVendors)   // katalogu bie në mock nëse bosh
+      const loadedInvoices  = load(inv,  mockInvoices)
+      const loadedCustomers = load(cust, mockCustomers)
+      const loadedExpenses  = load(exp,  mockExpenses)
+      const loadedPayments  = load(pay,  mockPayments)
+      const loadedTransfers = load(tran, mockTransfers)
+      const loadedVendors   = load(vend, mockVendors)
       const loadedItems     = load(itm,  mockItems)
 
       setInvoices(loadedInvoices);        prevInvoices.current  = loadedInvoices
