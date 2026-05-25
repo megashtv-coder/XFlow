@@ -3,7 +3,7 @@ import {
   mockInvoices, mockCustomers, mockExpenses, mockItems, mockVendors,
   mockPayments, mockTransfers, paymentModes as defaultPaymentModes,
   depositAccounts as defaultDepositAccounts,
-  currencies, mockUsers, mockActivityLog,
+  currencies, mockUsers, mockActivityLog, mockOrganizations,
 } from '../data/mockData'
 import { supabase } from '../lib/supabase'
 
@@ -17,7 +17,7 @@ const AppContext = createContext(null)
 const fromRows = (rows) => (rows || []).map(r => r.data)
 
 // Sinkronizon ndryshimet e një tabele: upsert të reja/ndryshuara, delete të fshira
-function diffSync(table, curr, prevRef) {
+function diffSync(table, curr, prevRef, orgId) {
   if (!supabase) return
   const prev = prevRef.current
   if (prev === curr) return               // asnjë ndryshim
@@ -31,7 +31,9 @@ function diffSync(table, curr, prevRef) {
   prevRef.current = curr
 
   if (toUpsert.length)
-    supabase.from(table).upsert(toUpsert.map(d => ({ id: d.id, data: d }))).then()
+    supabase.from(table).upsert(
+      toUpsert.map(d => ({ id: d.id, data: { ...d, orgId: orgId || d.orgId } }))
+    ).then()
   if (toDelete.length)
     supabase.from(table).delete().in('id', toDelete.map(d => d.id)).then()
 }
@@ -51,6 +53,10 @@ export function AppProvider({ children }) {
   const [dbLoading,        setDbLoading]        = useState(!!supabase) // loading initial kur ka Supabase
   const [sidebarOpen,      setSidebarOpen]      = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('xflow_sidebar') === 'true')
+  const [managerMode,      setManagerMode]      = useState(false) // super admin mund të kalojë në manager view
+
+  /* ── Organizations ── */
+  const [organizations, setOrganizations] = useState(mockOrganizations)
 
   /* ── Users & Auth ── */
   const _loadedUsers = (() => {
@@ -75,7 +81,12 @@ export function AppProvider({ children }) {
   })
   const [activityLog, setActivityLog] = useState(mockActivityLog)
 
-  const isTester = currentUser?.role === 'tester'
+  const isTester     = currentUser?.role === 'tester'
+  const isSuperAdmin = currentUser?.isSuperAdmin === true
+  const currentOrgId = currentUser?.orgId || null
+
+  // Org aktuale (objekti i plotë)
+  const currentOrg = organizations.find(o => o.id === currentOrgId) || null
 
   /* ── Data states — inicializohen bosh, mbushen nga Supabase / mockData ── */
   const [invoices,        setInvoices]        = useState([])
@@ -134,7 +145,8 @@ export function AppProvider({ children }) {
       supabase.from('vendors').select('data'),
       supabase.from('items').select('data'),
       supabase.from('settings').select('key, value'),
-    ]).then(([inv, cust, exp, pay, tran, vend, itm, sett]) => {
+      supabase.from('organizations').select('data'),
+    ]).then(([inv, cust, exp, pay, tran, vend, itm, sett, orgs]) => {
 
       const load = (res, fallback) => {
         const d = res.data?.length ? fromRows(res.data) : fallback
@@ -170,6 +182,9 @@ export function AppProvider({ children }) {
         prevDA.current = defaultDepositAccounts
       }
 
+      // Organizations
+      if (orgs?.data?.length) setOrganizations(fromRows(orgs.data))
+
       setDbLoading(false)
     }).catch(() => {
       // Fallback në rast gabimi rrjeti
@@ -190,15 +205,15 @@ export function AppProvider({ children }) {
   /* ══════════════════════════════════════════════════════════
      SYNC — kur ndryshohen të dhënat, ruhen automatikisht
   ══════════════════════════════════════════════════════════ */
-  const canSync = !dbLoading && !isTester
+  const canSync = !dbLoading && !isTester && !!currentOrgId
 
-  useEffect(() => { if (canSync) diffSync('invoices',  invoices,  prevInvoices)  }, [invoices,  canSync])
-  useEffect(() => { if (canSync) diffSync('customers', customers, prevCustomers) }, [customers, canSync])
-  useEffect(() => { if (canSync) diffSync('expenses',  expenses,  prevExpenses)  }, [expenses,  canSync])
-  useEffect(() => { if (canSync) diffSync('payments',  payments,  prevPayments)  }, [payments,  canSync])
-  useEffect(() => { if (canSync) diffSync('transfers', transfers, prevTransfers) }, [transfers, canSync])
-  useEffect(() => { if (canSync) diffSync('vendors',   vendors,   prevVendors)   }, [vendors,   canSync])
-  useEffect(() => { if (canSync) diffSync('items',     items,     prevItems)     }, [items,     canSync])
+  useEffect(() => { if (canSync) diffSync('invoices',  invoices,  prevInvoices,  currentOrgId) }, [invoices,  canSync])
+  useEffect(() => { if (canSync) diffSync('customers', customers, prevCustomers, currentOrgId) }, [customers, canSync])
+  useEffect(() => { if (canSync) diffSync('expenses',  expenses,  prevExpenses,  currentOrgId) }, [expenses,  canSync])
+  useEffect(() => { if (canSync) diffSync('payments',  payments,  prevPayments,  currentOrgId) }, [payments,  canSync])
+  useEffect(() => { if (canSync) diffSync('transfers', transfers, prevTransfers, currentOrgId) }, [transfers, canSync])
+  useEffect(() => { if (canSync) diffSync('vendors',   vendors,   prevVendors,   currentOrgId) }, [vendors,   canSync])
+  useEffect(() => { if (canSync) diffSync('items',     items,     prevItems,     currentOrgId) }, [items,     canSync])
 
   useEffect(() => {
     if (!canSync || !supabase) return
@@ -213,6 +228,21 @@ export function AppProvider({ children }) {
     prevDA.current = depositAccounts
     supabase.from('settings').upsert({ key: 'depositAccounts', value: depositAccounts }).then()
   }, [depositAccounts, canSync])
+
+  // Sync organizations — ruhen nga super admin, pa kufizim org
+  const prevOrgs = useRef(mockOrganizations)
+  useEffect(() => {
+    if (!supabase || !isSuperAdmin) return
+    if (prevOrgs.current === organizations) return
+    const toUpsert = organizations.filter(o => {
+      const old = prevOrgs.current.find(x => x.id === o.id)
+      return !old || JSON.stringify(old) !== JSON.stringify(o)
+    })
+    const toDelete = prevOrgs.current.filter(o => !organizations.find(x => x.id === o.id))
+    prevOrgs.current = organizations
+    if (toUpsert.length) supabase.from('organizations').upsert(toUpsert.map(o => ({ id: o.id, data: o }))).then()
+    if (toDelete.length) supabase.from('organizations').delete().in('id', toDelete.map(o => o.id)).then()
+  }, [organizations, isSuperAdmin])
 
   /* ══════════════════════════════════════════════════════════
      Persist users & currentUser në localStorage
@@ -315,6 +345,11 @@ export function AppProvider({ children }) {
       fmt,
       logout,
       isTester,
+      isSuperAdmin,
+      currentOrgId,
+      currentOrg,
+      organizations,   setOrganizations,
+      managerMode,     setManagerMode,
     }}>
       {children}
     </AppContext.Provider>

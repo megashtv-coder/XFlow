@@ -13,25 +13,30 @@ import Settings from './pages/Settings'
 import Subscriptions from './pages/Subscriptions'
 import Suppliers from './pages/Suppliers'
 import UsersPage from './pages/Users'
+import OrgManager from './pages/OrgManager'
 import { Toast, LoadingSkeleton } from './components/UI'
 
-function AppLayout() {
-  const { page, loading, toast, setToast, modal, darkMode } = useApp()
+const ORG_PAGES = {
+  dashboard:     Dashboard,
+  invoices:      Invoices,
+  customers:     Customers,
+  expenses:      ExpensesPage,
+  items:         Items,
+  payments:      Payments,
+  reports:       Reports,
+  settings:      Settings,
+  subscriptions: Subscriptions,
+  suppliers:     Suppliers,
+  users:         UsersPage,
+}
 
-  const PAGES = {
-    dashboard:     Dashboard,
-    invoices:      Invoices,
-    customers:     Customers,
-    expenses:      ExpensesPage,
-    items:         Items,
-    payments:      Payments,
-    reports:       Reports,
-    settings:      Settings,
-    subscriptions: Subscriptions,
-    suppliers:     Suppliers,
-    users:         UsersPage,
-  }
-  const PageComponent = PAGES[page] || Dashboard
+function AppLayout() {
+  const { page, loading, toast, setToast, modal, darkMode, isSuperAdmin, managerMode } = useApp()
+
+  // Super admin në manager mode sheh OrgManager, pa sidebar-in normal
+  const PageComponent = (isSuperAdmin && managerMode)
+    ? OrgManager
+    : (ORG_PAGES[page] || Dashboard)
 
   return (
     <div className={`app flex min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>

@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, HelpCircle, ChevronRight, X, Bell,
-  Truck, Zap, ChevronLeft, UserCog, LogOut,
+  Truck, Zap, ChevronLeft, UserCog, LogOut, Building2, Crown,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
@@ -9,6 +9,7 @@ export default function Sidebar() {
   const {
     page, navigate, sidebarOpen, setSidebarOpen,
     invoices, sidebarCollapsed, setSidebarCollapsed, currentUser, logout,
+    isSuperAdmin, managerMode, setManagerMode, currentOrg,
   } = useApp()
 
   const today          = new Date().toISOString().slice(0, 10)
@@ -54,7 +55,9 @@ export default function Sidebar() {
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
               <div className="text-sm font-black text-gray-900 dark:text-gray-100 leading-none tracking-tight">X-Flow</div>
-              <div className="text-[10px] text-gray-400 dark:text-gray-500 tracking-widest uppercase mt-0.5">Pro</div>
+              <div className="text-[10px] text-gray-400 dark:text-gray-500 tracking-widest uppercase mt-0.5">
+                {managerMode ? 'Manager' : (currentOrg?.shortName || 'Pro')}
+              </div>
             </div>
           )}
           {!sidebarCollapsed && (
@@ -64,59 +67,99 @@ export default function Sidebar() {
           )}
         </div>
 
+        {/* Super Admin — toggle Manager / Org view */}
+        {isSuperAdmin && (
+          <div className={`border-b border-gray-100 dark:border-gray-800 ${sidebarCollapsed ? 'px-2 py-2' : 'px-3 py-2'}`}>
+            <button
+              onClick={() => setManagerMode(m => !m)}
+              title={managerMode ? `Kalo te ${currentOrg?.shortName || 'Organizata'}` : 'Kalo te Manager View'}
+              className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                managerMode
+                  ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100'
+                  : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 hover:bg-blue-100'
+              } ${sidebarCollapsed ? 'justify-center' : ''}`}
+            >
+              {managerMode
+                ? <><Building2 size={13} className="flex-shrink-0" />{!sidebarCollapsed && <span>Manager View</span>}</>
+                : <><Crown size={13} className="flex-shrink-0" />{!sidebarCollapsed && <span>Manager View</span>}</>
+              }
+            </button>
+          </div>
+        )}
+
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto overflow-x-hidden">
-          {!sidebarCollapsed && (
-            <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mb-2">Kryesore</p>
+          {/* ── Manager mode ── */}
+          {isSuperAdmin && managerMode && (
+            <>
+              {!sidebarCollapsed && (
+                <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mb-2">Manager</p>
+              )}
+              <div
+                className={`sidebar-item active ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                title={sidebarCollapsed ? 'Organizatat' : undefined}
+              >
+                <Building2 size={18} className="flex-shrink-0" />
+                {!sidebarCollapsed && <span>Organizatat</span>}
+              </div>
+            </>
           )}
 
-          {NAV.map(({ id, icon: Icon, label, badge, badgeColor }) => (
-            <div
-              key={id}
-              title={sidebarCollapsed ? label : undefined}
-              className={`sidebar-item ${page === id ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
-              onClick={() => navigate(id)}
-            >
-              <Icon size={18} className="flex-shrink-0" />
-              {!sidebarCollapsed && <span className="flex-1 truncate">{label}</span>}
-              {!sidebarCollapsed && badge ? (
-                <span className={`${badgeColor || 'bg-red-500'} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center`}>
-                  {badge}
-                </span>
-              ) : null}
-              {sidebarCollapsed && badge ? (
-                <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${badgeColor || 'bg-red-500'}`} />
-              ) : null}
-            </div>
-          ))}
+          {/* ── Org mode (nav normal) ── */}
+          {!(isSuperAdmin && managerMode) && (
+            <>
+              {!sidebarCollapsed && (
+                <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mb-2">Kryesore</p>
+              )}
+              {NAV.map(({ id, icon: Icon, label, badge, badgeColor }) => (
+                <div
+                  key={id}
+                  title={sidebarCollapsed ? label : undefined}
+                  className={`sidebar-item ${page === id ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                  onClick={() => navigate(id)}
+                >
+                  <Icon size={18} className="flex-shrink-0" />
+                  {!sidebarCollapsed && <span className="flex-1 truncate">{label}</span>}
+                  {!sidebarCollapsed && badge ? (
+                    <span className={`${badgeColor || 'bg-red-500'} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center`}>
+                      {badge}
+                    </span>
+                  ) : null}
+                  {sidebarCollapsed && badge ? (
+                    <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${badgeColor || 'bg-red-500'}`} />
+                  ) : null}
+                </div>
+              ))}
 
-          {!sidebarCollapsed && (
-            <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mt-4 mb-2">Sistemi</p>
-          )}
-          {sidebarCollapsed && <div className="my-2 border-t border-gray-100" />}
+              {!sidebarCollapsed && (
+                <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mt-4 mb-2">Sistemi</p>
+              )}
+              {sidebarCollapsed && <div className="my-2 border-t border-gray-100" />}
 
-          <div
-            title={sidebarCollapsed ? 'Përdoruesit' : undefined}
-            className={`sidebar-item ${page === 'users' ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
-            onClick={() => navigate('users')}
-          >
-            <UserCog size={18} className="flex-shrink-0" />
-            {!sidebarCollapsed && <span>Përdoruesit</span>}
-          </div>
+              <div
+                title={sidebarCollapsed ? 'Përdoruesit' : undefined}
+                className={`sidebar-item ${page === 'users' ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                onClick={() => navigate('users')}
+              >
+                <UserCog size={18} className="flex-shrink-0" />
+                {!sidebarCollapsed && <span>Përdoruesit</span>}
+              </div>
 
-          <div
-            title={sidebarCollapsed ? 'Cilësimet' : undefined}
-            className={`sidebar-item ${page === 'settings' ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
-            onClick={() => navigate('settings')}
-          >
-            <Settings size={18} className="flex-shrink-0" />
-            {!sidebarCollapsed && <span>Cilësimet</span>}
-          </div>
+              <div
+                title={sidebarCollapsed ? 'Cilësimet' : undefined}
+                className={`sidebar-item ${page === 'settings' ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                onClick={() => navigate('settings')}
+              >
+                <Settings size={18} className="flex-shrink-0" />
+                {!sidebarCollapsed && <span>Cilësimet</span>}
+              </div>
 
-          {!sidebarCollapsed && (
-            <div className="sidebar-item">
-              <HelpCircle size={18} /> <span>Ndihmë & Mbështetje</span>
-            </div>
+              {!sidebarCollapsed && (
+                <div className="sidebar-item">
+                  <HelpCircle size={18} /> <span>Ndihmë & Mbështetje</span>
+                </div>
+              )}
+            </>
           )}
         </nav>
 
@@ -135,7 +178,10 @@ export default function Sidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 truncate">{currentUser?.name || 'User'}</p>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 capitalize">{currentUser?.role || 'admin'}</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 capitalize">
+                  {currentUser?.isSuperAdmin ? 'Super Admin' : currentUser?.role}
+                  {currentOrg && !managerMode ? ` · ${currentOrg.shortName}` : ''}
+                </p>
               </div>
               <ChevronRight size={14} className="text-gray-300 dark:text-gray-600 flex-shrink-0" />
             </div>
