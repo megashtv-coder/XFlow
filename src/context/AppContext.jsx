@@ -143,18 +143,34 @@ export function AppProvider({ children }) {
       return
     }
 
+    // Helper: merr TË GJITHA rreshtat duke paginuar (Supabase kthen max 1000 pa range)
+    const fetchAll = async (table, col = 'data') => {
+      const PAGE = 1000
+      let from = 0
+      let all  = []
+      while (true) {
+        const { data, error } = await supabase
+          .from(table).select(col).range(from, from + PAGE - 1)
+        if (error || !data?.length) break
+        all  = all.concat(data)
+        if (data.length < PAGE) break
+        from += PAGE
+      }
+      return { data: all }
+    }
+
     // Me Supabase — ngarko të gjitha tabelat paralelisht
     Promise.all([
-      supabase.from('invoices').select('data'),
-      supabase.from('customers').select('data'),
-      supabase.from('expenses').select('data'),
-      supabase.from('payments').select('data'),
-      supabase.from('transfers').select('data'),
-      supabase.from('vendors').select('data'),
-      supabase.from('items').select('data'),
+      fetchAll('invoices'),
+      fetchAll('customers'),
+      fetchAll('expenses'),
+      fetchAll('payments'),
+      fetchAll('transfers'),
+      fetchAll('vendors'),
+      fetchAll('items'),
       supabase.from('settings').select('key, value'),
-      supabase.from('organizations').select('data'),
-      supabase.from('users').select('data'),
+      fetchAll('organizations'),
+      fetchAll('users'),
     ]).then(([inv, cust, exp, pay, tran, vend, itm, sett, orgs, usrs]) => {
 
       const load = (res, fallback) => {
