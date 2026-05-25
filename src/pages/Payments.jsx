@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
 import {
   CreditCard, Download, Search, X, Filter,
-  TrendingUp, Wallet, Users, Receipt, Pencil, Trash2,
+  TrendingUp, Wallet, Users, Receipt, Pencil, Trash2, FileSpreadsheet,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { EmptyState, Pagination } from '../components/UI'
 import PaymentModal from './PaymentModal'
+import ImportExcelModal from '../components/ImportExcelModal'
 
 // sort/page defaults
 
@@ -103,6 +104,7 @@ export default function Payments() {
   const [sortField,   setSortField] = useState('date')
   const [sortDir,     setSortDir]   = useState('desc')
   const [deletingId,  setDeletingId] = useState(null)
+  const [importOpen,  setImportOpen] = useState(false)
 
   const months  = getMonths(payments)
   const methods = [...new Set(payments.map(p => p.method))]
@@ -149,6 +151,24 @@ export default function Payments() {
   const openNewPayment  = ()  => setModal(<PaymentModal onClose={closeModal} />)
   const openEditPayment = (p) => setModal(<PaymentModal payment={p} onClose={closeModal} />)
 
+  function handleImportPayments(rows) {
+    // Shto pagesat e reja (shmang dublikatat sipas id)
+    const existingIds = new Set(payments.map(p => p.id))
+    const newPayments = rows.filter(p => !existingIds.has(p.id))
+
+    setPayments(prev => [...prev, ...newPayments])
+
+    // Shëno faturat si të paguara nëse invoiceId përputhet
+    const paidInvoiceIds = new Set(newPayments.map(p => p.invoiceId).filter(Boolean))
+    if (paidInvoiceIds.size > 0) {
+      setInvoices(prev => prev.map(inv =>
+        paidInvoiceIds.has(inv.id) ? { ...inv, status: 'paid' } : inv
+      ))
+    }
+
+    showToast(`U importuan ${newPayments.length} pagesa${paidInvoiceIds.size ? ` · ${paidInvoiceIds.size} fatura u shënuan si të paguara` : ''} ✓`)
+  }
+
   const deletePayment = (p) => {
     setPayments(prev => prev.filter(x => x.id !== p.id))
     setInvoices(prev => prev.map(i =>
@@ -175,11 +195,22 @@ export default function Payments() {
           >
             <Download size={14} /> Shkarko
           </button>
+          <button className="btn btn-outline btn-sm gap-2" onClick={() => setImportOpen(true)}>
+            <FileSpreadsheet size={14} /> Import Excel
+          </button>
           <button className="btn btn-primary btn-sm gap-2" onClick={openNewPayment}>
             <CreditCard size={14} /> Regjistro Pagesë
           </button>
         </div>
       </div>
+
+      {importOpen && (
+        <ImportExcelModal
+          entity="payments"
+          onImport={handleImportPayments}
+          onClose={() => setImportOpen(false)}
+        />
+      )}
 
       {/* Alert fatura pa pagese */}
       {unpaidCount > 0 && (

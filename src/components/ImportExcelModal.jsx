@@ -78,6 +78,44 @@ const MAPS = {
     }),
   },
 
+  payments: {
+    label: 'Pagesa',
+    fields: [
+      { key: 'date',           aliases: ['data', 'date', 'payment date', 'data pageses', 'data pagesës'] },
+      { key: 'invoiceId',      aliases: ['id faturës', 'id fature', 'invoice id', 'invoice number', 'fatura', 'nr fature', 'nr faturës', 'invoice no', 'invoice#'] },
+      { key: 'customer',       aliases: ['klienti', 'customer', 'emri', 'customer name', 'emër'] },
+      { key: 'amount',         aliases: ['shuma', 'amount', 'total', 'vlera', 'pagesa'] },
+      { key: 'fee',            aliases: ['fee', 'komision', 'tarifë', 'tarifa', 'charge'] },
+      { key: 'method',         aliases: ['metoda', 'method', 'payment method', 'menyra', 'mënyra', 'payment mode'] },
+      { key: 'depositAccount', aliases: ['llogaria', 'account', 'deposit account', 'llogaria e depozitimit'] },
+      { key: 'depositedTo',    aliases: ['tek', 'deposited to', 'depozituar tek', 'partner'] },
+      { key: 'reference',      aliases: ['referenca', 'reference', 'transaction id', 'id transaksionit', 'ref'] },
+      { key: 'notes',          aliases: ['shenime', 'shënime', 'notes', 'komente', 'comment'] },
+    ],
+    template: [
+      ['Data','ID Faturës','Klienti','Shuma','Fee','Metoda','Llogaria','Depozituar tek','Referenca','Shënime'],
+      ['2026-01-15','INV-001','Ardit Krasniqi','100','2','PayPal','PayPal - Megaenndy','Enndy','TXN123',''],
+    ],
+    build: (row, idx) => {
+      const amount = parseFloat(row.amount) || 0
+      const fee    = parseFloat(row.fee)    || 0
+      return {
+        id:             `PAY-${String(Date.now() + idx).slice(-8)}`,
+        invoiceId:      (row.invoiceId  || '').toString().trim(),
+        customer:       (row.customer   || '').toString().trim(),
+        amount,
+        fee,
+        net:            amount - fee,
+        date:           normalizeDate(row.date),
+        method:         (row.method         || 'Kesh').toString().trim(),
+        depositAccount: (row.depositAccount  || '').toString().trim(),
+        depositedTo:    (row.depositedTo     || 'Enndy').toString().trim(),
+        reference:      (row.reference       || '').toString().trim(),
+        notes:          (row.notes           || '').toString().trim(),
+      }
+    },
+  },
+
   expenses: {
     label: 'Shpenzime',
     fields: [
@@ -308,6 +346,14 @@ export default function ImportExcelModal({ entity, onImport, onClose }) {
                             <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{r.category}</td>
                             <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{r.vendor}</td>
                             <td className="px-3 py-2 font-medium text-gray-700 dark:text-gray-300">€{r.amount}</td>
+                          </>
+                        )}
+                        {entity === 'payments' && (
+                          <>
+                            <td className="px-3 py-2 font-medium text-gray-700 dark:text-gray-300">{r.date}</td>
+                            <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{r.customer}</td>
+                            <td className="px-3 py-2 text-gray-500 dark:text-gray-400">{r.invoiceId || '—'}</td>
+                            <td className="px-3 py-2 font-medium text-green-700">€{r.amount}</td>
                           </>
                         )}
                       </tr>
