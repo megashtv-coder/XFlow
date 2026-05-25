@@ -64,9 +64,16 @@ export function AppProvider({ children }) {
       const saved = localStorage.getItem('xflow_users')
       if (!saved) return mockUsers
       const stored = JSON.parse(saved)
+      // Sync immutable base fields from mockData (username, role, orgId, isSuperAdmin)
+      // so that changes in mockData always take effect even for existing stored users
+      const merged = stored.map(u => {
+        const base = mockUsers.find(m => m.id === u.id)
+        if (!base) return u
+        return { ...u, username: base.username, role: base.role, orgId: base.orgId, isSuperAdmin: base.isSuperAdmin }
+      })
       const storedIds = new Set(stored.map(u => u.id))
       const missing = mockUsers.filter(u => !storedIds.has(u.id))
-      return missing.length ? [...stored, ...missing] : stored
+      return missing.length ? [...merged, ...missing] : merged
     } catch { return mockUsers }
   })()
 
