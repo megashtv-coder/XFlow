@@ -19,7 +19,11 @@ const MAPS = {
       { key: 'referredBy',  aliases: ['referuar nga', 'referred by', 'referral'] },
     ],
     template: [['Emri','Mbiemri','Telefoni','Email','Shteti','App','MAC Address','Referuar nga'],
-               ['Ardit','Krasniqi','+38344123456','ardit@email.com','Kosovë','Predator','00:1A:79:28:2D:16','']],
+               ['Ardit','Krasniqi','+38344123456','ardit@email.com','Kosovë','Predator','00:1A:79:28:2D:16',''],
+               ['Blerim','Hyseni','+38345678901','blerim@email.com','Kosovë','Predator','00:1A:79:28:2D:17','Ardit Krasniqi'],
+               ['Driton','Morina','+38346789012','driton@email.com','Shqipëri','Predator','00:1A:79:28:2D:18',''],
+               ['Aleksander','Dushku','+38347890123','aleksander@email.com','Kosovë','Predator','00:1A:79:28:2D:19','Blerim Hyseni'],
+               ['Mimoza','Salihu','+38348901234','mimoza@email.com','Shqipëri','Predator','00:1A:79:28:2D:20','Driton Morina']],
     build: (row, idx) => ({
       id:         `CUS-${String(Date.now() + idx).slice(-6)}`,
       firstName:  row.firstName || '',
@@ -55,8 +59,12 @@ const MAPS = {
       { key: 'notifyDate',        aliases: ['data njoftimit', 'notify date', 'njoftim'] },
     ],
     template: [
-      ['Klienti','Data','Skadenca','Shuma','Statusi','Produkti','Sasia','Çmimi','Skadimi abonimit','Data njoftimit'],
-      ['Ardit Krasniqi','2026-01-15','2026-01-20','100','paid','12 muaj abonim','1','100','2027-01-15','2026-12-15'],
+      ['Data','Numri i fatures','Klienti','Data per pagese:','Shuma','Produkti','Pershkrimi i produktit','Sasia','Çmimi','Skadimi abonimit','Data njoftimit','Statusi'],
+      ['2026-01-15','','Ardit Krasniqi','2026-01-20','100','12 muaj abonim','','1','100','2027-01-15','2026-12-15','paid'],
+      ['2026-01-16','','Blerim Hyseni','2026-01-25','200','6 muaj abonim','','1','200','2026-07-16','2026-06-16','pending'],
+      ['2026-01-17','','Driton Morina','2026-02-05','150','3 muaj abonim','','1','150','2026-04-17','2026-04-10','pending'],
+      ['2026-01-18','','Aleksander Dushku','2026-02-15','500','12 muaj abonim - Premium','Paket Premium me suport 24/7','1','500','2027-01-18','2026-12-18','paid'],
+      ['','','','','','Setup fee','','1','100','','',''],
     ],
     build: (row, idx) => ({
       id:                  `INV-${String(Date.now() + idx).padStart(6,'0').slice(-6).padStart(6,'0')}`,
@@ -94,7 +102,11 @@ const MAPS = {
     ],
     template: [
       ['Data','ID Faturës','Klienti','Shuma','Fee','Metoda','Llogaria','Depozituar tek','Referenca','Shënime'],
-      ['2026-01-15','INV-001','Ardit Krasniqi','100','2','PayPal','PayPal - Megaenndy','Enndy','TXN123',''],
+      ['2026-01-15','INV-001','Ardit Krasniqi','100','0','PayPal','PayPal - Megaenndy','Enndy','TXN-001-123456',''],
+      ['2026-01-16','INV-002','Blerim Hyseni','200','0','Transfer Bankar','Llogaria Banka','Samki','REF-002-789','Depozitim në llogari Samki'],
+      ['2026-01-17','INV-003','Driton Morina','150','5','Stripe','Stripe - Megaenndy','Enndy','stripe_ch_123','Komisioni 5%'],
+      ['2026-01-18','INV-004','Aleksander Dushku','500','10','PayPal','PayPal - Megaenndy','Enndy','TXN-004-654321','Premium payment'],
+      ['2026-01-20','INV-001','Ardit Krasniqi','50','0','Kesh','Kesh - Enndy','Enndy','','Pagesa e dytë'],
     ],
     build: (row, idx) => {
       const amount = parseFloat(row.amount) || 0
@@ -131,6 +143,10 @@ const MAPS = {
     template: [
       ['Data','Kategoria','Lloji','Furnitori','Paguaj nga','Referenca','Paguar nga','Shuma'],
       ['2026-01-15','Software','Blerje Krediti Predator','Predator','Kesh - Enndy','500 kredit','Enndy','800'],
+      ['2026-01-16','Internet','Abonimit Internet','Albtelecom','Llogaria Bank','Pagesë mujore','Enndy','50'],
+      ['2026-01-17','Zyre','Qira e zyrës','Pronari i zyrës','Kesh - Enndy','Qira janar','Samki','600'],
+      ['2026-01-18','Hardware','Blerjë router','TP-Link','Kesh - Samki','Router wifi','Samki','120'],
+      ['2026-01-19','Marketing','Reklama Google','Google Ads','Llogaria Bank','Google Ads campaign','Enndy','250'],
     ],
     build: (row, idx) => ({
       id:            `EXP-${String(Date.now() + idx).slice(-6)}`,
