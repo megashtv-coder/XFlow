@@ -242,7 +242,7 @@ export default function Payments() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp size={14} className="text-emerald-500" />
@@ -258,22 +258,6 @@ export default function Payments() {
           </div>
           <p className="text-xl font-bold text-amber-500">- {fmt(totalFee)}</p>
           <p className="text-xs text-gray-400 mt-0.5">{filtered.length} transaksione</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Users size={14} className="text-blue-500" />
-            <p className="text-xs text-gray-400 font-medium">Tek Enndy</p>
-          </div>
-          <p className="text-xl font-bold text-blue-600">{fmt(enndiNet)}</p>
-          <p className="text-xs text-gray-400 mt-0.5">50% fitim: {fmt(totalNet / 2)}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Users size={14} className="text-purple-500" />
-            <p className="text-xs text-gray-400 font-medium">Tek Samki</p>
-          </div>
-          <p className="text-xl font-bold text-purple-600">{fmt(samkiNet)}</p>
-          <p className="text-xs text-gray-400 mt-0.5">50% fitim: {fmt(totalNet / 2)}</p>
         </div>
       </div>
 
