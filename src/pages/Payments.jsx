@@ -308,7 +308,7 @@ export default function Payments() {
         />
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 370px)' }}>
+          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
           <table className="w-full text-sm min-w-[560px]">
             <thead className="sticky top-0 z-10">
               <tr className="border-b border-gray-100 bg-gray-50">
@@ -436,7 +436,7 @@ export default function Payments() {
 
           {/* Totals row */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-end gap-6 px-5 py-3 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500">
+            <div className="flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500">
               <span>Bruto: <span className="text-gray-700">{fmt(totalGross)}</span></span>
               <span>Fee: <span className="text-amber-500">- {fmt(totalFee)}</span></span>
               <span>Neto: <span className="text-emerald-600 text-sm font-bold">{fmt(totalNet)}</span></span>

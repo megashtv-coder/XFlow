@@ -59,10 +59,10 @@
     @apply bg-white rounded-xl border border-gray-100 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-default;
   }
   .table-th {
-    @apply text-xs font-bold text-gray-400 uppercase tracking-wide px-4 py-3 text-left;
+    @apply text-xs font-bold text-gray-400 uppercase tracking-wide px-4 py-2 text-left;
   }
   .table-td {
-    @apply px-4 py-3 text-sm text-gray-600 border-b border-gray-50;
+    @apply px-4 py-2 text-sm text-gray-600 border-b border-gray-50;
   }
   .icon-btn {
     @apply w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-all duration-150 cursor-pointer;
