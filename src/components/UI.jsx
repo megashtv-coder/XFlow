@@ -80,31 +80,13 @@ export function StatCard({ icon: Icon, iconBg, iconColor, val, label, badge, bad
   )
 }
 
-export function Modal({ title, children, footer, onClose, userColor = '#3b82f6', userInitials = null }) {
-  // Debug log
-  if (userInitials) console.log('🔍 Modal user avatar:', { userInitials, userColor })
-
+export function Modal({ title, children, footer, onClose }) {
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-base font-bold text-gray-800">{title}</h2>
-          <div className="flex items-center gap-3">
-            {/* 🆕 User Icon */}
-            {userInitials && (
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-sm"
-                style={{
-                  backgroundColor: userColor || '#3b82f6',
-                  border: '2px solid #e5e7eb'
-                }}
-                title="Përdoruesi i loguar"
-              >
-                {userInitials}
-              </div>
-            )}
-            <button className="icon-btn" onClick={onClose}><X size={18} /></button>
-          </div>
+          <button className="icon-btn" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="px-6 py-5">{children}</div>
         {footer && <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">{footer}</div>}

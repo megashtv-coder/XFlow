@@ -137,13 +137,8 @@ function ReferredBySelect({ value, onChange, excludeId }) {
    Modal — shto / edito klient
 ══════════════════════════════════════════════════════════ */
 export function CustomerModal({ customer, onClose }) {
-  const { setCustomers, showToast, currentUser } = useApp()
+  const { setCustomers, showToast } = useApp()
   const isEdit = !!customer
-
-  // User initials for avatar
-  const userInitials = currentUser
-    ? currentUser.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
-    : 'AK'
 
   const empty = {
     firstName: '', lastName: '', phone: '', email: '',
@@ -209,8 +204,6 @@ export function CustomerModal({ customer, onClose }) {
         </span>
       }
       onClose={onClose}
-      userColor={currentUser?.color}
-      userInitials={userInitials}
       footer={
         <>
           <button className="btn btn-outline" onClick={onClose}>Anulo</button>
