@@ -681,6 +681,18 @@ export default function Invoices() {
     return c?.phone || ''
   }
 
+  // Check if customer has invoices overdue more than 3 weeks (21 days)
+  const hasLongOverdue = (customerName) => {
+    const today = new Date()
+    return invoices.some(inv => {
+      if (inv.customer !== customerName || inv.status === 'paid' || inv.status === 'void') return false
+      if (!inv.due) return false
+      const dueDate = new Date(inv.due)
+      const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24))
+      return daysOverdue > 21  // More than 3 weeks
+    })
+  }
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = () => setOpenDropdown(null)
@@ -1003,6 +1015,9 @@ export default function Invoices() {
                         <td className="table-td font-medium text-gray-800">
                           <div className="flex items-center gap-1.5">
                             {inv.customer}
+                            {hasLongOverdue(inv.customer) && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 bg-red-100 text-red-700 rounded-full flex-shrink-0">⚠ VONUAR 3+javë</span>
+                            )}
                             {getCustomerType(inv.customer) === 'reseller' && (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded-full flex-shrink-0">Reseller</span>
                             )}
