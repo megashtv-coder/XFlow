@@ -67,7 +67,9 @@ const MAPS = {
       ['','','','','','Setup fee','','1','100','','',''],
     ],
     build: (row, idx) => ({
-      id:                  `INV-${String(Date.now() + idx).padStart(6,'0').slice(-6).padStart(6,'0')}`,
+      id:                  row.invoiceId && String(row.invoiceId).trim()
+        ? String(row.invoiceId).trim().toUpperCase()
+        : `INV-${String(Date.now() + idx).padStart(6,'0').slice(-6).padStart(6,'0')}`,
       customer:            row.customer || '',
       country:             '',
       email:               '',
@@ -253,17 +255,17 @@ function parseSheet(worksheet, entity) {
 }
 
 function mergeInvoiceRows(rows) {
-  const invoices = []
-  let currentInvoice = null
+  const invoiceMap = {}
 
   for (const row of rows) {
-    const hasCustomer = row.customer && String(row.customer).trim()
-    const hasDate = row.date && String(row.date).trim()
+    const invoiceId = row.invoiceId ||
+      (row.customer && String(row.customer).trim() ? `${row.date}-${row.customer}` : null)
 
-    if (hasCustomer && hasDate) {
-      // Start a new invoice
-      if (currentInvoice) invoices.push(currentInvoice)
-      currentInvoice = {
+    if (!invoiceId) continue
+
+    if (!invoiceMap[invoiceId]) {
+      // Create new invoice
+      invoiceMap[invoiceId] = {
         ...row,
         items: row.item ? [{
           desc: row.item || 'Shërbim',
@@ -271,9 +273,9 @@ function mergeInvoiceRows(rows) {
           price: parseFloat(row.price) || parseFloat(row.amount) || 0,
         }] : []
       }
-    } else if (currentInvoice && row.item) {
-      // Add item to current invoice
-      currentInvoice.items.push({
+    } else if (row.item) {
+      // Add item to existing invoice
+      invoiceMap[invoiceId].items.push({
         desc: row.item || 'Shërbim',
         qty: parseInt(row.qty) || 1,
         price: parseFloat(row.price) || parseFloat(row.amount) || 0,
@@ -281,11 +283,10 @@ function mergeInvoiceRows(rows) {
     }
   }
 
-  if (currentInvoice) invoices.push(currentInvoice)
+  const invoices = Object.values(invoiceMap)
 
   return invoices.map((inv, idx) => {
     const obj = { ...inv }
-    // Remove item/qty/price since they're now in items array
     delete obj.item
     delete obj.qty
     delete obj.price
