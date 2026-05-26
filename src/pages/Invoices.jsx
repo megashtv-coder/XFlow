@@ -1016,7 +1016,7 @@ export default function Invoices() {
                           <div className="flex items-center gap-1.5">
                             {inv.customer}
                             {hasLongOverdue(inv.customer) && (
-                              <span className="text-[10px] font-bold px-2 py-0.5 bg-red-100 text-red-700 rounded-full flex-shrink-0">⚠ VONUAR 3+javë</span>
+                              <span className="text-red-600 flex-shrink-0" title="Fatura më shumë se 3 javë të vonuara">▲</span>
                             )}
                             {getCustomerType(inv.customer) === 'reseller' && (
                               <span className="text-[10px] font-bold px-1.5 py-0.5 bg-purple-100 text-purple-600 rounded-full flex-shrink-0">Reseller</span>
