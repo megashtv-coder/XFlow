@@ -70,7 +70,7 @@ const MAPS = {
       subscriptionExpiry:  normalizeDate(row.subscriptionExpiry),
       notifyDate:          normalizeDate(row.notifyDate),
       comments:            [],
-      items:               [{
+      items:               row.items || [{
         desc:  row.item  || 'Shërbim',
         qty:   parseInt(row.qty)   || 1,
         price: parseFloat(row.price) || parseFloat(row.amount) || 0,
@@ -218,15 +218,63 @@ function parseSheet(worksheet, entity) {
     if (idx !== -1) colMap[f.key] = idx
   })
 
-  return raw.slice(1)
+  const parsed = raw.slice(1)
     .filter(row => row.some(c => c !== ''))
     .map((row, idx) => {
       const obj = {}
       fields.forEach(f => {
         if (colMap[f.key] !== undefined) obj[f.key] = row[colMap[f.key]]
       })
-      return MAPS[entity].build(obj, idx)
+      return { ...obj, _rowIdx: idx }
     })
+
+  // Special handling for invoices: merge rows that belong to same invoice
+  if (entity === 'invoices') {
+    return mergeInvoiceRows(parsed)
+  }
+
+  return parsed.map((obj, idx) => MAPS[entity].build(obj, idx))
+}
+
+function mergeInvoiceRows(rows) {
+  const invoices = []
+  let currentInvoice = null
+
+  for (const row of rows) {
+    const hasCustomer = row.customer && String(row.customer).trim()
+    const hasDate = row.date && String(row.date).trim()
+
+    if (hasCustomer && hasDate) {
+      // Start a new invoice
+      if (currentInvoice) invoices.push(currentInvoice)
+      currentInvoice = {
+        ...row,
+        items: row.item ? [{
+          desc: row.item || 'Shërbim',
+          qty: parseInt(row.qty) || 1,
+          price: parseFloat(row.price) || parseFloat(row.amount) || 0,
+        }] : []
+      }
+    } else if (currentInvoice && row.item) {
+      // Add item to current invoice
+      currentInvoice.items.push({
+        desc: row.item || 'Shërbim',
+        qty: parseInt(row.qty) || 1,
+        price: parseFloat(row.price) || parseFloat(row.amount) || 0,
+      })
+    }
+  }
+
+  if (currentInvoice) invoices.push(currentInvoice)
+
+  return invoices.map((inv, idx) => {
+    const obj = { ...inv }
+    // Remove item/qty/price since they're now in items array
+    delete obj.item
+    delete obj.qty
+    delete obj.price
+    return MAPS.invoices.build(obj, idx)
+  })
 }
 
 function downloadTemplate(entity) {
