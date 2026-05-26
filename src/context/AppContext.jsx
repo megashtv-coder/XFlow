@@ -100,7 +100,9 @@ export function AppProvider({ children }) {
     if (isSuperAdmin) return data  // Superadmin sheh të gjithçka
     if (!currentOrgId) return data  // Nëse nuk ka user, shfaq të gjitha (mockData)
     // Filtro vetëm të dhënat e organizatës aktuale
-    return data.filter(item => (item.orgId === currentOrgId || !item.orgId))
+    const filtered = data.filter(item => (item.orgId === currentOrgId || !item.orgId))
+    console.log(`[XFlow] Filtering by org "${currentOrgId}": ${data.length} items → ${filtered.length} items`)
+    return filtered
   }
 
   /* ── Wrapper setters që automatikisht shtojnë orgId në të dhëna të reja ── */
