@@ -67,26 +67,43 @@ const MAPS = {
       ['2026-01-18','','Aleksander Dushku','2026-02-15','500','12 muaj abonim - Premium','Paket Premium me suport 24/7','1','500','2027-01-18','2026-12-18','paid'],
       ['','','','','','Setup fee','','1','100','','',''],
     ],
-    build: (row, idx) => ({
-      id:                  row.invoiceId && String(row.invoiceId).trim()
-        ? String(row.invoiceId).trim().toUpperCase()
-        : `INV-${String(Date.now() + idx).padStart(6,'0').slice(-6).padStart(6,'0')}`,
-      customer:            row.customer || '',
-      country:             '',
-      email:               '',
-      amount:              parseFloat(row.amount) || 0,
-      status:              normalizeStatus(row.status),
-      date:                normalizeDate(row.date),
-      due:                 normalizeDate(row.due),
-      subscriptionExpiry:  normalizeDate(row.subscriptionExpiry),
-      notifyDate:          normalizeDate(row.notifyDate),
-      comments:            [],
-      items:               row.items || [{
-        desc:  row.item  || 'Shërbim',
-        qty:   parseInt(row.qty)   || 1,
-        price: parseFloat(row.price) || parseFloat(row.amount) || 0,
-      }],
-    }),
+    build: (row, idx) => {
+      const subscriptionExpiry = normalizeDate(row.subscriptionExpiry);
+      let notifyDate = normalizeDate(row.notifyDate);
+
+      // Default: set notifyDate to 7 days before subscriptionExpiry if not provided
+      if (!notifyDate && subscriptionExpiry) {
+        const date = new Date(subscriptionExpiry);
+        if (!isNaN(date.getTime())) {
+          date.setDate(date.getDate() - 7);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          notifyDate = `${year}-${month}-${day}`;
+        }
+      }
+
+      return {
+        id:                  row.invoiceId && String(row.invoiceId).trim()
+          ? String(row.invoiceId).trim().toUpperCase()
+          : `INV-${String(Date.now() + idx).padStart(6,'0').slice(-6).padStart(6,'0')}`,
+        customer:            row.customer || '',
+        country:             '',
+        email:               '',
+        amount:              parseFloat(row.amount) || 0,
+        status:              normalizeStatus(row.status),
+        date:                normalizeDate(row.date),
+        due:                 normalizeDate(row.due),
+        subscriptionExpiry:  subscriptionExpiry,
+        notifyDate:          notifyDate,
+        comments:            [],
+        items:               row.items || [{
+          desc:  row.item  || 'Shërbim',
+          qty:   parseInt(row.qty)   || 1,
+          price: parseFloat(row.price) || parseFloat(row.amount) || 0,
+        }],
+      };
+    },
   },
 
   payments: {
