@@ -20,23 +20,26 @@ const cleanPhone = p => (p || '').replace(/[\s\+\-\(\)]/g, '')
    Searchable combobox "Referuar nga"
 ══════════════════════════════════════════════════════════ */
 function ReferredBySelect({ value, onChange, excludeId }) {
-  const { customers } = useApp()
+  const { customers, representatives } = useApp()
   const [query,  setQuery]  = useState(value || '')
   const [open,   setOpen]   = useState(false)
   const [active, setActive] = useState(-1)
   const wrapRef  = useRef(null)
   const inputRef = useRef(null)
 
-  // Mban listën e emrave të klientëve (unique)
+  // Mban listën e emrave nga të dyja burimet: klientë + përfaqësues (unique)
   const names = useMemo(() => {
-    const uniqueNames = new Set(
-      customers
+    const uniqueNames = new Set([
+      // Emrat e klientëve
+      ...customers
         .filter(c => c.id !== excludeId)
         .map(c => (c.name || `${c.firstName || ''} ${c.lastName || ''}`).trim())
-        .filter(Boolean)
-    )
+        .filter(Boolean),
+      // Përfaqësuesit e ruajtur
+      ...(representatives || [])
+    ])
     return Array.from(uniqueNames).sort()
-  }, [customers, excludeId])
+  }, [customers, representatives, excludeId])
 
   // Filtrimi live
   const filtered = useMemo(() => {
