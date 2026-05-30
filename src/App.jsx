@@ -15,7 +15,6 @@ import Settings from './pages/Settings'
 import Subscriptions from './pages/Subscriptions'
 import Suppliers from './pages/Suppliers'
 import UsersPage from './pages/Users'
-import ImportData from './pages/ImportData'
 import { Toast, LoadingSkeleton } from './components/UI'
 
 const ORG_PAGES = {
@@ -30,7 +29,6 @@ const ORG_PAGES = {
   subscriptions: Subscriptions,
   suppliers:     Suppliers,
   users:         UsersPage,
-  import:        ImportData,
 }
 
 function OrgAppLayout() {

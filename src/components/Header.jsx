@@ -139,7 +139,7 @@ export default function Header() {
                 <Bell size={16} />
                 Njoftimet e Abonimit
               </h3>
-              {unreadCount > 0 && (
+              {unreadCount > 0 ? (
                 <button
                   onClick={markAllAsRead}
                   className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
@@ -147,7 +147,9 @@ export default function Header() {
                   <Check size={14} />
                   Lexoje të gjitha
                 </button>
-              )}
+              ) : upcomingNotifications.length > 0 ? (
+                <span className="text-xs text-gray-400 dark:text-gray-500">Të gjitha lexuar</span>
+              ) : null}
             </div>
 
             {/* Notifications list */}

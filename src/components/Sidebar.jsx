@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, HelpCircle, ChevronRight, X, Bell,
-  Truck, Zap, ChevronLeft, UserCog, LogOut, Building2, Crown, Upload,
+  Truck, Zap, ChevronLeft, UserCog, LogOut, Building2, Crown,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
@@ -21,7 +21,6 @@ export default function Sidebar() {
   const NAV = [
     { id: 'dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'invoices',      icon: FileText,        label: 'Faturat',    badge: invoices.filter(i => i.status === 'pending' || i.status === 'overdue').length || null },
-    { id: 'import',        icon: Upload,          label: 'Ngarko të dhëna' },
     { id: 'subscriptions', icon: Bell,            label: 'Abonimet',   badge: subNotifyCount || null, badgeColor: 'bg-orange-500' },
     { id: 'customers',     icon: UsersIcon,       label: 'Klientët' },
     { id: 'items',         icon: Package,         label: 'Produktet' },
