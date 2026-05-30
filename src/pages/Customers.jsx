@@ -27,19 +27,20 @@ function ReferredBySelect({ value, onChange, excludeId }) {
   const wrapRef  = useRef(null)
   const inputRef = useRef(null)
 
-  // Mban listën e emrave të klientëve
-  const names = useMemo(() =>
-    customers
-      .filter(c => c.id !== excludeId)
-      .map(c => (c.name || `${c.firstName || ''} ${c.lastName || ''}`).trim())
-      .filter(Boolean)
-      .sort(),
-    [customers, excludeId]
-  )
+  // Mban listën e emrave të klientëve (unique)
+  const names = useMemo(() => {
+    const uniqueNames = new Set(
+      customers
+        .filter(c => c.id !== excludeId)
+        .map(c => (c.name || `${c.firstName || ''} ${c.lastName || ''}`).trim())
+        .filter(Boolean)
+    )
+    return Array.from(uniqueNames).sort()
+  }, [customers, excludeId])
 
   // Filtrimi live
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = (query || '').trim().toLowerCase()
     if (!q) return names
     return names.filter(n => n.toLowerCase().includes(q))
   }, [names, query])
