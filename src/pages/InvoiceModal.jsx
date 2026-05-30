@@ -574,11 +574,11 @@ export default function InvoiceModal({ initialData }) {
       <FormGroup label="Referenti (Përfaqësuesi)">
         <Combobox
           options={[
-            // Get unique referents from existing invoices
+            // Get unique representatives from customers' "Referuar nga" field
             ...Array.from(new Set(
-              invoices
-                .filter(inv => inv.referent && inv.referent.trim())
-                .map(inv => inv.referent.trim())
+              customers
+                .filter(cust => cust.referredBy && cust.referredBy.trim())
+                .map(cust => cust.referredBy.trim())
             )).map(ref => ({ id: ref, name: ref }))
           ]}
           value={form.referent}
