@@ -120,10 +120,15 @@
 .dark .form-label { @apply text-gray-400; }
 .dark .icon-btn { @apply text-gray-400 hover:bg-gray-700 hover:text-gray-200; }
 
+/* ItemRow grid - Desktop default */
+.item-row {
+  grid-template-columns: 1fr 72px 100px 86px 28px;
+}
+
 /* Mobile responsive ItemRow grid */
 @media (max-width: 640px) {
   .item-row {
-    grid-template-columns: 1fr 32px 40px 40px 18px !important;
+    grid-template-columns: 1fr 32px 40px 40px 18px;
     gap: 6px;
     padding: 8px 12px;
   }

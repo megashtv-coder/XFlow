@@ -318,9 +318,6 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
   return (
     <div
       className="item-row grid items-start gap-2 py-2.5 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
-      style={{
-        gridTemplateColumns: '1fr 72px 100px 86px 28px' // Desktop default; CSS media query handles mobile
-      }}
     >
       {/* Product combobox + description */}
       <div className="flex flex-col gap-1 min-w-0">
