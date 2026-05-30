@@ -15,22 +15,24 @@ import Settings from './pages/Settings'
 import Subscriptions from './pages/Subscriptions'
 import Suppliers from './pages/Suppliers'
 import UsersPage from './pages/Users'
+import CommunicationHistory from './pages/CommunicationHistory'
 import { Toast, LoadingSkeleton } from './components/UI'
 import { useEffect } from 'react'
 import AutoNotificationService from './services/AutoNotificationService'
 
 const ORG_PAGES = {
-  dashboard:     Dashboard,
-  invoices:      Invoices,
-  customers:     Customers,
-  expenses:      ExpensesPage,
-  items:         Items,
-  payments:      Payments,
-  reports:       Reports,
-  settings:      Settings,
-  subscriptions: Subscriptions,
-  suppliers:     Suppliers,
-  users:         UsersPage,
+  dashboard:              Dashboard,
+  invoices:              Invoices,
+  customers:             Customers,
+  expenses:              ExpensesPage,
+  items:                 Items,
+  payments:              Payments,
+  reports:               Reports,
+  settings:              Settings,
+  subscriptions:         Subscriptions,
+  suppliers:             Suppliers,
+  users:                 UsersPage,
+  communicationHistory:  CommunicationHistory,
 }
 
 function OrgAppLayout() {
