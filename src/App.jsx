@@ -58,27 +58,38 @@ function OrgAppLayout() {
     }
   }, [invoices, customers, showToast])
 
-  // Auto-backup every 3 hours
+  // Auto-backup every 3 hours (fixed schedule, not on every refresh)
   useEffect(() => {
-    // Function to create backup
-    const createBackup = () => {
-      const appState = { invoices, customers, items, payments, expenses, users }
-      const result = BackupService.createAutoBackup(appState)
-      if (result.success) {
-        console.log('✅ Auto-backup created successfully')
-      } else {
-        console.error('Auto-backup failed:', result.message)
+    const BACKUP_INTERVAL_MS = 3 * 60 * 60 * 1000 // 3 hours
+    const LAST_BACKUP_KEY = 'xflow_last_backup_time'
+    const CHECK_INTERVAL_MS = 5 * 60 * 1000 // Check every 5 minutes
+
+    // Function to check if it's time to backup and create if needed
+    const checkAndCreateBackup = () => {
+      const lastBackupTime = localStorage.getItem(LAST_BACKUP_KEY)
+      const now = Date.now()
+
+      // If no backup exists or 3 hours have passed, create a backup
+      if (!lastBackupTime || (now - parseInt(lastBackupTime)) >= BACKUP_INTERVAL_MS) {
+        const appState = { invoices, customers, items, payments, expenses, users }
+        const result = BackupService.createAutoBackup(appState)
+        if (result.success) {
+          localStorage.setItem(LAST_BACKUP_KEY, now.toString())
+          console.log('✅ Auto-backup created successfully')
+        } else {
+          console.error('Auto-backup failed:', result.message)
+        }
       }
     }
 
-    // Create backup immediately on app load
-    createBackup()
+    // Check on app load
+    checkAndCreateBackup()
 
-    // Set up interval for every 3 hours (3 * 60 * 60 * 1000 milliseconds)
-    const backupInterval = setInterval(createBackup, 3 * 60 * 60 * 1000)
+    // Set up interval to check every 5 minutes if it's time to backup
+    const backupCheckInterval = setInterval(checkAndCreateBackup, CHECK_INTERVAL_MS)
 
     // Cleanup interval on unmount
-    return () => clearInterval(backupInterval)
+    return () => clearInterval(backupCheckInterval)
   }, [invoices, customers, items, payments, expenses, users])
 
   return (
