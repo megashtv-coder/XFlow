@@ -83,7 +83,7 @@ function InvoiceListCard({ inv, selected, onClick }) {
 }
 
 /* ── invoice side panel (right panel) ───────────────── */
-function InvoiceSidePanel({ invId, onClose }) {
+function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
   const {
     invoices, setInvoices,
     customers,
@@ -855,6 +855,7 @@ export default function Invoices() {
             key={preview}
             invId={preview}
             onClose={() => setPreview(null)}
+            setSelectedCustomer={setSelectedCustomer}
           />
         </div>
 
