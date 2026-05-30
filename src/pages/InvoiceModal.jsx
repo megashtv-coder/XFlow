@@ -315,15 +315,12 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
   const fmtN = v => new Intl.NumberFormat('de-DE').format(v)
   const isMobile = useIsMobile()
 
-  // Responsive grid columns: mobile has narrower fixed columns, desktop has wider ones
-  const gridCols = isMobile
-    ? '1fr 40px 48px 48px 24px'  // Mobile: tighter columns
-    : '1fr 72px 100px 86px 28px' // Desktop: original widths
-
   return (
     <div
-      className="grid items-start gap-2 py-2.5 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
-      style={{ gridTemplateColumns: gridCols }}
+      className="item-row grid items-start gap-2 py-2.5 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
+      style={{
+        gridTemplateColumns: '1fr 72px 100px 86px 28px' // Desktop default; CSS media query handles mobile
+      }}
     >
       {/* Product combobox + description */}
       <div className="flex flex-col gap-1 min-w-0">
@@ -351,7 +348,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
 
       {/* Sasia */}
       <input
-        className={`form-control text-center text-sm py-1.5 mt-0.5 ${isMobile ? 'px-0.5 text-xs' : 'px-1'}`}
+        className="form-control text-center text-sm px-1 py-1.5 mt-0.5"
         type="number" min="0.01" step="1"
         value={item.qty}
         onChange={e => onUpdate({ qty: e.target.value })}
@@ -359,7 +356,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
 
       {/* Çmimi */}
       <input
-        className={`form-control text-right text-sm py-1.5 mt-0.5 ${isMobile ? 'px-0.5 text-xs' : 'px-2'}`}
+        className="form-control text-right text-sm px-2 py-1.5 mt-0.5"
         type="number" min="0" step="0.01"
         value={item.unitPrice}
         onChange={e => onUpdate({ unitPrice: e.target.value })}
@@ -367,7 +364,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
       />
 
       {/* Line total */}
-      <div className={`text-right font-bold py-1.5 mt-0.5 ${isMobile ? 'px-0.5 text-xs' : 'text-sm px-1'} ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
+      <div className={`text-right text-sm font-bold py-1.5 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
         €{fmtN(lineTotal)}
       </div>
 
@@ -375,9 +372,9 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
       {canRemove ? (
         <button
           onClick={onRemove}
-          className={`flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors mt-0.5 ${isMobile ? 'w-6 h-6' : 'w-7 h-7'}`}
+          className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-400 transition-colors mt-0.5"
         >
-          <X size={isMobile ? 12 : 14} />
+          <X size={14} />
         </button>
       ) : <div />}
     </div>
