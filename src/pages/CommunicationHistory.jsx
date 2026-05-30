@@ -86,6 +86,17 @@ export default function CommunicationHistory() {
     return msg.length > 100 ? msg.substring(0, 100) + '...' : msg
   }
 
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      prepared: { icon: '⏳', label: 'Gati për dërgim', color: 'bg-amber-100 text-amber-700' },
+      sent: { icon: '✓', label: 'Dërguar', color: 'bg-emerald-100 text-emerald-700' },
+      failed: { icon: '✕', label: 'Dështoi', color: 'bg-red-100 text-red-700' },
+      read: { icon: '✓✓', label: 'Lexuar', color: 'bg-blue-100 text-blue-700' },
+    }
+    const s = statusMap[status] || { icon: '•', label: status || 'Dërguar', color: 'bg-gray-100 text-gray-700' }
+    return s
+  }
+
   return (
     <div>
       {/* Header */}
@@ -241,9 +252,14 @@ export default function CommunicationHistory() {
                         {formatMessage(msg.message)}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs font-semibold">
-                          ✓ {msg.status || 'Dërguar'}
-                        </span>
+                        {(() => {
+                          const badge = getStatusBadge(msg.status)
+                          return (
+                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${badge.color}`}>
+                              {badge.icon} {badge.label}
+                            </span>
+                          )
+                        })()}
                       </td>
                     </tr>
                   ))}
@@ -270,6 +286,16 @@ export default function CommunicationHistory() {
                   <p className="text-xs text-gray-700 mb-2">
                     {formatMessage(msg.message)}
                   </p>
+                  <div className="mt-2">
+                    {(() => {
+                      const badge = getStatusBadge(msg.status)
+                      return (
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${badge.color}`}>
+                          {badge.icon} {badge.label}
+                        </span>
+                      )
+                    })()}
+                  </div>
                 </div>
               ))}
             </div>

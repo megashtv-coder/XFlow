@@ -1158,6 +1158,16 @@ export default function Invoices() {
                                       className={`block w-full text-left px-4 py-2 text-sm hover:bg-green-50 flex items-center gap-2 border-b border-gray-100 ${isOverdue ? 'text-orange-600' : 'text-green-600'}`}
                                       onClick={e => {
                                         e.stopPropagation()
+                                        // Log reminder message as "prepared"
+                                        const loggedMsg = MessageLogService.logWhatsAppMessage(inv.customer, rawPhone, buildReminderMsg(inv), inv.id, 'prepared')
+
+                                        // Auto-mark as "sent" after 5 seconds
+                                        if (loggedMsg?.id) {
+                                          setTimeout(() => {
+                                            MessageLogService.updateMessageStatus(loggedMsg.id, 'sent')
+                                          }, 5000)
+                                        }
+
                                         setOpenDropdown(null)
                                       }}
                                     >
@@ -1186,7 +1196,16 @@ export default function Invoices() {
                                       className="block w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 flex items-center gap-2 border-b border-gray-100"
                                       onClick={e => {
                                         e.stopPropagation()
-                                        MessageLogService.logWhatsAppMessage(inv.customer, rawPhone, buildInvoiceMsg(inv), inv.id)
+                                        // Log as "prepared" when button is clicked
+                                        const loggedMsg = MessageLogService.logWhatsAppMessage(inv.customer, rawPhone, buildInvoiceMsg(inv), inv.id, 'prepared')
+
+                                        // Auto-mark as "sent" after 5 seconds (assumes user sends it)
+                                        if (loggedMsg?.id) {
+                                          setTimeout(() => {
+                                            MessageLogService.updateMessageStatus(loggedMsg.id, 'sent')
+                                          }, 5000)
+                                        }
+
                                         setOpenDropdown(null)
                                       }}
                                     >

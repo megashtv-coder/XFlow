@@ -78,14 +78,14 @@ export function filterMessageLogs(filters = {}) {
 /**
  * Log WhatsApp message
  */
-export function logWhatsAppMessage(customerName, phoneNumber, message, invoiceId = null) {
+export function logWhatsAppMessage(customerName, phoneNumber, message, invoiceId = null, status = 'prepared') {
   return logMessage({
     type: 'whatsapp',
     customerName,
     phoneNumber,
     message,
     invoiceId,
-    status: 'sent', // In production, this would be updated based on actual delivery
+    status: status, // 'prepared' (ready to send), 'sent' (actually sent), 'failed'
   })
 }
 
@@ -165,6 +165,29 @@ export function getMessageStatistics() {
   })
 
   return stats
+}
+
+/**
+ * Update message status (e.g., from 'prepared' to 'sent')
+ */
+export function updateMessageStatus(messageId, newStatus) {
+  try {
+    const logs = getMessageLogs()
+    const messageIndex = logs.findIndex(log => log.id === messageId)
+
+    if (messageIndex === -1) {
+      console.warn('Message not found:', messageId)
+      return false
+    }
+
+    logs[messageIndex].status = newStatus
+    logs[messageIndex].statusUpdatedAt = new Date().toISOString()
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(logs))
+    return true
+  } catch (error) {
+    console.error('Error updating message status:', error)
+    return false
+  }
 }
 
 /**
