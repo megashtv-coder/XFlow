@@ -445,7 +445,10 @@ export default function InvoiceModal({ initialData }) {
   const [addingCustomer, setAddingCustomer] = useState(null)   // null | { name }
   const [error,          setError]          = useState('')
 
+  const today = new Date().toISOString().slice(0, 10)
+
   const [form, setForm] = useState({
+    date:               initialData?.date               || today,
     customer:           initialData?.customer           || '',
     referent:           initialData?.referent           || '',
     due:                initialData?.due                || due3d,
@@ -540,6 +543,7 @@ export default function InvoiceModal({ initialData }) {
 
     const custObj = customers.find(c => c.name === form.customer)
     const payload = {
+      date:               form.date,
       customer:           form.customer,
       referent:           form.referent,
       country:            custObj?.country || '',
@@ -560,7 +564,6 @@ export default function InvoiceModal({ initialData }) {
       setInvoices(p => [{
         ...payload,
         id:       generateNextInvoiceId(),
-        date:     new Date().toISOString().slice(0, 10),
         comments: [],
       }, ...p])
       showToast('Fatura u krijua me sukses! ✓')
@@ -762,9 +765,16 @@ export default function InvoiceModal({ initialData }) {
 
       {/* ── Dates ── */}
       <div className="grid grid-cols-2 gap-4">
+        <FormGroup label="Data e faturës *">
+          <input className="form-control" type="date" value={form.date} onChange={e => set('date', e.target.value)} />
+        </FormGroup>
         <FormGroup label="Afati i pagesës (auto: 3 ditë)">
           <input className="form-control" type="date" value={form.due} onChange={e => set('due', e.target.value)} />
         </FormGroup>
+      </div>
+
+      {/* ── Subscription dates ── */}
+      <div className="grid grid-cols-2 gap-4">
         <FormGroup label="Data e skadimit të abonimit">
           <input className="form-control" type="date" value={form.subscriptionExpiry}
             onChange={e => {
@@ -777,6 +787,7 @@ export default function InvoiceModal({ initialData }) {
               }
             }} />
         </FormGroup>
+        <div></div>
       </div>
 
       {/* ── Notify date ── */}
