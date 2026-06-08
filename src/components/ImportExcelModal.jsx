@@ -376,21 +376,22 @@ export default function ImportExcelModal({ entity, onImport, onClose }) {
 
   function handleImport() {
     if (!rows?.length) return
-    alert(`[IMPORT STARTED] ${rows.length} rows will be imported`)
-    console.log('[ImportExcelModal] ====== IMPORT BUTTON CLICKED ======')
-    console.log('[ImportExcelModal] handleImport called with', rows.length, 'rows')
-    console.log('[ImportExcelModal] First row sample:', rows[0])
-    console.log('[ImportExcelModal] Last row sample:', rows[rows.length - 1])
+
+    // SUPER VISIBLE ERROR LOG
+    console.error('🔴 IMPORT DEBUG: rows.length = ' + rows.length)
+    console.error('🔴 IMPORT DEBUG: rows array = ', rows)
+    console.error('🔴 IMPORT DEBUG: First row ID = ' + rows[0]?.id)
+    console.error('🔴 IMPORT DEBUG: Last row ID = ' + rows[rows.length-1]?.id)
+
+    alert(`[IMPORT] Merr rreshta: ${rows.length}`)
+
     try {
-      console.log('[ImportExcelModal] Calling onImport callback...')
       onImport(rows)
-      console.log('[ImportExcelModal] onImport callback completed successfully')
     } catch (err) {
-      console.error('[ImportExcelModal] ERROR in onImport:', err)
-      alert(`[IMPORT ERROR] ${err.message}`)
+      console.error('[IMPORT ERROR]', err)
+      alert(`[ERROR] ${err.message}`)
       throw err
     }
-    console.log('[ImportExcelModal] Closing modal')
     onClose()
   }
 
