@@ -683,6 +683,8 @@ export default function Invoices() {
   const [importOpen,   setImportOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null) // Track which row's dropdown is open
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
+  const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
+  const [confirmDelAll, setConfirmDelAll] = useState(false) // Confirmation dialog for bulk delete
 
   const getCustomerType = name =>
     customers.find(c => c.name === name)?.type || 'individual'
@@ -732,6 +734,31 @@ export default function Invoices() {
       showToast(`U importuan ${renumbered.length} fatura`, 'success')
       return result
     })
+  }
+
+  // Bulk delete functions
+  const toggleSelectInvoice = (id) => {
+    setSelected(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(id)) newSet.delete(id)
+      else newSet.add(id)
+      return newSet
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selected.size === filtered.length) {
+      setSelected(new Set())
+    } else {
+      setSelected(new Set(filtered.map(i => i.id)))
+    }
+  }
+
+  const handleDeleteSelected = () => {
+    setInvoices(prev => prev.filter(i => !selected.has(i.id)))
+    setSelected(new Set())
+    setConfirmDelAll(false)
+    showToast(`U fshihen ${selected.size} fatura`, 'success')
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -993,6 +1020,15 @@ export default function Invoices() {
           <button className="btn btn-outline btn-sm" onClick={() => setImportOpen(true)}>
             <FileSpreadsheet size={14}/> Import Excel
           </button>
+          {selected.size > 0 && (
+            <button
+              className="btn btn-danger btn-sm flex items-center gap-2"
+              onClick={() => setConfirmDelAll(true)}
+              title={`Fshi ${selected.size} fatura të zgjedhura`}
+            >
+              <Trash2 size={14}/> Fshi {selected.size}
+            </button>
+          )}
           <button className="btn btn-primary btn-sm" onClick={() => setModal(<InvoiceModal/>)}>
             <span className="text-base leading-none">+</span> Faturë e re
           </button>
@@ -1004,6 +1040,44 @@ export default function Invoices() {
           onImport={handleImportInvoices}
           onClose={() => setImportOpen(false)}
         />
+      )}
+
+      {/* Bulk delete confirmation modal */}
+      {confirmDelAll && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-w-sm">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg">Fshi {selected.size} fatura?</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Kjo veprim nuk mund të rikthehej.</p>
+              </div>
+            </div>
+
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 mb-6 border border-red-200 dark:border-red-800">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-semibold">{selected.size}</span> fatura të zgjedhura do të fshihen përgjithmonë.
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmDelAll(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                Anulo
+              </button>
+              <button
+                onClick={handleDeleteSelected}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Po, fshi të gjitha
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Filters */}
@@ -1069,6 +1143,15 @@ export default function Invoices() {
               <table className="w-full min-w-[500px]">
                 <thead className="sticky top-0 z-10">
                   <tr className="border-b-2 border-gray-100 bg-white">
+                    <th className="table-th w-8 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selected.size === filtered.length && filtered.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 cursor-pointer"
+                        title={selected.size === filtered.length ? "Deselekto të gjitha" : "Selekto të gjitha"}
+                      />
+                    </th>
                     {[
                       { key: 'id',       label: 'ID',     cls: 'hidden sm:table-cell' },
                       { key: 'customer', label: 'Klienti',cls: '' },
@@ -1114,11 +1197,18 @@ export default function Invoices() {
                     return (
                       <tr
                         key={inv.id}
-                        className="hover:bg-blue-50/30 transition-colors group cursor-pointer"
-                        onClick={() => setPreview(inv.id)}
+                        className={`hover:bg-blue-50/30 transition-colors group ${selected.has(inv.id) ? 'bg-blue-100' : ''}`}
                       >
-                        <td className="table-td font-bold text-blue-600 text-sm hidden sm:table-cell">{inv.id}</td>
-                        <td className="table-td font-medium text-gray-800">
+                        <td className="table-td w-8 text-center" onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selected.has(inv.id)}
+                            onChange={() => toggleSelectInvoice(inv.id)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </td>
+                        <td className="table-td font-bold text-blue-600 text-sm hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>{inv.id}</td>
+                        <td className="table-td font-medium text-gray-800 cursor-pointer" onClick={() => setPreview(inv.id)}>
                           <div className="flex items-center gap-1.5">
                             {inv.customer}
                             {hasLongOverdue(inv.customer) && (
