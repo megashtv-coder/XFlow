@@ -687,20 +687,35 @@ export default function Invoices() {
     customers.find(c => c.name === name)?.type || 'individual'
 
   function handleImportInvoices(rows) {
+    console.log('[Import] Received rows:', rows.length)
+
     setInvoices(prev => {
+      console.log('[Import] Current invoices:', prev.length)
+
       const existingIds = new Set(prev.map(i => i.id))
       const news = rows.filter(r => !existingIds.has(r.id))
+
+      console.log('[Import] New invoices to add:', news.length)
+
       // riindekso IDs për të mos pasur konflikte
       const maxNum = prev.reduce((m, i) => {
         const n = parseInt(i.id.replace('INV-','')) || 0
         return n > m ? n : m
       }, 0)
+
       const renumbered = news.map((r, i) => ({
         ...r,
         id: `INV-${String(maxNum + i + 1).padStart(6, '0')}`,
       }))
+
+      console.log('[Import] After renumbering:', renumbered.length)
+      console.log('[Import] First imported invoice:', renumbered[0])
+
+      const result = [...prev, ...renumbered]
+      console.log('[Import] Final total:', result.length)
+
       showToast(`U importuan ${renumbered.length} fatura`, 'success')
-      return [...prev, ...renumbered]
+      return result
     })
   }
 
