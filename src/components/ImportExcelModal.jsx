@@ -275,6 +275,7 @@ function parseSheet(worksheet, entity) {
 }
 
 function mergeInvoiceRows(rows) {
+  console.log('[mergeInvoiceRows] Started with', rows.length, 'rows')
   const invoiceMap = {}
 
   for (const row of rows) {
@@ -312,8 +313,21 @@ function mergeInvoiceRows(rows) {
   }
 
   const invoices = Object.values(invoiceMap)
+  console.log('[mergeInvoiceRows] Created', invoices.length, 'invoices from', rows.length, 'rows')
+  console.log('[mergeInvoiceRows] Building invoices now...')
 
-  return invoices.map((inv, idx) => MAPS.invoices.build(inv, idx))
+  const built = invoices.map((inv, idx) => {
+    try {
+      const result = MAPS.invoices.build(inv, idx)
+      return result
+    } catch (err) {
+      console.error('[mergeInvoiceRows] ERROR building invoice', idx, ':', err, 'Invoice:', inv)
+      throw err
+    }
+  })
+
+  console.log('[mergeInvoiceRows] Returning', built.length, 'built invoices')
+  return built
 }
 
 export function downloadTemplate(entity) {
@@ -354,7 +368,16 @@ export default function ImportExcelModal({ entity, onImport, onClose }) {
 
   function handleImport() {
     if (!rows?.length) return
-    onImport(rows)
+    console.log('[ImportExcelModal] handleImport called with', rows.length, 'rows')
+    console.log('[ImportExcelModal] First row sample:', rows[0])
+    console.log('[ImportExcelModal] Last row sample:', rows[rows.length - 1])
+    try {
+      onImport(rows)
+      console.log('[ImportExcelModal] onImport callback completed successfully')
+    } catch (err) {
+      console.error('[ImportExcelModal] ERROR in onImport:', err)
+      throw err
+    }
     onClose()
   }
 
