@@ -102,9 +102,20 @@ export function AppProvider({ children }) {
     if (isSuperAdmin) return data  // Superadmin sheh të gjithçka
     if (!currentOrgId) return data  // Nëse nuk ka user, shfaq të gjitha (mockData)
 
-    // Filter by orgId, but also show items without orgId for backward compatibility
-    const filtered = data.filter(item => !item.orgId || item.orgId === currentOrgId)
-    console.log(`[XFlow] Filtering by org "${currentOrgId}": ${data.length} items → ${filtered.length} items`)
+    // STRICT FILTERING: Only show items that belong to THIS org
+    // No cross-org leakage!
+    const filtered = data.filter(item => {
+      // If no orgId, assign current org (shouldn't happen but safety net)
+      if (!item.orgId) {
+        console.warn(`[XFlow] ⚠️ Item without orgId found:`, item.id, '- this should not happen!')
+        return false  // Don't show items without orgId
+      }
+      return item.orgId === currentOrgId
+    })
+
+    if (data.length > filtered.length) {
+      console.warn(`[XFlow] FILTERING: ${data.length} → ${filtered.length} (removed ${data.length - filtered.length} items from other orgs)`)
+    }
     return filtered
   }
 
@@ -174,6 +185,18 @@ export function AppProvider({ children }) {
       return next.map(item => ({ ...item, orgId: currentOrgId }))
     })
   }, [currentOrgId])
+
+  /* ── Data migration: Fix any invoices without orgId ── */
+  const migrateOrgIds = (rawInvoices, orgId) => {
+    if (!Array.isArray(rawInvoices)) return rawInvoices
+    return rawInvoices.map(inv => {
+      if (!inv.orgId && orgId) {
+        console.warn(`[MIGRATION] Fixing invoice ${inv.id} - assigning orgId`)
+        return { ...inv, orgId }
+      }
+      return inv
+    })
+  }
 
   /* ── Data states — inicializohen bosh, mbushen nga Supabase / mockData ── */
   const [invoices,        setInvoices]        = useState([])
