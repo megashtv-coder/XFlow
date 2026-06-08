@@ -135,7 +135,8 @@ export function AppProvider({ children }) {
         console.error('🔴 SECURITY: Trying to set customers without currentOrgId!')
         return prev
       }
-      return next.map(item => ({ ...item, orgId: currentOrgId }))
+      // Only assign orgId if missing - keep existing orgId for Supabase data
+      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
     })
   }, [currentOrgId])
 
@@ -147,7 +148,8 @@ export function AppProvider({ children }) {
         console.error('🔴 SECURITY: Trying to set expenses without currentOrgId!')
         return prev
       }
-      return next.map(item => ({ ...item, orgId: currentOrgId }))
+      // Only assign orgId if missing - keep existing orgId for Supabase data
+      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
     })
   }, [currentOrgId])
 
@@ -159,7 +161,8 @@ export function AppProvider({ children }) {
         console.error('🔴 SECURITY: Trying to set payments without currentOrgId!')
         return prev
       }
-      return next.map(item => ({ ...item, orgId: currentOrgId }))
+      // Only assign orgId if missing - keep existing orgId for Supabase data
+      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
     })
   }, [currentOrgId])
 
@@ -171,7 +174,8 @@ export function AppProvider({ children }) {
         console.error('🔴 SECURITY: Trying to set transfers without currentOrgId!')
         return prev
       }
-      return next.map(item => ({ ...item, orgId: currentOrgId }))
+      // Only assign orgId if missing - keep existing orgId for Supabase data
+      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
     })
   }, [currentOrgId])
 
