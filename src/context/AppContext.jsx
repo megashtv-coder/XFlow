@@ -102,15 +102,9 @@ export function AppProvider({ children }) {
     if (isSuperAdmin) return data  // Superadmin sheh të gjithçka
     if (!currentOrgId) return data  // Nëse nuk ka user, shfaq të gjitha (mockData)
 
-    // CRITICAL: Only show items that explicitly belong to this org
-    // Items without orgId are corrupted and should NOT be shown (prevents cross-org leakage)
-    const filtered = data.filter(item => item.orgId === currentOrgId)
-
-    if (data.length !== filtered.length) {
-      console.warn(`[XFlow] Filtering by org "${currentOrgId}": ${data.length} items → ${filtered.length} items (removed ${data.length - filtered.length} items without orgId)`)
-    } else {
-      console.log(`[XFlow] Filtering by org "${currentOrgId}": ${data.length} items`)
-    }
+    // Filter by orgId, but also show items without orgId for backward compatibility
+    const filtered = data.filter(item => !item.orgId || item.orgId === currentOrgId)
+    console.log(`[XFlow] Filtering by org "${currentOrgId}": ${data.length} items → ${filtered.length} items`)
     return filtered
   }
 
