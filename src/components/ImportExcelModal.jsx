@@ -354,13 +354,21 @@ export default function ImportExcelModal({ entity, onImport, onClose }) {
     if (!file) return
     setError(''); setLoading(true)
     try {
+      console.log('[handleFile] Starting file import:', file.name)
       const buf  = await file.arrayBuffer()
       const wb   = XLSX.read(buf, { type: 'array', cellDates: false })
       const ws   = wb.Sheets[wb.SheetNames[0]]
+      console.log('[handleFile] Sheet loaded, parsing...')
       const parsed = parseSheet(ws, entity)
+      console.log('[handleFile] parseSheet returned:', parsed.length, 'items')
+      console.log('[handleFile] First item:', parsed[0])
+      console.log('[handleFile] Last item:', parsed[parsed.length - 1])
       if (!parsed.length) { setError('Nuk u gjet asnjë rresht i vlefshëm në file.'); setLoading(false); return }
+      console.log('[handleFile] Calling setRows with', parsed.length, 'items')
       setRows(parsed)
+      console.log('[handleFile] setRows called - state will update')
     } catch (err) {
+      console.error('[handleFile] ERROR:', err)
       setError('Gabim gjatë leximit të file-it: ' + err.message)
     }
     setLoading(false)
