@@ -755,10 +755,11 @@ export default function Invoices() {
   }
 
   const handleDeleteSelected = () => {
-    setInvoices(prev => prev.filter(i => !selected.has(i.id)))
+    const count = invoices.length
+    setInvoices([])  // Delete ALL invoices
     setSelected(new Set())
     setConfirmDelAll(false)
-    showToast(`U fshihen ${selected.size} fatura`, 'success')
+    showToast(`U fshihen ${count} fatura`, 'success')
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -1020,13 +1021,13 @@ export default function Invoices() {
           <button className="btn btn-outline btn-sm" onClick={() => setImportOpen(true)}>
             <FileSpreadsheet size={14}/> Import Excel
           </button>
-          {selected.size > 0 && (
+          {invoices.length > 0 && (
             <button
               className="btn btn-danger btn-sm flex items-center gap-2"
               onClick={() => setConfirmDelAll(true)}
-              title={`Fshi ${selected.size} fatura të zgjedhura`}
+              title="Fshi të gjitha faturat në këtë organizatë"
             >
-              <Trash2 size={14}/> Fshi {selected.size}
+              <Trash2 size={14}/> Fshi të gjitha ({invoices.length})
             </button>
           )}
           <button className="btn btn-primary btn-sm" onClick={() => setModal(<InvoiceModal/>)}>
@@ -1051,14 +1052,14 @@ export default function Invoices() {
                 <Trash2 size={24} className="text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg">Fshi {selected.size} fatura?</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg">Fshi të gjitha {invoices.length} faturat?</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Kjo veprim nuk mund të rikthehej.</p>
               </div>
             </div>
 
             <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 mb-6 border border-red-200 dark:border-red-800">
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">{selected.size}</span> fatura të zgjedhura do të fshihen përgjithmonë.
+                <span className="font-semibold">{invoices.length}</span> fatura do të fshihen përgjithmonë.
               </p>
             </div>
 
