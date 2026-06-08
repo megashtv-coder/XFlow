@@ -668,6 +668,7 @@ export default function Invoices() {
     customers,
     setModal, closeModal,
     showToast, fmt,
+    currentOrgId, currentOrg,
   } = useApp()
 
   const [search,       setSearch]   = useState('')
@@ -687,6 +688,10 @@ export default function Invoices() {
     customers.find(c => c.name === name)?.type || 'individual'
 
   function handleImportInvoices(rows) {
+    console.error('🔴🔴🔴 IMPORT ORGID CHECK:')
+    console.error('  currentOrgId:', currentOrgId)
+    console.error('  currentOrg.name:', currentOrg?.name)
+
     console.log('[Import] =============== STARTING IMPORT ===============')
     console.log('[Import] Received rows:', rows.length)
 
@@ -715,6 +720,13 @@ export default function Invoices() {
 
       const result = [...prev, ...renumbered]
       console.log('[Import] Final total invoices:', result.length)
+
+      // DEBUG: Check orgId on imported invoices
+      const importedInvoices = result.slice(-renumbered.length)
+      console.error('🔴 IMPORTED INVOICES ORGID CHECK:')
+      console.error('  Count:', importedInvoices.length)
+      console.error('  First invoice orgId:', importedInvoices[0]?.orgId)
+      console.error('  Sample invoices:', importedInvoices.slice(0, 3).map(i => ({ id: i.id, orgId: i.orgId, customer: i.customer })))
       console.log('[Import] =============== IMPORT COMPLETE ===============')
 
       showToast(`U importuan ${renumbered.length} fatura`, 'success')
