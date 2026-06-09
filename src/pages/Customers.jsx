@@ -200,6 +200,18 @@ export function CustomerModal({ customer, onClose, isFormPage }) {
     if (!form.country)          { setErr('Shteti është i detyrueshëm.'); return }
 
     const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`
+
+    // Check for duplicate customer name (only when creating new, not when editing)
+    if (!isEdit) {
+      const existingCustomer = customers.find(c =>
+        c.name && c.name.toLowerCase() === fullName.toLowerCase()
+      )
+      if (existingCustomer) {
+        setErr(`Klienti "${fullName}" ekziston tashmë. Nuk mund të krijohen klientë me të njëjtin emër.`)
+        return
+      }
+    }
+
     const payload = {
       ...form,
       name:     fullName,
