@@ -39,8 +39,21 @@ export default function Login({ users = [], onLogin }) {
     console.log('✅ Profile response:', { profile, profileError })
     if (profileError) throw new Error(profileError.message)
 
-    console.log('✅ Login successful, calling onLogin with:', { user: data.user, orgId: profile?.org_id })
-    onLogin({ ...data.user, orgId: profile?.org_id })
+    // Enhance Supabase user with required properties for AppContext compatibility
+    const enhancedUser = {
+      ...data.user,
+      id: data.user.id,
+      email: data.user.email,
+      username: data.user.email, // Use email as username for compatibility
+      name: data.user.user_metadata?.name || data.user.email.split('@')[0],
+      orgId: profile?.org_id,
+      role: profile?.role || 'user',
+      isSuperAdmin: false,
+      active: true
+    }
+
+    console.log('✅ Login successful, enhanced user:', enhancedUser)
+    onLogin(enhancedUser)
 
   } catch (err) {
     console.error('❌ Login error:', err)
