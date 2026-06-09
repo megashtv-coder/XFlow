@@ -18,6 +18,31 @@ const AppContext = createContext(null)
 // Rreshtat nga Supabase kanë formën { id, data } — shpaketoj data
 const fromRows = (rows) => (rows || []).map(r => r.data)
 
+// Deduplicate customers - keep only one instance of each unique customer
+function deduplicateCustomers(customers) {
+  const seen = new Map()
+  const duplicateIds = new Set()
+
+  customers.forEach(customer => {
+    // Create a key based on identifying fields (name, phone, email)
+    const key = `${(customer.name || '').toLowerCase()}|${(customer.phone || '').toLowerCase()}|${(customer.email || '').toLowerCase()}`
+
+    if (seen.has(key)) {
+      // Mark this as a duplicate
+      duplicateIds.add(customer.id)
+    } else {
+      // Keep track of first instance
+      seen.set(key, customer.id)
+    }
+  })
+
+  // Return filtered list without duplicates
+  return {
+    deduped: customers.filter(c => !duplicateIds.has(c.id)),
+    removed: Array.from(duplicateIds)
+  }
+}
+
 // Sinkronizon ndryshimet e një tabele: upsert të reja/ndryshuara, delete të fshira
 function diffSync(table, curr, prevRef, orgId) {
   if (!supabase) return
@@ -212,7 +237,12 @@ export function AppProvider({ children }) {
       console.log('📊 Loading invoices from mockData:', mockInvoices.length, 'invoices')
       console.log('🆕 First invoice:', mockInvoices[0])
       setInvoices(mockInvoices);        prevInvoices.current  = mockInvoices
-      setCustomers(mockCustomers);      prevCustomers.current = mockCustomers
+      // Deduplicate customers from mockData
+      const { deduped: dedupedCustomers, removed: removedDuplicates } = deduplicateCustomers(mockCustomers)
+      if (removedDuplicates.length > 0) {
+        console.log(`🧹 Removed ${removedDuplicates.length} duplicate customers from mockData`)
+      }
+      setCustomers(dedupedCustomers);   prevCustomers.current = dedupedCustomers
       setExpenses(mockExpenses);        prevExpenses.current  = mockExpenses
       setPayments(mockPayments);        prevPayments.current  = mockPayments
       setTransfers(mockTransfers);      prevTransfers.current = mockTransfers
@@ -259,7 +289,12 @@ export function AppProvider({ children }) {
       }
 
       const loadedInvoices  = load(inv,  [])
-      const loadedCustomers = load(cust, [])
+      const loadedCustomersRaw = load(cust, [])
+      // Deduplicate customers - remove duplicates with identical data
+      const { deduped: loadedCustomers, removed: removedDuplicates } = deduplicateCustomers(loadedCustomersRaw)
+      if (removedDuplicates.length > 0) {
+        console.log(`🧹 Removed ${removedDuplicates.length} duplicate customers`)
+      }
       const loadedExpenses  = load(exp,  [])
       const loadedPayments  = load(pay,  [])
       const loadedTransfers = load(tran, [])
