@@ -1006,6 +1006,19 @@ export default function Invoices() {
     .filter(i => i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today))
     .reduce((sum, i) => sum + (i.amount || 0), 0)
 
+  // Calculate average days to payment
+  const paidInvoices = invoices.filter(i => i.status === 'paid' && i.date && i.paidDate)
+  const avgDaysToPayment = paidInvoices.length > 0
+    ? Math.round(
+        paidInvoices.reduce((sum, i) => {
+          const invDate = new Date(i.date)
+          const paidDate = new Date(i.paidDate)
+          const days = Math.floor((paidDate - invDate) / (1000 * 60 * 60 * 24))
+          return sum + days
+        }, 0) / paidInvoices.length
+      )
+    : 0
+
   return (
     <div>
       {/* Header */}
@@ -1017,7 +1030,7 @@ export default function Invoices() {
           </div>
 
           {/* Stats in the middle */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-8">
             <div className="flex flex-col">
               <p className="text-xs text-gray-400 font-medium">Në pritje</p>
               <p className="text-lg font-bold text-amber-600">{fmt(pendingValue)}</p>
@@ -1025,6 +1038,10 @@ export default function Invoices() {
             <div className="flex flex-col">
               <p className="text-xs text-gray-400 font-medium">Të vonuara</p>
               <p className="text-lg font-bold text-red-600">{fmt(overdueValue)}</p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-xs text-gray-400 font-medium">Ditë për pagim</p>
+              <p className="text-lg font-bold text-blue-600">{avgDaysToPayment}d</p>
             </div>
           </div>
 
@@ -1070,14 +1087,18 @@ export default function Invoices() {
         </div>
 
         {/* Mobile stats (show on small screens) */}
-        <div className="md:hidden flex gap-3">
+        <div className="md:hidden flex gap-2">
           <div className="flex-1 bg-amber-50 rounded-lg p-3 border border-amber-100">
             <p className="text-xs text-amber-600 font-medium">Në pritje</p>
-            <p className="text-base font-bold text-amber-700">{fmt(pendingValue)}</p>
+            <p className="text-sm font-bold text-amber-700">{fmt(pendingValue)}</p>
           </div>
           <div className="flex-1 bg-red-50 rounded-lg p-3 border border-red-100">
             <p className="text-xs text-red-600 font-medium">Të vonuara</p>
-            <p className="text-base font-bold text-red-700">{fmt(overdueValue)}</p>
+            <p className="text-sm font-bold text-red-700">{fmt(overdueValue)}</p>
+          </div>
+          <div className="flex-1 bg-blue-50 rounded-lg p-3 border border-blue-100">
+            <p className="text-xs text-blue-600 font-medium">Ditë pagim</p>
+            <p className="text-sm font-bold text-blue-700">{avgDaysToPayment}d</p>
           </div>
         </div>
       </div>
