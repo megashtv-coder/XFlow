@@ -55,7 +55,6 @@ export function AppProvider({ children }) {
   const [dbLoading,        setDbLoading]        = useState(!!supabase) // loading initial kur ka Supabase
   const [sidebarOpen,      setSidebarOpen]      = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('xflow_sidebar') === 'true')
-  const [managerMode,      setManagerMode]      = useState(false) // super admin mund të kalojë në manager view
 
   /* ── Organizations ── */
   const [organizations, setOrganizations] = useState(mockOrganizations)
@@ -645,7 +644,6 @@ export function AppProvider({ children }) {
       currentOrgId,
       currentOrg,
       organizations,   setOrganizations,
-      managerMode,     setManagerMode,
     }}>
       {children}
     </AppContext.Provider>
