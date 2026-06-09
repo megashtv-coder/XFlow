@@ -765,7 +765,17 @@ export default function Invoices() {
   const today = new Date().toISOString().slice(0, 10)
 
   const filtered = invoices.filter(i => {
-    if (statusFilter !== 'all' && i.status !== statusFilter) return false
+    // Status filter - special handling for 'overdue'
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'overdue') {
+        // Overdue includes: explicit 'overdue' status OR pending with past due date
+        const isOverdue = i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today)
+        if (!isOverdue) return false
+      } else {
+        if (i.status !== statusFilter) return false
+      }
+    }
+
     if (typeFilter === 'reseller'   && getCustomerType(i.customer) !== 'reseller')   return false
     if (typeFilter === 'individual' && getCustomerType(i.customer) === 'reseller')    return false
     if (search) {
