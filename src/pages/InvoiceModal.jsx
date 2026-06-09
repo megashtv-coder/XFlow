@@ -58,9 +58,22 @@ function Combobox({
     return () => document.removeEventListener('mousedown', h)
   }, [open])
 
-  const filtered = options.filter(o =>
-    getLabel(o).toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = (() => {
+    const results = options.filter(o =>
+      getLabel(o).toLowerCase().includes(search.toLowerCase())
+    )
+    // Deduplicate by key (remove exact duplicates)
+    if (getKey) {
+      const seen = new Set()
+      return results.filter(o => {
+        const key = getKey(o)
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+    }
+    return results
+  })()
   const selected = options.find(o => getLabel(o) === value)
 
   return (

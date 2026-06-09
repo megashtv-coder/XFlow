@@ -26,12 +26,10 @@ export default function FormPageWrapper({ title, subtitle, children, onBack }) {
       </button>
 
       {/* Content - Full page */}
-      <div className={`flex-1 overflow-y-auto p-6 pt-12 ${
+      <div className={`flex-1 overflow-y-auto p-0 ${
         darkMode ? 'bg-gray-900' : 'bg-gray-50'
       }`}>
-        <div className={`max-w-4xl ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-xl border ${
-          darkMode ? 'border-gray-700' : 'border-gray-100'
-        } shadow-sm p-6`}>
+        <div className={`h-full ${darkMode ? 'bg-gray-800' : 'bg-white'} border-0 shadow-none p-6`}>
           {children}
         </div>
       </div>
