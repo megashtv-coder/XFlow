@@ -1006,15 +1006,15 @@ export default function Invoices() {
     .filter(i => i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today))
     .reduce((sum, i) => sum + (i.amount || 0), 0)
 
-  // Calculate average days to payment
-  const paidInvoices = invoices.filter(i => i.status === 'paid' && i.date && i.paidDate)
+  // Calculate average days to payment (invoice date to due date)
+  const paidInvoices = invoices.filter(i => i.status === 'paid' && i.date && i.due)
   const avgDaysToPayment = paidInvoices.length > 0
     ? Math.round(
         paidInvoices.reduce((sum, i) => {
           const invDate = new Date(i.date)
-          const paidDate = new Date(i.paidDate)
-          const days = Math.floor((paidDate - invDate) / (1000 * 60 * 60 * 24))
-          return sum + days
+          const dueDate = new Date(i.due)
+          const days = Math.floor((dueDate - invDate) / (1000 * 60 * 60 * 24))
+          return sum + Math.max(0, days) // Don't count negative days
         }, 0) / paidInvoices.length
       )
     : 0
