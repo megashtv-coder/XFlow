@@ -583,8 +583,10 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       }, ...p])
       showToast('Fatura u krijua me sukses! ✓')
     }
-    // Close form/modal - use onClose if available (form page mode), else closeModal (modal mode)
-    if (onClose) {
+    // Navigate back to invoices list after save
+    if (isFormPage && navigate) {
+      navigate('invoices')
+    } else if (onClose) {
       onClose()
     } else {
       closeModal()
@@ -698,16 +700,16 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       {/* ── Item Table ── */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="form-label mb-0">Artikujt</label>
-          {/* Column labels - hidden on very small screens */}
+          <label className="form-label mb-0 text-sm sm:text-base">ARTIKUJT</label>
+          {/* Column labels */}
           <div
-            className="hidden sm:grid text-[10px] text-gray-400 font-bold uppercase tracking-wide gap-2 pr-9"
-            style={{ gridTemplateColumns: '1fr 72px 100px 86px' }}
+            className="grid text-[11px] sm:text-[12px] text-gray-500 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
+            style={{ gridTemplateColumns: '1fr 60px 80px 70px' }}
           >
-            <span className="pl-3">Produkt / Shërbim</span>
-            <span className="text-center">Sasia</span>
-            <span className="text-right">Çmimi (€)</span>
-            <span className="text-right">Totali</span>
+            <span className="pl-2 sm:pl-3 text-xs">Produkt</span>
+            <span className="text-center text-xs">Sasia</span>
+            <span className="text-right text-xs">Çmimi (€)</span>
+            <span className="text-right text-xs">Totali</span>
           </div>
         </div>
 
