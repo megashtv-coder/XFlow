@@ -50,7 +50,7 @@ export function AppProvider({ children }) {
   const [darkMode,         setDarkMode]         = useState(() => localStorage.getItem('xflow_dark') === 'true')
   const [toast,            setToast]            = useState(null)
   const [modal,            setModal]            = useState(null)
-  const [page,             setPage]             = useState(() => localStorage.getItem('xflow_page') || 'dashboard')
+  const [page,             setPage]             = useState('dashboard') // Always start at dashboard
   const [loading,          setLoading]          = useState(false)
   const [dbLoading,        setDbLoading]        = useState(!!supabase) // loading initial kur ka Supabase
   const [sidebarOpen,      setSidebarOpen]      = useState(false)
@@ -520,7 +520,6 @@ export function AppProvider({ children }) {
         const newPage = state.page || new URL(window.location).searchParams.get('page') || 'dashboard'
         if (newPage !== page) {
           setPage(newPage)
-          localStorage.setItem('xflow_page', newPage)
         }
       }
     }
@@ -534,7 +533,6 @@ export function AppProvider({ children }) {
     setCurrentUser(null)
     setPage('dashboard')
     // Clear both AppContext and TenantContext
-    localStorage.removeItem('xflow_page')
     localStorage.removeItem('xflow_user')
     localStorage.removeItem('xflow_session')
   }, [])
@@ -571,13 +569,11 @@ export function AppProvider({ children }) {
       setToast({ msg: 'Ky modul nuk është në dispozicion për organizatën tuaj.', type: 'error' })
       if (guardResult.redirectTo) {
         setPage(guardResult.redirectTo)
-        localStorage.setItem('xflow_page', guardResult.redirectTo)
       }
       return
     }
 
     setPage(p)
-    localStorage.setItem('xflow_page', p)
     setSidebarOpen(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 350)
