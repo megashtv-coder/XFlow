@@ -12,30 +12,38 @@ export default function Login({ users = [], onLogin }) {
   const submit = async (e) => {
   e?.preventDefault()
   if (!username || !password) { setError('Plotëso të gjitha fushat.'); return }
-  
+
   setLoading(true)
   setError('')
-  
+
   try {
+    console.log('🔐 Logging in with email:', username)
+
     // Login with Supabase auth
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: username, 
+      email: username,
       password
     })
-    
+
+    console.log('✅ Auth response:', { data, error })
     if (error) throw new Error(error.message)
-    
+
     // Fetch user profile to get org_id
-    const { data: profile } = await supabase
+    console.log('📋 Fetching profile for:', username)
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('email', username)
       .single()
-    
-    // Call onLogin with user + org_id
+
+    console.log('✅ Profile response:', { profile, profileError })
+    if (profileError) throw new Error(profileError.message)
+
+    console.log('✅ Login successful, calling onLogin with:', { user: data.user, orgId: profile?.org_id })
     onLogin({ ...data.user, orgId: profile?.org_id })
-    
+
   } catch (err) {
+    console.error('❌ Login error:', err)
     setError(err.message || 'Login failed')
   } finally {
     setLoading(false)
