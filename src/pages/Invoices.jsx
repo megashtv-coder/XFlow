@@ -679,21 +679,19 @@ export default function Invoices() {
   const editInvoiceId = pageMatch[1]?.includes('-') ? pageMatch[1] : null
   const editInvoice = editInvoiceId ? invoices.find(i => i.id === editInvoiceId) : null
 
-  // If in form mode, show full-page form
-  if (isFormMode) {
-    return (
-      <FormPageWrapper
-        title={editInvoice ? `Ndrysho Faturën — ${editInvoice.id}` : 'Faturë e Re'}
-        subtitle={editInvoice ? editInvoice.customer : 'Krijo një faturë të re'}
-        onBack={() => navigate('invoices')}
-      >
-        <InvoiceModal
-          invoice={editInvoice || undefined}
-          onClose={() => navigate('invoices')}
-        />
-      </FormPageWrapper>
-    )
-  }
+  // Declare the form component here so we can render it as a side panel
+  const InvoiceFormPanel = isFormMode ? (
+    <FormPageWrapper
+      title={editInvoice ? `Ndrysho Faturën` : 'Faturë e Re'}
+      subtitle={editInvoice ? editInvoice.id : 'Krijo një faturë të re'}
+      onBack={() => navigate('invoices')}
+    >
+      <InvoiceModal
+        invoice={editInvoice || undefined}
+        onClose={() => navigate('invoices')}
+      />
+    </FormPageWrapper>
+  ) : null
 
   const [search,       setSearch]   = useState('')
   const [statusFilter, setStatus]   = useState('all')
@@ -1482,6 +1480,9 @@ export default function Invoices() {
           onClose={() => setSelectedCustomer(null)}
         />
       )}
+
+      {/* Invoice Form Side Panel */}
+      {InvoiceFormPanel}
     </div>
   )
 }
