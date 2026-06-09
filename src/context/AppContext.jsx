@@ -97,105 +97,54 @@ export function AppProvider({ children }) {
   // Org aktuale (objekti i plotë)
   const currentOrg = organizations.find(o => o.id === currentOrgId) || null
 
-  /* ── Filter data by organization ── */
+  /* ── Single-org: No filtering needed ── */
   const filterByOrg = (data) => {
-    if (isSuperAdmin) return data  // Superadmin sheh të gjithçka
-    if (!currentOrgId) return data  // Nëse nuk ka user, shfaq të gjitha (mockData)
-
-    // STRICT filtering: show ONLY items that belong to current org
-    // Items without orgId are NOT shown (security first)
-    const filtered = data.filter(item => item.orgId === currentOrgId)
-    return filtered
+    // Single org app - return all data without filtering
+    return data
   }
 
   /* ── Wrapper setters që automatikisht shtojnë orgId në të dhëna të reja ── */
   const wrappedSetInvoices = useCallback((fn) => {
     setInvoices(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-
-      // Assign orgId if missing (fallback safety)
-      const orgIdToUse = currentOrgId || 'default'
-      if (!currentOrgId) {
-        console.warn('⚠️ No currentOrgId set, using fallback!')
-      }
-
-      return next.map(item => ({
-        ...item,
-        orgId: item.orgId || orgIdToUse  // Use existing or assign current
-      }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   const wrappedSetCustomers = useCallback((fn) => {
     setCustomers(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-      // If currentOrgId missing, just keep existing orgId (happens during initial load)
-      if (!currentOrgId) {
-        return next.map(item => ({ ...item, orgId: item.orgId || 'default' }))
-      }
-      // Only assign orgId if missing - keep existing orgId for Supabase data
-      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   const wrappedSetExpenses = useCallback((fn) => {
     setExpenses(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-      // If currentOrgId missing, just keep existing orgId (happens during initial load)
-      if (!currentOrgId) {
-        return next.map(item => ({ ...item, orgId: item.orgId || 'default' }))
-      }
-      // Only assign orgId if missing - keep existing orgId for Supabase data
-      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   const wrappedSetPayments = useCallback((fn) => {
     setPayments(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-      // If currentOrgId missing, just keep existing orgId (happens during initial load)
-      if (!currentOrgId) {
-        return next.map(item => ({ ...item, orgId: item.orgId || 'default' }))
-      }
-      // Only assign orgId if missing - keep existing orgId for Supabase data
-      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   const wrappedSetTransfers = useCallback((fn) => {
     setTransfers(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-      // If currentOrgId missing, just keep existing orgId (happens during initial load)
-      if (!currentOrgId) {
-        return next.map(item => ({ ...item, orgId: item.orgId || 'default' }))
-      }
-      // Only assign orgId if missing - keep existing orgId for Supabase data
-      return next.map(item => ({ ...item, orgId: item.orgId || currentOrgId }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   const wrappedSetUsers = useCallback((fn) => {
     setUsers(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      if (!Array.isArray(next)) return next
-
-      // Assign orgId if missing (fallback safety)
-      const orgIdToUse = currentOrgId || 'default'
-      if (!currentOrgId) {
-        console.warn('⚠️ No currentOrgId set, using fallback!')
-      }
-
-      return next.map(item => ({
-        ...item,
-        orgId: item.orgId || orgIdToUse  // Use existing or assign current
-      }))
+      return next
     })
-  }, [currentOrgId])
+  }, [])
 
   /* ── Data migration: Fix any invoices without orgId ── */
   const migrateOrgIds = (rawInvoices, orgId) => {
