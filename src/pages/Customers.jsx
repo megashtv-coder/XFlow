@@ -159,7 +159,7 @@ function ReferredBySelect({ value, onChange, excludeId }) {
 /* ══════════════════════════════════════════════════════════
    Modal — shto / edito klient
 ══════════════════════════════════════════════════════════ */
-export function CustomerModal({ customer, onClose }) {
+export function CustomerModal({ customer, onClose, isFormPage }) {
   const { setCustomers, showToast, representatives, setRepresentatives, currentOrgId } = useApp()
   const isEdit = !!customer
 
@@ -224,24 +224,8 @@ export function CustomerModal({ customer, onClose }) {
     onClose()
   }
 
-  return (
-    <Modal
-      title={
-        <span className="flex items-center gap-2">
-          <UserPlus size={18} className="text-blue-500" />
-          {isEdit ? `Edito — ${customer.firstName} ${customer.lastName}` : 'Klient i ri'}
-        </span>
-      }
-      onClose={onClose}
-      footer={
-        <>
-          <button className="btn btn-outline" onClick={onClose}>Anulo</button>
-          <button className="btn btn-primary" onClick={save}>
-            {isEdit ? 'Ruaj ndryshimet' : 'Shto klientin'}
-          </button>
-        </>
-      }
-    >
+  const formContent = (
+    <>
       {err && (
         <div className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
           {err}
@@ -371,6 +355,44 @@ export function CustomerModal({ customer, onClose }) {
           ))}
         </div>
       </FormGroup>
+    </>
+  )
+
+  // If rendering as form page (side panel), don't use Modal wrapper
+  if (isFormPage) {
+    return (
+      <div className="space-y-4">
+        {formContent}
+        <div className="flex gap-2 pt-4 border-t border-gray-200">
+          <button className="btn btn-outline flex-1" onClick={onClose}>Anulo</button>
+          <button className="btn btn-primary flex-1" onClick={save}>
+            {isEdit ? 'Ruaj ndryshimet' : 'Shto klientin'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Otherwise, render with Modal wrapper
+  return (
+    <Modal
+      title={
+        <span className="flex items-center gap-2">
+          <UserPlus size={18} className="text-blue-500" />
+          {isEdit ? `Edito — ${customer.firstName} ${customer.lastName}` : 'Klient i ri'}
+        </span>
+      }
+      onClose={onClose}
+      footer={
+        <>
+          <button className="btn btn-outline" onClick={onClose}>Anulo</button>
+          <button className="btn btn-primary" onClick={save}>
+            {isEdit ? 'Ruaj ndryshimet' : 'Shto klientin'}
+          </button>
+        </>
+      }
+    >
+      {formContent}
     </Modal>
   )
 }
@@ -927,7 +949,7 @@ export default function Customers() {
             <CustomerModal
               key={`modal-${editCustomerId || 'create'}`}
               customer={editCustomer || undefined}
-              onClose={() => navigate('customers')}
+              isFormPage={true}
             />
           </FormPageWrapper>
         </div>

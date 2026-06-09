@@ -73,7 +73,9 @@
       "Bash(curl -s http://localhost:5173/)",
       "Bash(cat > *)",
       "Bash(git reset *)",
-      "Bash(sort -k5 -h -r)"
+      "Bash(sort -k5 -h -r)",
+      "Bash(vercel --prod)",
+      "Bash(vercel --prod --token=\"\")"
     ]
   }
 }

@@ -82,7 +82,7 @@ function MethodPills({ value, onChange, modes }) {
 /* ── main modal ── */
 /* invoice  = pre-selected invoice (create mode from invoice row)  */
 /* payment  = existing payment to edit (edit mode)                  */
-export default function PaymentModal({ invoice, payment: editPayment, onClose }) {
+export default function PaymentModal({ invoice, payment: editPayment, onClose, isFormPage }) {
   const {
     invoices, setInvoices,
     setPayments, setExpenses,

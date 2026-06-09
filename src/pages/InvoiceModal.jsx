@@ -420,7 +420,7 @@ function calculateSubscriptionExpiry(baseDate, months) {
 /* ══════════════════════════════════════════════════════════
    InvoiceModal
 ══════════════════════════════════════════════════════════ */
-export default function InvoiceModal({ initialData }) {
+export default function InvoiceModal({ initialData, isFormPage }) {
   const { invoices, customers, setCustomers, items: products, setInvoices, showToast, closeModal, representatives, setRepresentatives } = useApp()
 
   const isEdit = !!(initialData?.id)
@@ -571,22 +571,8 @@ export default function InvoiceModal({ initialData }) {
     closeModal()
   }
 
-  return (
-    <Modal
-      title={
-        <span className="flex items-center gap-2">
-          {isEdit ? <Pencil size={18} className="text-blue-500"/> : <FilePlus size={18} className="text-blue-500"/>}
-          {isEdit ? 'Ndrysho Faturën' : 'Faturë e re'}
-        </span>
-      }
-      onClose={closeModal}
-      footer={<>
-        <button className="btn btn-outline" onClick={closeModal}>Anulo</button>
-        <button className="btn btn-primary" onClick={save}>
-          {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
-        </button>
-      </>}
-    >
+  const formContent = (
+    <>
       {error && (
         <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-600 text-xs rounded-lg px-3 py-2.5 mb-4">
           {error}
@@ -805,6 +791,42 @@ export default function InvoiceModal({ initialData }) {
           {isEdit && <option value="paid">Paguar</option>}
         </select>
       </FormGroup>
+    </>
+  )
+
+  // If rendering as form page (side panel), don't use Modal wrapper
+  if (isFormPage) {
+    return (
+      <div className="space-y-4">
+        {formContent}
+        <div className="flex gap-2 pt-4 border-t border-gray-200">
+          <button className="btn btn-outline flex-1" onClick={closeModal}>Anulo</button>
+          <button className="btn btn-primary flex-1" onClick={save}>
+            {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Otherwise, render with Modal wrapper (for backwards compatibility)
+  return (
+    <Modal
+      title={
+        <span className="flex items-center gap-2">
+          {isEdit ? <Pencil size={18} className="text-blue-500"/> : <FilePlus size={18} className="text-blue-500"/>}
+          {isEdit ? 'Ndrysho Faturën' : 'Faturë e re'}
+        </span>
+      }
+      onClose={closeModal}
+      footer={<>
+        <button className="btn btn-outline" onClick={closeModal}>Anulo</button>
+        <button className="btn btn-primary" onClick={save}>
+          {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
+        </button>
+      </>}
+    >
+      {formContent}
     </Modal>
   )
 }
