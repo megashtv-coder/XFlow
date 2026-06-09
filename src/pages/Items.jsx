@@ -303,6 +303,26 @@ export default function Items() {
 
   const masked = <span className="text-gray-300 font-mono text-xs tracking-widest select-none cursor-pointer" onClick={() => setShowPin(true)}>••••</span>
 
+  // If in form mode, show only the form
+  if (isFormMode && pageMatch[1] !== 'delete') {
+    return (
+      <div key={`item-form-${editItemId || 'create'}`}>
+        <FormPageWrapper
+          title={editItem ? `Ndrysho Produktin` : 'Produkt i Ri'}
+          subtitle={editItem ? `${fmt(editItem.salePrice)} - ${editItem.account}` : 'Krijo një produkt ose shërbim të ri'}
+          onBack={() => navigate('items')}
+        >
+          <ItemModal
+            key={`modal-${editItemId || 'create'}`}
+            item={editItem || undefined}
+            onClose={() => navigate('items')}
+            isFormPage={true}
+          />
+        </FormPageWrapper>
+      </div>
+    )
+  }
+
   /* stat cards */
   const totalItems   = items.length
   const withVendor   = items.filter(i => i.vendor).length
@@ -550,23 +570,6 @@ export default function Items() {
         </div>
       )}
 
-      {/* Form Side Panel */}
-      {isFormMode && pageMatch[1] !== 'delete' && (
-        <div key={`item-form-${editItemId || 'create'}`}>
-          <FormPageWrapper
-            title={editItem ? `Ndrysho Produktin` : 'Produkt i Ri'}
-            subtitle={editItem ? `${fmt(editItem.salePrice)} - ${editItem.account}` : 'Krijo një produkt ose shërbim të ri'}
-            onBack={() => navigate('items')}
-          >
-            <ItemModal
-              key={`modal-${editItemId || 'create'}`}
-              item={editItem || undefined}
-              onClose={() => navigate('items')}
-              isFormPage={true}
-            />
-          </FormPageWrapper>
-        </div>
-      )}
     </div>
   )
 }

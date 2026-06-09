@@ -1053,6 +1053,11 @@ export default function Invoices() {
       )
     : 0
 
+  // If in form mode, show only the form
+  if (isFormMode) {
+    return InvoiceFormPanel
+  }
+
   return (
     <div>
       {/* Header */}

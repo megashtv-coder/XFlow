@@ -634,6 +634,26 @@ export default function Customers() {
     })
   }
 
+  // If in form mode, show only the form
+  if (isFormMode) {
+    return (
+      <div key={`customer-form-${editCustomerId || 'create'}`}>
+        <FormPageWrapper
+          title={editCustomer ? `Ndrysho Klientin` : 'Klient i Ri'}
+          subtitle={editCustomer ? editCustomer.name : 'Krijo një klient të ri'}
+          onBack={() => navigate('customers')}
+        >
+          <CustomerModal
+            key={`modal-${editCustomerId || 'create'}`}
+            customer={editCustomer || undefined}
+            onClose={() => navigate('customers')}
+            isFormPage={true}
+          />
+        </FormPageWrapper>
+      </div>
+    )
+  }
+
   const toggleSelectAll = () => {
     const pageIds = new Set(paginatedCustomers.map(c => c.id))
     const allPageSelected = paginatedCustomers.every(c => selected.has(c.id))
@@ -938,23 +958,6 @@ export default function Customers() {
         </div>
       )}
 
-      {/* Form Side Panel */}
-      {isFormMode && (
-        <div key={`customer-form-${editCustomerId || 'create'}`}>
-          <FormPageWrapper
-            title={editCustomer ? `Ndrysho Klientin` : 'Klient i Ri'}
-            subtitle={editCustomer ? editCustomer.name : 'Krijo një klient të ri'}
-            onBack={() => navigate('customers')}
-          >
-            <CustomerModal
-              key={`modal-${editCustomerId || 'create'}`}
-              customer={editCustomer || undefined}
-              onClose={() => navigate('customers')}
-              isFormPage={true}
-            />
-          </FormPageWrapper>
-        </div>
-      )}
     </div>
   )
 }

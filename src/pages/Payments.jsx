@@ -209,6 +209,26 @@ export default function Payments() {
     setDeletingId(null)
   }
 
+  // If in form mode, show only the form
+  if (isFormMode) {
+    return (
+      <div key={`payment-form-${editPaymentId || 'create'}`}>
+        <FormPageWrapper
+          title={editPayment ? `Ndrysho Pagesën` : 'Pagese e Re'}
+          subtitle={editPayment ? `${fmt(editPayment.amount)} - ${editPayment.method}` : 'Regjistro një pagesë të re'}
+          onBack={() => navigate('payments')}
+        >
+          <PaymentModal
+            key={`modal-${editPaymentId || 'create'}`}
+            payment={editPayment || undefined}
+            onClose={() => navigate('payments')}
+            isFormPage={true}
+          />
+        </FormPageWrapper>
+      </div>
+    )
+  }
+
   return (
     <div>
       {/* Header */}
@@ -505,23 +525,6 @@ export default function Payments() {
         </div>
       )}
 
-      {/* Form Side Panel */}
-      {isFormMode && (
-        <div key={`payment-form-${editPaymentId || 'create'}`}>
-          <FormPageWrapper
-            title={editPayment ? `Ndrysho Pagesën` : 'Pagese e Re'}
-            subtitle={editPayment ? `${fmt(editPayment.amount)} - ${editPayment.method}` : 'Regjistro një pagesë të re'}
-            onBack={() => navigate('payments')}
-          >
-            <PaymentModal
-              key={`modal-${editPaymentId || 'create'}`}
-              payment={editPayment || undefined}
-              onClose={() => navigate('payments')}
-              isFormPage={true}
-            />
-          </FormPageWrapper>
-        </div>
-      )}
     </div>
   )
 }

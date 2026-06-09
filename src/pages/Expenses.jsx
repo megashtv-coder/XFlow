@@ -358,6 +358,26 @@ export default function ExpensesPage() {
   const openDelete = e   => navigate(`expenses:${e.id}:delete`)
 
   /* recurring unique items (by type+vendor) for the recurring section */
+  // If in form mode, show only the form
+  if (isFormMode && pageMatch[1] !== 'delete') {
+    return (
+      <div key={`expense-form-${editExpenseId || 'create'}`}>
+        <FormPageWrapper
+          title={editExpense ? `Ndrysho Shpenzimin` : 'Shpenzim i Ri'}
+          subtitle={editExpense ? `${editExpense.type} - ${fmt(editExpense.amount)}` : 'Krijo një shpenzim të ri'}
+          onBack={() => navigate('expenses')}
+        >
+          <ExpenseModal
+            key={`modal-${editExpenseId || 'create'}`}
+            expense={editExpense || undefined}
+            onClose={() => navigate('expenses')}
+            isFormPage={true}
+          />
+        </FormPageWrapper>
+      </div>
+    )
+  }
+
   const recurringItems = useMemo(() => {
     const seen = new Set()
     return expenses.filter(e => {
@@ -632,23 +652,6 @@ export default function ExpensesPage() {
         </div>
       )}
 
-      {/* Form Side Panel */}
-      {isFormMode && pageMatch[1] !== 'delete' && (
-        <div key={`expense-form-${editExpenseId || 'create'}`}>
-          <FormPageWrapper
-            title={editExpense ? `Ndrysho Shpenzimin` : 'Shpenzim i Ri'}
-            subtitle={editExpense ? `${editExpense.type} - ${fmt(editExpense.amount)}` : 'Krijo një shpenzim të ri'}
-            onBack={() => navigate('expenses')}
-          >
-            <ExpenseModal
-              key={`modal-${editExpenseId || 'create'}`}
-              expense={editExpense || undefined}
-              onClose={() => navigate('expenses')}
-              isFormPage={true}
-            />
-          </FormPageWrapper>
-        </div>
-      )}
     </div>
   )
 }
