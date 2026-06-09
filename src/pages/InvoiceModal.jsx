@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import {
   FilePlus, Pencil, Search, ChevronDown, X, Plus, UserPlus, User, Users, Smartphone,
@@ -58,22 +58,24 @@ function Combobox({
     return () => document.removeEventListener('mousedown', h)
   }, [open])
 
-  const filtered = (() => {
-    const results = options.filter(o =>
+  // Deduplicate options once based on key
+  const deduplicatedOptions = useMemo(() => {
+    if (!getKey) return options
+    const seen = new Set()
+    return options.filter(o => {
+      const key = getKey(o)
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+  }, [options, getKey])
+
+  // Filter deduped options by search
+  const filtered = useMemo(() => {
+    return deduplicatedOptions.filter(o =>
       getLabel(o).toLowerCase().includes(search.toLowerCase())
     )
-    // Deduplicate by key (remove exact duplicates)
-    if (getKey) {
-      const seen = new Set()
-      return results.filter(o => {
-        const key = getKey(o)
-        if (seen.has(key)) return false
-        seen.add(key)
-        return true
-      })
-    }
-    return results
-  })()
+  }, [deduplicatedOptions, search, getLabel])
   const selected = options.find(o => getLabel(o) === value)
 
   return (
@@ -581,7 +583,12 @@ export default function InvoiceModal({ initialData, isFormPage }) {
       }, ...p])
       showToast('Fatura u krijua me sukses! ✓')
     }
-    onClose()
+    // Close form/modal - use onClose if available (form page mode), else closeModal (modal mode)
+    if (onClose) {
+      onClose()
+    } else {
+      closeModal()
+    }
   }
 
   const formContent = (
