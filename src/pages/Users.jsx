@@ -210,7 +210,12 @@ export default function UsersPage() {
         (l.module     || '').toLowerCase().includes(q)
       )
     }
-    return logs.slice(0, 50)
+    // Sort by timestamp descending (newest first)
+    return logs.sort((a, b) => {
+      const timeA = new Date(a.timestamp || 0).getTime()
+      const timeB = new Date(b.timestamp || 0).getTime()
+      return timeB - timeA
+    }).slice(0, 50)
   }, [activityLog, logUserFilter, logSearch])
 
   return (
