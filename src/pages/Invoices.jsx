@@ -953,29 +953,31 @@ export default function Invoices() {
             <h2 className="text-xl font-bold text-gray-800">Faturat</h2>
             <p className="text-sm text-gray-400 mt-0.5">{invoices.length} fatura gjithsej</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {/* View toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
-              <button
-                onClick={() => setViewMode('table')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                  viewMode === 'table' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <LayoutList size={13}/> Tabele
-              </button>
-              <button
-                onClick={() => setViewMode('board')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                  viewMode === 'board' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <Columns size={13}/> Tabllo
-              </button>
-            </div>
-            <button className="btn btn-outline btn-sm"><Download size={14}/>Eksporto</button>
-            <button className="btn btn-primary btn-sm" onClick={() => setModal(<InvoiceModal/>)}>
-              <span className="text-base leading-none">+</span> Faturë e re
+          <div className="flex items-center gap-1.5">
+            {/* Switch to table view */}
+            <button
+              onClick={() => setViewMode('table')}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+              title="Tabela"
+            >
+              <LayoutList size={16}/>
+            </button>
+
+            {/* Export */}
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+              title="Eksporto"
+            >
+              <Download size={16}/>
+            </button>
+
+            {/* New Invoice */}
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
+              onClick={() => setModal(<InvoiceModal/>)}
+              title="Faturë e re"
+            >
+              +
             </button>
           </div>
         </div>
@@ -1004,44 +1006,42 @@ export default function Invoices() {
           <h2 className="text-xl font-bold text-gray-800">Faturat</h2>
           <p className="text-sm text-gray-400 mt-0.5">{invoices.length} fatura gjithsej</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* View toggle */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                viewMode === 'table' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <LayoutList size={13}/> Tabele
-            </button>
-            <button
-              onClick={() => setViewMode('board')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                viewMode === 'board' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Columns size={13}/> Tabllo
-            </button>
-          </div>
-          <button className="btn btn-outline btn-sm"><Download size={14}/>Eksporto</button>
-          <button className="btn btn-outline btn-sm" onClick={() => downloadTemplate('invoices')} title="Shkarko shablonin Excel">
-            <Download size={14}/>Template Excel
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Export - Icon only */}
+          <button
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            title="Eksporto faturat"
+          >
+            <Download size={16}/>
           </button>
-          <button className="btn btn-outline btn-sm" onClick={() => setImportOpen(true)}>
-            <FileSpreadsheet size={14}/> Import Excel
+
+          {/* Import - Icon only */}
+          <button
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            onClick={() => setImportOpen(true)}
+            title="Importo Excel"
+          >
+            <FileSpreadsheet size={16}/>
           </button>
+
+          {/* Delete selected - Show only when items selected */}
           {selected.size > 0 && (
             <button
-              className="btn btn-danger btn-sm flex items-center gap-2"
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
               onClick={() => setConfirmDelAll(true)}
-              title={`Fshi ${selected.size} faturën e zgjedhur`}
+              title={`Fshi ${selected.size}`}
             >
-              <Trash2 size={14}/> Fshi ({selected.size})
+              <Trash2 size={16}/>
             </button>
           )}
-          <button className="btn btn-primary btn-sm" onClick={() => setModal(<InvoiceModal/>)}>
-            <span className="text-base leading-none">+</span> Faturë e re
+
+          {/* New Invoice - Primary button with + icon */}
+          <button
+            className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
+            onClick={() => setModal(<InvoiceModal/>)}
+            title="Faturë e re"
+          >
+            +
           </button>
         </div>
       </div>
