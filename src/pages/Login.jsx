@@ -58,18 +58,18 @@ export default function Login({ users = [], onLogin }) {
         <p className="text-sm text-gray-400 mb-6">Kyçu me llogarinë tënde</p>
 
         <form onSubmit={submit} autoComplete="on">
-          {/* Email */}
+          {/* Username */}
           <div className="mb-4">
-            <label className="form-label" htmlFor="login-username">Email</label>
+            <label className="form-label" htmlFor="login-username">Emri i përdoruesit</label>
             <input
               id="login-username"
-              name="email"
+              name="username"
               className="form-control"
-              type="email"
-              autoComplete="email"
+              type="text"
+              autoComplete="username"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              placeholder="megashtv@gmail.com"
+              placeholder="p.sh. xpmx"
               autoFocus
             />
           </div>
