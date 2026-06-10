@@ -125,10 +125,10 @@
   grid-template-columns: 1fr 72px 100px 86px 28px;
 }
 
-/* Mobile responsive ItemRow grid */
+/* Mobile responsive ItemRow grid - 4 columns (no total) */
 @media (max-width: 640px) {
   .item-row {
-    grid-template-columns: 1fr 48px 56px 56px 24px;
+    grid-template-columns: 1fr 48px 56px 24px;
     gap: 6px;
     padding: 8px 12px;
   }

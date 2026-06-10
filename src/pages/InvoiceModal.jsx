@@ -377,7 +377,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
       />
 
       {/* Line total */}
-      <div className={`text-right text-base sm:text-sm font-bold py-2 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
+      <div className={`hidden sm:block text-right text-base sm:text-sm font-bold py-2 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
         €{fmtN(lineTotal)}
       </div>
 
@@ -700,10 +700,10 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       {/* ── Item Table ── */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="form-label mb-0 text-sm sm:text-base">ARTIKUJT</label>
+          <label className="form-label mb-0 text-xs sm:text-sm">Artikujt</label>
           {/* Column labels */}
           <div
-            className="grid text-[11px] sm:text-[12px] text-gray-500 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
+            className="hidden sm:grid text-[11px] sm:text-[12px] text-gray-500 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
             style={{ gridTemplateColumns: '1fr 60px 80px 70px' }}
           >
             <span className="pl-2 sm:pl-3 text-xs">Produkt</span>
