@@ -361,7 +361,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
 
       {/* Sasia */}
       <input
-        className="form-control text-center text-sm px-1 py-1.5 mt-0.5"
+        className="form-control text-center text-base sm:text-sm font-semibold px-1 py-2 sm:py-1.5 mt-0.5"
         type="number" min="0.01" step="1"
         value={item.qty}
         onChange={e => onUpdate({ qty: e.target.value })}
@@ -369,7 +369,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
 
       {/* Çmimi */}
       <input
-        className="form-control text-right text-sm px-2 py-1.5 mt-0.5"
+        className="form-control text-right text-base sm:text-sm font-semibold px-2 py-2 sm:py-1.5 mt-0.5"
         type="number" min="0" step="0.01"
         value={item.unitPrice}
         onChange={e => onUpdate({ unitPrice: e.target.value })}
@@ -377,7 +377,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
       />
 
       {/* Line total */}
-      <div className={`text-right text-sm font-bold py-1.5 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
+      <div className={`text-right text-base sm:text-sm font-bold py-2 sm:py-1.5 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
         €{fmtN(lineTotal)}
       </div>
 
@@ -738,22 +738,22 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
 
       {/* ── Totals block ── */}
       <div className="bg-gray-50 rounded-xl border border-gray-100 px-4 py-3 mb-4 space-y-2">
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-base sm:text-sm">
           <span className="text-gray-500 font-medium">Sub Total</span>
           <span className="font-semibold text-gray-800">€{fmtN(subTotal)}</span>
         </div>
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-base sm:text-sm">
           <div className="flex items-center gap-2 text-gray-500 font-medium">
             <span>Zbritja</span>
             <input
-              className="w-14 border border-gray-200 rounded-lg px-2 py-0.5 text-xs text-right outline-none focus:border-blue-400 bg-white"
+              className="w-16 sm:w-14 border border-gray-200 rounded-lg px-2 py-1 sm:py-0.5 text-base sm:text-xs text-right outline-none focus:border-blue-400 bg-white font-semibold"
               type="number" min="0" max={discount.type === '%' ? 100 : undefined}
               value={discount.value}
               onChange={e => setDiscount(p => ({ ...p, value: e.target.value }))}
               placeholder="0"
             />
             <select
-              className="border border-gray-200 rounded-lg px-1.5 py-0.5 text-xs outline-none focus:border-blue-400 bg-white text-gray-700"
+              className="border border-gray-200 rounded-lg px-2 sm:px-1.5 py-1 sm:py-0.5 text-base sm:text-xs outline-none focus:border-blue-400 bg-white text-gray-700 font-semibold"
               value={discount.type}
               onChange={e => setDiscount(p => ({ ...p, type: e.target.value }))}
             >
@@ -761,13 +761,13 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
               <option value="fixed">€</option>
             </select>
           </div>
-          <span className={`font-semibold ${discAmount > 0 ? 'text-red-500' : 'text-gray-300'}`}>
+          <span className={`font-semibold text-base sm:text-sm ${discAmount > 0 ? 'text-red-500' : 'text-gray-300'}`}>
             -{discAmount > 0 ? `€${fmtN(discAmount)}` : '€0'}
           </span>
         </div>
         <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-          <span className="font-bold text-gray-800 text-sm">Total (€)</span>
-          <span className="text-xl font-bold text-blue-700">€{fmtN(total)}</span>
+          <span className="font-bold text-gray-800 text-base sm:text-sm">Total (€)</span>
+          <span className="text-2xl sm:text-xl font-bold text-blue-700">€{fmtN(total)}</span>
         </div>
       </div>
 
