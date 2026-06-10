@@ -865,11 +865,11 @@ export default function Invoices() {
   if (preview) {
     return (
       <div
-        className="-m-3 sm:-m-5 md:-m-6 flex overflow-hidden"
+        className="-m-3 sm:-m-5 md:-m-6 flex overflow-hidden bg-gray-50"
         style={{ height: 'calc(100vh - 56px)' }}
       >
         {/* Left: invoice list — hidden on mobile (show only detail panel) */}
-        <div className="hidden md:flex w-[280px] flex-shrink-0 border-r border-gray-200 flex-col overflow-hidden bg-white">
+        <div className="hidden md:flex w-[340px] flex-shrink-0 border-r border-gray-200 flex-col overflow-hidden bg-white">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <div>
               <p className="font-bold text-sm text-gray-800">Të gjitha faturat</p>
@@ -957,7 +957,7 @@ export default function Invoices() {
         </div>
 
         {/* Right: invoice side panel */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden max-w-2xl">
           <InvoiceSidePanel
             key={preview}
             invId={preview}
