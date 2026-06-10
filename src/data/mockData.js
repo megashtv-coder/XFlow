@@ -62,19 +62,19 @@ export const paymentModes = [
 ]
 
 export const depositAccounts = [
-  'Binance Enndy',
-  'PayPal - Bledar',
-  'PayPal - Shpend.be',
-  'PayPal - Me-Xhanin',
-  'PayPal - Megaenndy',
-  'Wise - Samki',
-  'Paysera - Enndy',
-  'TEB - Enndy',
-  'OneFor - Enndy',
-  'Paysera - Samki',
-  'Stripe - X',
   'Kesh - Enndy',
   'Kesh - Samki',
+  'PayPal - Bledar',
+  'PayPal - Shpend.be',
+  'Wise - Samki',
+  'TEB - Enndy',
+  'Paysera - Enndy',
+  'OneFor - Enndy',
+  'Stripe - X',
+  'Paysera - Samki',
+  'PayPal - Me-Xhanin',
+  'PayPal - Megaenndy',
+  'Binance Enndy',
 ]
 
 export const depositedToOptions = ['Enndy', 'Samki']
