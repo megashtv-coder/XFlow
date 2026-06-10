@@ -583,7 +583,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
    Faqja kryesore
 ══════════════════════════════════════════════════════════ */
 export default function Customers() {
-  const { customers, setCustomers, closeModal, fmt, invoices, showToast, page, navigate } = useApp()
+  const { customers, setCustomers, closeModal, fmt, invoices, showToast, page, navigate, logActivity } = useApp()
   const [search,        setSearch]        = useState('')
   const [typeFilt,      setTypeFilt]      = useState('all')
   const [countryFilt,   setCountryFilt]   = useState('all')
@@ -624,12 +624,14 @@ export default function Customers() {
     if (showDeleteConfirm.type === 'single') {
       const name = customers.find(c => c.id === showDeleteConfirm.id)?.name
       setCustomers(prev => prev.filter(c => c.id !== showDeleteConfirm.id))
+      logActivity(`Fshi klientin ${name}`, 'Klientët')
       showToast(`Klienti "${name}" u fshi ✓`, 'success')
     } else if (showDeleteConfirm.type === 'multiple') {
       const count = selected.size
       const names = customers.filter(c => selected.has(c.id)).map(c => c.name).join(', ')
       setCustomers(prev => prev.filter(c => !selected.has(c.id)))
       setSelected(new Set())
+      logActivity(`Fshi ${count} klientë: ${names}`, 'Klientët')
       showToast(`${count} klientë u fshin ✓`, 'success')
     }
     setShowDeleteConfirm(null)
