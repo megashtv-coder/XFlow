@@ -705,7 +705,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
           <label className="form-label mb-0 text-sm sm:text-base font-bold">Artikujt</label>
           {/* Column labels */}
           <div
-            className="hidden sm:grid text-[16.5px] text-gray-600 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
+            className="hidden sm:grid text-[13px] text-gray-600 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
             style={{ gridTemplateColumns: '1fr 60px 80px 70px' }}
           >
             <span className="pl-2 sm:pl-3"></span>
@@ -731,7 +731,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         </div>
 
         <button
-          className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 px-1 py-1 transition-colors"
+          className="mt-2 flex items-center gap-1.5 text-[13px] font-semibold text-blue-600 hover:text-blue-800 px-1 py-1 transition-colors"
           onClick={addItem}
         >
           <Plus size={13} /> Shto artikull tjetër
