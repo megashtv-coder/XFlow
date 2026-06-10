@@ -705,13 +705,13 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
           <label className="form-label mb-0 text-xs sm:text-sm">Artikujt</label>
           {/* Column labels */}
           <div
-            className="hidden sm:grid text-[11px] sm:text-[12px] text-gray-500 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
+            className="hidden sm:grid text-sm sm:text-base text-gray-600 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
             style={{ gridTemplateColumns: '1fr 60px 80px 70px' }}
           >
-            <span className="pl-2 sm:pl-3 text-xs">Produkt</span>
-            <span className="text-center text-xs">Sasia</span>
-            <span className="text-right text-xs">Çmimi (€)</span>
-            <span className="text-right text-xs">Totali</span>
+            <span className="pl-2 sm:pl-3"></span>
+            <span className="text-center">Sasia</span>
+            <span className="text-right">Çmimi (€)</span>
+            <span className="text-right">Totali</span>
           </div>
         </div>
 
