@@ -32,6 +32,7 @@ function Combobox({
   options = [], value = '', onChange, placeholder,
   getKey, getLabel, renderOption,
   onAddNew, addNewLabel = 'Shto të ri',
+  textClass = 'text-sm',
 }) {
   const [open, setOpen]     = useState(false)
   const [search, setSearch] = useState('')
@@ -85,7 +86,7 @@ function Combobox({
         className="form-control flex items-center justify-between cursor-pointer select-none gap-2 min-h-[38px]"
         onClick={openDrop}
       >
-        <span className={`text-sm truncate flex-1 ${selected ? 'text-gray-800' : 'text-gray-400'}`}>
+        <span className={`${textClass} truncate flex-1 ${selected ? 'text-gray-800' : 'text-gray-400'}`}>
           {selected ? getLabel(selected) : placeholder}
         </span>
         <ChevronDown size={14} className={`text-gray-400 flex-shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
@@ -344,6 +345,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
           placeholder="Zgjedh ose shëno..."
           getKey={p => p.id}
           getLabel={p => p.name}
+          textClass="text-base sm:text-sm"
           renderOption={p => (
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm text-gray-800 truncate">{p.name}</span>
@@ -352,7 +354,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
           )}
         />
         <input
-          className="w-full text-xs text-gray-500 italic bg-transparent outline-none border-b border-dashed border-gray-200 focus:border-blue-300 px-1 py-0.5 placeholder-gray-300 transition-colors"
+          className="w-full text-base sm:text-xs text-gray-500 italic bg-transparent outline-none border-b border-dashed border-gray-200 focus:border-blue-300 px-1 py-0.5 placeholder-gray-300 transition-colors"
           placeholder="Përshkrim (opsional)..."
           value={item.note || ''}
           onChange={e => onUpdate({ note: e.target.value })}
@@ -771,20 +773,20 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         </div>
       </div>
 
-      {/* ── Dates ── */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* ── Dates (Horizontal on mobile) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
         <FormGroup label="Data e faturës *">
-          <input className="form-control" type="date" value={form.date} onChange={e => set('date', e.target.value)} />
+          <input className="form-control text-base sm:text-sm" type="date" value={form.date} onChange={e => set('date', e.target.value)} />
         </FormGroup>
         <FormGroup label="Afati i pagesës (auto: 3 ditë)">
-          <input className="form-control" type="date" value={form.due} onChange={e => set('due', e.target.value)} />
+          <input className="form-control text-base sm:text-sm" type="date" value={form.due} onChange={e => set('due', e.target.value)} />
         </FormGroup>
       </div>
 
-      {/* ── Subscription dates ── */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* ── Subscription dates (Horizontal on mobile) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
         <FormGroup label="Data e skadimit të abonimit">
-          <input className="form-control" type="date" value={form.subscriptionExpiry}
+          <input className="form-control text-base sm:text-sm" type="date" value={form.subscriptionExpiry}
             onChange={e => {
               const v = e.target.value
               set('subscriptionExpiry', v)
@@ -798,11 +800,13 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         <div></div>
       </div>
 
-      {/* ── Notify date ── */}
-      <FormGroup label="🔔 Njoftim rinovimi — data kur dërgojmë rikujtim">
-        <input className="form-control" type="date" value={form.notifyDate} onChange={e => set('notifyDate', e.target.value)} />
-        <p className="text-[11px] text-gray-400 mt-1">Shfaqet në menunë "Abonimet" si rikujtim për klientin.</p>
-      </FormGroup>
+      {/* ── Notify date (Full width, highlight) ── */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4">
+        <FormGroup label="🔔 Njoftim rinovimi — data kur dërgojmë rikujtim">
+          <input className="form-control text-base sm:text-sm bg-white" type="date" value={form.notifyDate} onChange={e => set('notifyDate', e.target.value)} />
+          <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1.5">Shfaqet në menunë "Abonimet" si rikujtim për klientin.</p>
+        </FormGroup>
+      </div>
 
       {/* ── Statusi ── */}
       <FormGroup label="Statusi">
