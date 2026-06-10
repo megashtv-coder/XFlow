@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext'
 import BackupService from '../services/BackupService'
 
 export default function Settings() {
-  const { showToast, paymentModes, setPaymentModes, depositAccounts, setDepositAccounts, logout, invoices, customers, items, payments, expenses, users, setInvoices, setCustomers, setItems, setPayments, setExpenses } = useApp()
+  const { showToast, paymentModes, setPaymentModes, depositAccounts, setDepositAccounts, logout, invoices, customers, items, payments, expenses, users, setInvoices, setCustomers, setItems, setPayments, setExpenses, currentUser } = useApp()
   const fileInputRef = useRef(null)
   const [toggles, setToggles] = useState({
     emailNotif: true, smsNotif: false, autoInvoice: true,
@@ -208,6 +208,7 @@ export default function Settings() {
       <div className="max-w-2xl space-y-5">
         {sections.map(({ title, icon: Icon, rows }) => {
           const isLockedSection = title === 'Profili i kompanisë' || title === 'Gjuha & Rajoni'
+          const isAdmin = currentUser?.role === 'admin' || currentUser?.isSuperAdmin
           return (
           <div key={title}>
             <div className="flex items-center gap-2 mb-2 px-1">
@@ -223,7 +224,7 @@ export default function Settings() {
                   </div>
                   {row.key ? (
                     <Toggle on={toggles[row.key]} onToggle={() => tog(row.key)}/>
-                  ) : isLockedSection ? (
+                  ) : isLockedSection && !isAdmin ? (
                     <button className="btn btn-outline btn-sm text-xs opacity-50 cursor-not-allowed" disabled>Nuk mund të ndryshohet</button>
                   ) : (
                     <button className="btn btn-outline btn-sm text-xs">Ndrysho</button>
