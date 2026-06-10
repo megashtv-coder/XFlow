@@ -29,7 +29,7 @@ export default function FormPageWrapper({ title, subtitle, children, onBack }) {
       <div className={`flex-1 overflow-y-auto p-0 ${
         darkMode ? 'bg-gray-900' : 'bg-gray-50'
       }`}>
-        <div className={`h-full ${darkMode ? 'bg-gray-800' : 'bg-white'} border-0 shadow-none p-6`}>
+        <div className={`max-w-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border-0 shadow-none p-6 min-h-full`}>
           {children}
         </div>
       </div>
