@@ -9,6 +9,7 @@ import { Toast, LoadingSkeleton } from './components/UI'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import AutoNotificationService from './services/AutoNotificationService'
 import BackupService from './services/BackupService'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 // Lazy load all pages to reduce initial bundle size
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -215,6 +216,7 @@ export default function App() {
     <TenantProvider>
       <AppProvider>
         <AuthWrapper />
+        <SpeedInsights />
       </AppProvider>
     </TenantProvider>
   )
