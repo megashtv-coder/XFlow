@@ -550,13 +550,74 @@ export default function ExpensesPage() {
         </span>
       </div>
 
+      {/* Mobile Card View - Hidden on sm+ */}
+      {paged.length > 0 && (
+        <div className="sm:hidden space-y-2 mb-4">
+          {paged.map(e => (
+            <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div className="flex justify-between items-start gap-2">
+                {/* Col 1: Type + Date + Vendor */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-bold text-gray-800 text-sm">{e.type}</p>
+                    {e.recurring && (
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400'}`}>
+                        {e.recurringFreq}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">{e.date}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{e.vendor || '—'}</p>
+                </div>
+
+                {/* Col 2: Amount + Account + Partner */}
+                <div className="text-right">
+                  <p className="font-bold text-red-500 text-sm">- {fmt(e.amount)}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{e.paidFrom || '—'}</p>
+                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
+                    e.paidBy === 'Enndy' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'
+                  }`}>
+                    {e.paidBy || '—'}
+                  </span>
+                </div>
+
+                {/* Col 3: Actions */}
+                <div className="relative flex-shrink-0 flex gap-1">
+                  <button
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+                    title="Edito"
+                    onClick={() => openEdit(e)}
+                  >
+                    ✏
+                  </button>
+                  <button
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                    title="Fshi"
+                    onClick={() => openDelete(e)}
+                  >
+                    <Trash2 size={16}/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Mobile pagination - hidden on sm+ */}
+      {paged.length > 0 && (
+        <div className="sm:hidden mb-6">
+          <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+        </div>
+      )}
+
       {/* Tabela */}
       {paged.length === 0 ? (
         <EmptyState icon={Receipt} title="Nuk ka shpenzime"
           sub="Regjistro shpenzimin e parë"
           action={<button className="btn btn-primary mt-2" onClick={openAdd}><Plus size={14}/>Shpenzim i ri</button>}/>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 420px)' }}>
           <table className="w-full text-sm min-w-[480px]">
             <thead className="sticky top-0 z-10">
@@ -648,9 +709,9 @@ export default function ExpensesPage() {
           </table>
           </div>
 
-          {/* Footer totals */}
+          {/* Footer totals - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/40 text-xs">
+            <div className="hidden sm:flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/40 text-xs">
               <div className="flex gap-4 text-gray-400">
                 <span>Enndy: <span className="font-bold text-blue-600">- {fmt(filtered.filter(e=>e.paidBy==='Enndy').reduce((s,e)=>s+e.amount,0))}</span></span>
                 <span>Samki: <span className="font-bold text-purple-600">- {fmt(filtered.filter(e=>e.paidBy==='Samki').reduce((s,e)=>s+e.amount,0))}</span></span>
@@ -661,7 +722,9 @@ export default function ExpensesPage() {
             </div>
           )}
 
-          <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+          <div className="hidden sm:block">
+            <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+          </div>
         </div>
       )}
 
