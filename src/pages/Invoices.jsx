@@ -1342,6 +1342,7 @@ export default function Invoices() {
                     <div className="relative">
                       <button
                         className="icon-btn text-gray-400 hover:text-gray-600 hover:bg-gray-100 -mr-2"
+                        data-mobile-invoice-id={inv.id}
                         onClick={e => {
                           e.stopPropagation()
                           setOpenDropdown(isDropdownOpen ? null : inv.id)
