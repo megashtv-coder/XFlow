@@ -252,11 +252,10 @@ export function AppProvider({ children }) {
       fetchAll('transfers'),
       fetchAll('vendors'),
       fetchAll('items'),
-      fetchAll('activities'),
       supabase.from('settings').select('key, value'),
       fetchAll('organizations'),
       fetchAll('users'),
-    ]).then(([inv, cust, exp, pay, tran, vend, itm, act, sett, orgs, usrs]) => {
+    ]).then(([inv, cust, exp, pay, tran, vend, itm, sett, orgs, usrs]) => {
 
       const load = (res, fallback) => {
         const d = res.data?.length ? fromRows(res.data) : fallback
@@ -326,31 +325,9 @@ export function AppProvider({ children }) {
           supabase.from('users').upsert(toSeed.map(u => ({ id: u.id, data: u }))).then()
       }
 
-      // Activities — merge localStorage and Supabase data
-      {
-        const supabaseActivities = act?.data?.length ? fromRows(act.data) : []
-        // Filter Supabase activities by current org
-        const filteredSupabase = currentOrgId ? supabaseActivities.filter(a => a.orgId === currentOrgId) : []
-
-        // Keep activities from localStorage (they're more up-to-date for this session)
-        // and merge with any Supabase activities that aren't already in localStorage
-        const localActivities = activityLog || []
-        const localIds = new Set(localActivities.map(a => a.id))
-        const newFromSupabase = filteredSupabase.filter(a => !localIds.has(a.id))
-
-        // Merge: local activities + new activities from Supabase, sorted by timestamp
-        const mergedActivities = [...localActivities, ...newFromSupabase]
-          .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
-
-        // Only update if we got new activities from Supabase
-        if (newFromSupabase.length > 0) {
-          setActivityLog(mergedActivities)
-          prevActivities.current = mergedActivities
-        } else {
-          // Keep localStorage activities as-is
-          prevActivities.current = localActivities
-        }
-      }
+      // Activities: Keep localStorage-loaded activities (they're synced to Supabase separately)
+      // Initialize prevActivities with current state so future syncs work correctly
+      prevActivities.current = activityLog || []
 
       // MIGRATION: Ensure all records have orgId (critical for data isolation)
       if (supabase) {
