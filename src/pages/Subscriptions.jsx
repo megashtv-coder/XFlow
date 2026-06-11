@@ -145,7 +145,7 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
 
 /* ── Section block ── */
 const Section = memo(function Section({ title, color, items, today, sentIds, itemsPerPage = 30 }) {
-  const { customers } = useApp()
+  const { customers, fmt } = useApp()
   const [page, setPage] = useState(1)
 
   if (!items.length) return null
