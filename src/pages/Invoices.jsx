@@ -1303,15 +1303,6 @@ export default function Invoices() {
               <table className="w-full min-w-[500px]" style={{ position: 'relative' }}>
                 <thead className="sticky top-0 z-10">
                   <tr className="border-b-2 border-gray-100 bg-white">
-                    <th className="table-th w-8 text-center">
-                      <input
-                        type="checkbox"
-                        checked={selected.size === filtered.length && filtered.length > 0}
-                        onChange={toggleSelectAll}
-                        className="w-4 h-4 cursor-pointer"
-                        title={selected.size === filtered.length ? "Deselekto të gjitha" : "Selekto të gjitha"}
-                      />
-                    </th>
                     {[
                       { key: 'id',       label: 'ID',     cls: 'hidden sm:table-cell' },
                       { key: 'customer', label: 'Klienti',cls: '' },
@@ -1343,6 +1334,15 @@ export default function Invoices() {
                       </span>
                     </th>
                     <th className="table-th text-right">Veprimet</th>
+                    <th className="table-th w-8 text-center hidden sm:table-cell">
+                      <input
+                        type="checkbox"
+                        checked={selected.size === filtered.length && filtered.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 cursor-pointer"
+                        title={selected.size === filtered.length ? "Deselekto të gjitha" : "Selekto të gjitha"}
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1359,14 +1359,6 @@ export default function Invoices() {
                         key={inv.id}
                         className={`hover:bg-blue-50/30 transition-colors group ${selected.has(inv.id) ? 'bg-blue-100' : ''}`}
                       >
-                        <td className="table-td w-8 text-center" onClick={e => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={selected.has(inv.id)}
-                            onChange={() => toggleSelectInvoice(inv.id)}
-                            className="w-4 h-4 cursor-pointer"
-                          />
-                        </td>
                         <td className="table-td font-bold text-blue-600 text-sm hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>{inv.id}</td>
                         <td className="table-td font-medium text-gray-800 cursor-pointer" onClick={() => setPreview(inv.id)}>
                           <div className="flex items-center gap-1.5">
@@ -1529,6 +1521,14 @@ export default function Invoices() {
                               })()}
                             </div>
                           </div>
+                        </td>
+                        <td className="table-td w-8 text-center hidden sm:table-cell" onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selected.has(inv.id)}
+                            onChange={() => toggleSelectInvoice(inv.id)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
                         </td>
                       </tr>
                     )
