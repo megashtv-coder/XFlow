@@ -94,7 +94,10 @@ export function AppProvider({ children }) {
       return _loadedUsers.find(u => u.id === parsed.id && u.active !== false) || null
     } catch { return null }
   })
-  const [activityLog, setActivityLog] = useState(mockActivityLog)
+  const [activityLog, setActivityLog] = useState(() => {
+    const saved = localStorage.getItem('xflow_activity_log')
+    return saved ? JSON.parse(saved) : mockActivityLog
+  })
 
   const isTester     = currentUser?.role === 'tester'
   const isSuperAdmin = currentUser?.isSuperAdmin === true
@@ -369,6 +372,11 @@ export function AppProvider({ children }) {
   useEffect(() => { if (canSync) diffSync('transfers', transfers, prevTransfers, currentOrgId) }, [transfers, canSync])
   useEffect(() => { if (canSync) diffSync('vendors',   vendors,   prevVendors,   currentOrgId) }, [vendors,   canSync])
   useEffect(() => { if (canSync) diffSync('items',     items,     prevItems,     currentOrgId) }, [items,     canSync])
+
+  // Persist activity log to localStorage
+  useEffect(() => {
+    localStorage.setItem('xflow_activity_log', JSON.stringify(activityLog))
+  }, [activityLog])
 
   useEffect(() => {
     if (!canSync || !supabase) return

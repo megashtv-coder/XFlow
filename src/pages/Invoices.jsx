@@ -1032,26 +1032,20 @@ export default function Invoices() {
   /* ── DEFAULT LAYOUT (full-width table) ── */
   const paged = sorted.slice((paginationPage - 1) * perPage, paginationPage * perPage)
 
-  /* Calculate stats */
-  const pendingValue = invoices
+  /* Calculate stats - based on filtered invoices */
+  const pendingValue = filtered
     .filter(i => i.status === 'pending')
     .reduce((sum, i) => sum + (i.amount || 0), 0)
-  const overdueValue = invoices
+  const overdueValue = filtered
     .filter(i => i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today))
     .reduce((sum, i) => sum + (i.amount || 0), 0)
 
-  // Calculate average days to payment (invoice date to paidDate)
-  const paidInvoices = invoices.filter(i => i.status === 'paid' && i.date && i.paidDate)
-  const avgDaysToPayment = paidInvoices.length > 0
-    ? Math.round(
-        paidInvoices.reduce((sum, i) => {
-          const invDate = new Date(i.date)
-          const payDate = new Date(i.paidDate)
-          const days = Math.floor((payDate - invDate) / (1000 * 60 * 60 * 24))
-          return sum + Math.max(0, days) // Don't count negative days
-        }, 0) / paidInvoices.length
-      )
-    : 0
+  // Calculate total unpaid invoices for resellers from filtered data
+  const sellerInvoices = filtered.filter(i => {
+    const customer = customers.find(c => c.name === i.customer)
+    return customer?.type === 'reseller' && (i.status === 'pending' || i.status === 'overdue')
+  })
+  const totalUnpaidSellers = sellerInvoices.reduce((sum, i) => sum + (i.amount || 0), 0)
 
   // If in form mode, show only the form
   if (isFormMode) {
@@ -1079,8 +1073,8 @@ export default function Invoices() {
               <p className="text-base font-bold text-red-700">{fmt(overdueValue)}</p>
             </div>
             <div className="bg-blue-50 rounded-lg p-3 border border-blue-100 min-w-max">
-              <p className="text-xs text-blue-600 font-medium">Ditë pagim</p>
-              <p className="text-base font-bold text-blue-700">{avgDaysToPayment}d</p>
+              <p className="text-xs text-blue-600 font-medium">Papaguara Sellers</p>
+              <p className="text-base font-bold text-blue-700">{fmt(totalUnpaidSellers)}</p>
             </div>
           </div>
 
@@ -1136,8 +1130,8 @@ export default function Invoices() {
             <p className="text-base font-bold text-red-700">{fmt(overdueValue)}</p>
           </div>
           <div className="flex-1 bg-blue-50 rounded-lg p-3 border border-blue-100">
-            <p className="text-xs text-blue-600 font-medium">Ditë pagim</p>
-            <p className="text-base font-bold text-blue-700">{avgDaysToPayment}d</p>
+            <p className="text-xs text-blue-600 font-medium">Papaguara Sellers</p>
+            <p className="text-base font-bold text-blue-700">{fmt(totalUnpaidSellers)}</p>
           </div>
         </div>
       </div>
