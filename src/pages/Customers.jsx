@@ -748,18 +748,18 @@ export default function Customers() {
           <p className="text-sm text-gray-400 mt-0.5">{customers.length} klientë aktiv</p>
         </div>
         <div className="flex items-center gap-1.5">
-          {/* Import */}
+          {/* Import - Hidden on mobile */}
           <button
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
             <FileSpreadsheet size={16}/>
           </button>
 
-          {/* New Customer */}
+          {/* New Customer - Hidden on mobile (see FAB below) */}
           <button
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
             onClick={openAdd}
             title="Shto klient"
           >
@@ -984,6 +984,15 @@ export default function Customers() {
           onClose={() => setSelectedCustomer(null)}
         />
       )}
+
+      {/* Floating Action Button - Mobile only */}
+      <div
+        className="fab sm:hidden"
+        onClick={openAdd}
+        title="Shto klient"
+      >
+        <UserPlus size={28}/>
+      </div>
     </div>
   )
 }
