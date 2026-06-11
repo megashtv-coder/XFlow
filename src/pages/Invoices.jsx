@@ -1300,8 +1300,8 @@ export default function Invoices() {
               <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3">
                 <div className="flex justify-between items-start gap-2">
                   {/* Col 1: Customer + Subscription Expiry */}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 text-sm truncate">{inv.customer}</p>
+                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setPreview(inv.id)}>
+                    <p className="font-bold text-gray-800 text-sm truncate hover:text-blue-600 transition-colors">{inv.customer}</p>
                     <p className="text-xs font-bold text-blue-600 mt-0.5">
                       {inv.subscriptionExpiry || '—'}
                     </p>
