@@ -339,6 +339,80 @@ export default function Payments() {
         </span>
       </div>
 
+      {/* Mobile Card View - Hidden on sm+ */}
+      {paged.length > 0 && (
+        <div className="sm:hidden space-y-2 mb-4">
+          {paged.map(p => (
+            <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div className="flex justify-between items-start gap-2">
+                {/* Col 1: Customer + Payment Date + Invoice */}
+                <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openEditPayment(p)}>
+                  <p className="font-bold text-gray-800 text-sm truncate hover:text-blue-600 transition-colors">{p.customer}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{p.date}</p>
+                  <p className="text-xs font-semibold text-blue-600">{p.invoiceId}</p>
+                </div>
+
+                {/* Col 2: Amount + Fee + Partner */}
+                <div className="text-right">
+                  <p className="font-bold text-gray-800 text-sm">{fmt(p.amount)}</p>
+                  <p className="text-xs text-amber-500 mt-0.5">{p.fee > 0 ? `- ${fmt(p.fee)}` : '—'}</p>
+                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
+                    p.depositedTo === 'Enndy'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'bg-purple-50 text-purple-600'
+                  }`}>
+                    {p.depositedTo}
+                  </span>
+                </div>
+
+                {/* Col 3: Actions - Larger Button */}
+                <div className="relative flex-shrink-0 flex gap-1">
+                  <button
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+                    title="Ndrysho"
+                    onClick={() => openEditPayment(p)}
+                  >
+                    <Pencil size={16}/>
+                  </button>
+                  <button
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                    title="Fshij"
+                    onClick={() => setDeletingId(p.id)}
+                  >
+                    <Trash2 size={16}/>
+                  </button>
+                </div>
+              </div>
+
+              {/* Delete confirmation inline */}
+              {deletingId === p.id && (
+                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2 justify-end">
+                  <button
+                    className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-semibold"
+                    onClick={() => deletePayment(p)}
+                  >
+                    Po, fshi
+                  </button>
+                  <button
+                    className="px-3 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold"
+                    onClick={() => setDeletingId(null)}
+                  >
+                    Anulo
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Mobile pagination - hidden on sm+ */}
+      {paged.length > 0 && (
+        <div className="sm:hidden mb-6">
+          <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+        </div>
+      )}
+
       {/* Tabela */}
       {paged.length === 0 ? (
         <EmptyState
@@ -354,7 +428,7 @@ export default function Payments() {
           }
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
           <table className="w-full text-sm min-w-[560px]">
             <thead className="sticky top-0 z-10">
@@ -481,16 +555,18 @@ export default function Payments() {
           </table>
           </div>
 
-          {/* Totals row */}
+          {/* Totals row - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500">
+            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500">
               <span>Bruto: <span className="text-gray-700">{fmt(totalGross)}</span></span>
               <span>Fee: <span className="text-amber-500">- {fmt(totalFee)}</span></span>
               <span>Neto: <span className="text-emerald-600 text-sm font-bold">{fmt(totalNet)}</span></span>
             </div>
           )}
 
-          <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+          <div className="hidden sm:block">
+            <Pagination page={pg} total={filtered.length} perPage={perPage} onChange={setPg} />
+          </div>
         </div>
       )}
 
