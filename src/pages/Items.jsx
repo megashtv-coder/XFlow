@@ -343,7 +343,7 @@ export default function Items() {
           <h2 className="text-xl font-bold text-gray-800">Produktet &amp; Shërbimet</h2>
           <p className="text-sm text-gray-400 mt-0.5">{totalItems} artikuj aktiv</p>
         </div>
-        <button className="btn btn-primary btn-sm self-start sm:self-auto" onClick={openAdd}>
+        <button className="hidden sm:flex btn btn-primary btn-sm self-start sm:self-auto" onClick={openAdd}>
           <Plus size={16} /> Shto produkt
         </button>
       </div>
@@ -574,6 +574,14 @@ export default function Items() {
         </div>
       )}
 
+      {/* Floating Action Button - Mobile only */}
+      <div
+        className="fab sm:hidden"
+        onClick={openAdd}
+        title="Shto produkt"
+      >
+        <Plus size={28}/>
+      </div>
     </div>
   )
 }
