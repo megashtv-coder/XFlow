@@ -471,7 +471,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     due:                initialData?.due                || due3d,
     subscriptionExpiry: initialData?.subscriptionExpiry || '',
     notifyDate:         initialData?.notifyDate         || '',
-    status:             initialData?.status             || 'draft',
+    status:             initialData?.status             || 'pending',
   })
 
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
