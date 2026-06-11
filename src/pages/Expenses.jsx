@@ -363,6 +363,14 @@ export default function ExpensesPage() {
   const openDelete = e   => navigate(`expenses:${e.id}:delete`)
 
   /* recurring unique items (by type+vendor) for the recurring section */
+  // If delete mode, show delete confirmation
+  if (pageMatch[2] === 'delete') {
+    const expenseToDelete = expenses.find(e => e.id === pageMatch[1])
+    if (expenseToDelete) {
+      return <DeleteConfirm exp={expenseToDelete} onClose={() => navigate('expenses')} />
+    }
+  }
+
   // If in form mode, show only the form
   if (isFormMode && pageMatch[1] !== 'delete') {
     return (

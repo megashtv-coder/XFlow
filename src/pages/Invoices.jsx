@@ -126,6 +126,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
   const doDelete = () => {
     setInvoices(prev => prev.filter(i => i.id !== inv.id))
     logActivity(`Fshiu faturën ${inv.id} — ${inv.customer} €${inv.amount}`, 'Faturat')
+    setConfirmDel(false)
     showToast('Fatura u fshi')
     onClose()
   }
@@ -720,6 +721,7 @@ export default function Invoices() {
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
   const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
   const [confirmDelAll, setConfirmDelAll] = useState(false) // Confirmation dialog for bulk delete
+  const [deletingInvoiceId, setDeletingInvoiceId] = useState(null) // Track which invoice is being deleted from dropdown
 
   const getCustomerType = name =>
     customers.find(c => c.name === name)?.type || 'individual'
@@ -1186,6 +1188,53 @@ export default function Invoices() {
         </div>
       )}
 
+      {/* Single invoice delete confirmation modal */}
+      {deletingInvoiceId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-w-sm">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg">Fshi faturën?</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Kjo veprim nuk mund të rikthehej.</p>
+              </div>
+            </div>
+
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 mb-6 border border-red-200 dark:border-red-800">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Fatura <span className="font-semibold">{deletingInvoiceId}</span> do të fshihet përgjithmonë.
+              </p>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeletingInvoiceId(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                Anulo
+              </button>
+              <button
+                onClick={() => {
+                  const inv = invoices.find(i => i.id === deletingInvoiceId)
+                  setInvoices(p => p.filter(i => i.id !== deletingInvoiceId))
+                  if (inv) {
+                    logActivity(`Fshiu faturën ${inv.id} — ${inv.customer} €${inv.amount}`, 'Faturat')
+                  }
+                  showToast('Fatura u fshi')
+                  setDeletingInvoiceId(null)
+                  setOpenDropdown(null)
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Po, fshi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2
@@ -1465,10 +1514,7 @@ export default function Invoices() {
                                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                                     onClick={e => {
                                       e.stopPropagation()
-                                      setInvoices(p => p.filter(i => i.id !== inv.id))
-                                      logActivity(`Fshiu faturën ${inv.id} — ${inv.customer} €${inv.amount}`, 'Faturat')
-                                      showToast('Fatura u fshi')
-                                      setOpenDropdown(null)
+                                      setDeletingInvoiceId(inv.id)
                                     }}
                                   >
                                     <Trash2 size={14}/> Fshi
