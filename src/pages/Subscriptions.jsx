@@ -174,7 +174,87 @@ const Section = memo(function Section({ title, color, items, today, sentIds, ite
           color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-500'
         }`}>{items.length}</span>
       </div>
-      <div className="card overflow-hidden">
+
+      {/* Mobile Card View - Hidden on sm+ */}
+      {paginatedItems.length > 0 && (
+        <div className="sm:hidden space-y-2 mb-4">
+          {paginatedItems.map(inv => {
+            const phone = getPhone(inv.customer)
+            const msg = encodeURIComponent(`Përshëndetje!\nAbonimit juaj skadon më ${inv.subscriptionExpiry}.\nJu lutem, rinovoni për të vazhduar shërbimin.\nFaleminderit!`)
+            const daysLeft = inv.notifyDate
+              ? Math.round((new Date(inv.notifyDate) - new Date(today)) / 86_400_000)
+              : null
+
+            return (
+              <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex justify-between items-start gap-2">
+                  {/* Col 1: Customer + Expiry + Notify */}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-800 text-sm truncate">{inv.customer}</p>
+                    <p className="text-xs font-bold text-blue-600 mt-0.5">{inv.subscriptionExpiry || '—'}</p>
+                    <p className="text-xs font-bold text-red-600 mt-0.5">{inv.notifyDate || '—'}</p>
+                  </div>
+
+                  {/* Col 2: Amount + Product */}
+                  <div className="text-right">
+                    <p className="font-bold text-gray-800 text-sm">{fmt(inv.amount)}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{inv.type || inv.product || '—'}</p>
+                  </div>
+
+                  {/* Col 3: Contact */}
+                  <div className="relative flex-shrink-0 flex gap-1">
+                    {phone ? (
+                      <>
+                        <a
+                          href={`https://wa.me/${phone}?text=${msg}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all"
+                          title="WhatsApp"
+                        >
+                          <MessageCircle size={14}/>
+                        </a>
+                        <a
+                          href={`https://t.me/+${phone}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-600 hover:text-white transition-all"
+                          title="Telegram"
+                        >
+                          <Send size={14}/>
+                        </a>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-300">—</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Mobile pagination - hidden on sm+ */}
+      {totalPages > 1 && (
+        <div className="sm:hidden flex items-center justify-center gap-2 mb-4">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+          >
+            ←
+          </button>
+          <span className="text-xs text-gray-500">{page}/{totalPages}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+          >
+            →
+          </button>
+        </div>
+      )}
+
+      <div className="card overflow-hidden hidden sm:block">
         <div className="overflow-auto">
           <table className="w-full">
             <thead className="sticky top-0 z-10">
@@ -203,9 +283,9 @@ const Section = memo(function Section({ title, color, items, today, sentIds, ite
         </div>
       </div>
 
-      {/* Pagination for section */}
+      {/* Pagination for section - hidden on mobile */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-3">
+        <div className="hidden sm:flex items-center justify-center gap-2 mt-3">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
