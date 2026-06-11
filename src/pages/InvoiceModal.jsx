@@ -825,11 +825,21 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
 
   // If rendering as form page (side panel), don't use Modal wrapper
   if (isFormPage) {
+    const handleCancel = () => {
+      if (navigate) {
+        navigate('invoices')
+      } else if (onClose) {
+        onClose()
+      } else {
+        closeModal()
+      }
+    }
+
     return (
       <div className="space-y-4">
         {formContent}
         <div className="flex gap-2 pt-4 border-t border-gray-200">
-          <button className="btn btn-outline flex-1" onClick={closeModal}>Anulo</button>
+          <button className="btn btn-outline flex-1" onClick={handleCancel}>Anulo</button>
           <button className="btn btn-primary flex-1" onClick={save}>
             {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
           </button>
