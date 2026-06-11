@@ -411,18 +411,18 @@ export default function ExpensesPage() {
           <p className="text-sm text-gray-400 mt-0.5">Totali: {fmt(allTotal)}</p>
         </div>
         <div className="flex items-center gap-1.5">
-          {/* Import */}
+          {/* Import - Hidden on mobile */}
           <button
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
             <FileSpreadsheet size={16}/>
           </button>
 
-          {/* New Expense */}
+          {/* New Expense - Hidden on mobile (see FAB below) */}
           <button
-            className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-bold text-lg"
             onClick={openAdd}
             title="Shpenzim i ri"
           >
@@ -665,6 +665,14 @@ export default function ExpensesPage() {
         </div>
       )}
 
+      {/* Floating Action Button - Mobile only */}
+      <div
+        className="fab sm:hidden"
+        onClick={openAdd}
+        title="Shpenzim i ri"
+      >
+        <Plus size={28}/>
+      </div>
     </div>
   )
 }
