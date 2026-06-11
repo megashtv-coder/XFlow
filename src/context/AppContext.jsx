@@ -32,12 +32,26 @@ function diffSync(table, curr, prevRef, orgId) {
 
   prevRef.current = curr
 
-  if (toUpsert.length)
+  if (toUpsert.length) {
     supabase.from(table).upsert(
       toUpsert.map(d => ({ id: d.id, data: { ...d, orgId: orgId || d.orgId } }))
-    ).then()
-  if (toDelete.length)
-    supabase.from(table).delete().in('id', toDelete.map(d => d.id)).then()
+    ).then(result => {
+      if (result.error) {
+        console.error(`[diffSync] Error upserting ${table}:`, result.error)
+      }
+    }).catch(err => {
+      console.error(`[diffSync] Error upserting ${table}:`, err)
+    })
+  }
+  if (toDelete.length) {
+    supabase.from(table).delete().in('id', toDelete.map(d => d.id)).then(result => {
+      if (result.error) {
+        console.error(`[diffSync] Error deleting from ${table}:`, result.error)
+      }
+    }).catch(err => {
+      console.error(`[diffSync] Error deleting from ${table}:`, err)
+    })
+  }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -252,10 +266,11 @@ export function AppProvider({ children }) {
       fetchAll('transfers'),
       fetchAll('vendors'),
       fetchAll('items'),
+      fetchAll('activities'),
       supabase.from('settings').select('key, value'),
       fetchAll('organizations'),
       fetchAll('users'),
-    ]).then(([inv, cust, exp, pay, tran, vend, itm, sett, orgs, usrs]) => {
+    ]).then(([inv, cust, exp, pay, tran, vend, itm, act, sett, orgs, usrs]) => {
 
       const load = (res, fallback) => {
         const d = res.data?.length ? fromRows(res.data) : fallback
@@ -325,9 +340,32 @@ export function AppProvider({ children }) {
           supabase.from('users').upsert(toSeed.map(u => ({ id: u.id, data: u }))).then()
       }
 
-      // Activities: Keep localStorage-loaded activities (they're synced to Supabase separately)
-      // Initialize prevActivities with current state so future syncs work correctly
-      prevActivities.current = activityLog || []
+      // Activities — merge localStorage + Supabase for cross-device sync
+      {
+        const localActivities = activityLog || []
+        const supabaseActivities = act?.data?.length ? fromRows(act.data) : []
+
+        // Filter Supabase activities by current org
+        const filteredSupabase = currentOrgId
+          ? supabaseActivities.filter(a => a.orgId === currentOrgId)
+          : []
+
+        // Merge: keep all local activities + add from Supabase that aren't local
+        const localIds = new Set(localActivities.map(a => a.id))
+        const newFromSupabase = filteredSupabase.filter(a => !localIds.has(a.id))
+
+        // Combine and sort by timestamp (newest first)
+        const merged = [...localActivities, ...newFromSupabase]
+          .sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime())
+
+        // Update state only if we have new activities from Supabase
+        if (newFromSupabase.length > 0) {
+          setActivityLog(merged)
+          prevActivities.current = merged
+        } else {
+          prevActivities.current = localActivities
+        }
+      }
 
       // MIGRATION: Ensure all records have orgId (critical for data isolation)
       if (supabase) {
