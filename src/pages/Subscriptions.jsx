@@ -194,7 +194,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, ite
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-800 text-sm truncate">{inv.customer}</p>
                     <p className="text-xs font-bold text-blue-600 mt-0.5">{formatDate(inv.subscriptionExpiry)}</p>
-                    <p className="text-xs font-bold text-red-600 mt-0.5">{inv.notifyDate || '—'}</p>
+                    <p className="text-xs font-bold text-red-600 mt-0.5">{formatDate(inv.notifyDate)}</p>
                   </div>
 
                   {/* Col 2: Amount + Product */}
