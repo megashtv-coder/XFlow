@@ -553,54 +553,74 @@ export default function ExpensesPage() {
       {/* Mobile Card View - Hidden on sm+ */}
       {paged.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
-          {paged.map(e => (
-            <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-3">
-              <div className="flex justify-between items-start gap-2">
-                {/* Col 1: Type + Date + Vendor */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <p className="font-bold text-gray-800 text-sm">{e.type}</p>
-                    {e.recurring && (
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400'}`}>
-                        {e.recurringFreq}
-                      </span>
+          {paged.map(e => {
+            const [openDropdown, setOpenDropdown] = useState(null)
+
+            return (
+              <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-3">
+                <div className="flex justify-between items-start gap-2">
+                  {/* Col 1: Type + Date + Vendor */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-bold text-gray-800 text-sm">{e.type}</p>
+                      {e.recurring && (
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400'}`}>
+                          {e.recurringFreq}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">{e.date}</p>
+                    <p className="text-xs text-gray-600 mt-0.5">{e.vendor || '—'}</p>
+                  </div>
+
+                  {/* Col 2: Amount + Account + Partner */}
+                  <div className="text-right">
+                    <p className="font-bold text-red-500 text-sm">- {fmt(e.amount)}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{e.paidFrom || '—'}</p>
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
+                      e.paidBy === 'Enndy' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'
+                    }`}>
+                      {e.paidBy || '—'}
+                    </span>
+                  </div>
+
+                  {/* Col 3: Actions - Dropdown */}
+                  <div className="relative flex-shrink-0">
+                    <button
+                      className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white transition-all"
+                      onClick={() => setOpenDropdown(openDropdown === e.id ? null : e.id)}
+                    >
+                      ⋮
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {openDropdown === e.id && (
+                      <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+                        <button
+                          className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 flex items-center gap-2 border-b"
+                          onClick={() => {
+                            openEdit(e)
+                            setOpenDropdown(null)
+                          }}
+                        >
+                          ✏ Edito
+                        </button>
+                        <button
+                          className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          onClick={() => {
+                            openDelete(e)
+                            setOpenDropdown(null)
+                          }}
+                        >
+                          <Trash2 size={14}/> Fshi
+                        </button>
+                      </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">{e.date}</p>
-                  <p className="text-xs text-gray-600 mt-0.5">{e.vendor || '—'}</p>
-                </div>
-
-                {/* Col 2: Amount + Account + Partner */}
-                <div className="text-right">
-                  <p className="font-bold text-red-500 text-sm">- {fmt(e.amount)}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{e.paidFrom || '—'}</p>
-                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
-                    e.paidBy === 'Enndy' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'
-                  }`}>
-                    {e.paidBy || '—'}
-                  </span>
-                </div>
-
-                {/* Col 3: Actions */}
-                <div className="relative flex-shrink-0 flex gap-1">
-                  <button
-                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
-                    title="Edito"
-                    onClick={() => openEdit(e)}
-                  >
-                    ✏
-                  </button>
-                  <button
-                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all"
-                    title="Fshi"
-                    onClick={() => openDelete(e)}
-                  >
-                    <Trash2 size={16}/>
-                  </button>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 
