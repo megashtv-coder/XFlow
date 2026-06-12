@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, lazy, Suspense, useMemo } from 'react'
 import {
   FileText, Download, Pencil, Trash2, CreditCard,
   MessageCircle, Send, XCircle, X, MessageSquare,
@@ -812,7 +812,7 @@ export default function Invoices() {
 
   const today = new Date().toISOString().slice(0, 10)
 
-  const filtered = invoices.filter(i => {
+  const filtered = useMemo(() => invoices.filter(i => {
     // Status filter - special handling for 'overdue'
     if (statusFilter !== 'all') {
       if (statusFilter === 'overdue') {
@@ -834,7 +834,7 @@ export default function Invoices() {
       if (!matchCustomer && !matchId && !matchReferent) return false
     }
     return true
-  })
+  }), [invoices, statusFilter, typeFilter, search, getCustomerType])
 
   const toggleSort = field => {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -842,14 +842,14 @@ export default function Invoices() {
     setPaginationPage(1)
   }
 
-  const sorted = [...filtered].sort((a, b) => {
+  const sorted = useMemo(() => [...filtered].sort((a, b) => {
     let cmp = 0
     if      (sortField === 'id')       cmp = a.id.localeCompare(b.id)
     else if (sortField === 'customer') cmp = a.customer.localeCompare(b.customer)
     else if (sortField === 'amount')   cmp = a.amount - b.amount
     else if (sortField === 'status')   cmp = (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9)
     return sortDir === 'asc' ? cmp : -cmp
-  })
+  }), [filtered, sortField, sortDir])
 
   const getPhone = name => {
     const c = customers.find(c => c.name === name)
