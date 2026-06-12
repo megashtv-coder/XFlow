@@ -343,11 +343,11 @@ export default function ExpensesPage() {
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => {
     let cmp = 0
-    if      (sortField === 'date')   cmp = a.date.localeCompare(b.date)
+    if      (sortField === 'date')   cmp = (a.date||'').localeCompare(b.date||'')
     else if (sortField === 'type')   cmp = (a.type||'').localeCompare(b.type||'')
     else if (sortField === 'vendor') cmp = (a.vendor||'').localeCompare(b.vendor||'')
     else if (sortField === 'paidBy') cmp = (a.paidBy||'').localeCompare(b.paidBy||'')
-    else if (sortField === 'amount') cmp = a.amount - b.amount
+    else if (sortField === 'amount') cmp = (a.amount || 0) - (b.amount || 0)
     return sortDir === 'asc' ? cmp : -cmp
   }), [filtered, sortField, sortDir])
 
