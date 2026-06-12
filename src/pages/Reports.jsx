@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
+import { formatDate } from '../utils/dateFormat'
 
 /* ─── konstante ─── */
 const MONTHS_SQ  = ['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','Nën','Dhj']
@@ -346,7 +347,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
                       ? <p className="text-xs text-gray-400">Asnjë pagesë në këtë periudhë.</p>
                       : d.payItems.map(p => (
                           <div key={p.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span className="truncate max-w-[200px]">{p.customer} · {p.date}</span>
+                            <span className="truncate max-w-[200px]">{p.customer} · {formatDate(p.date)}</span>
                             <span className="font-semibold text-emerald-600 flex-shrink-0 ml-2">+{fmt(p.net)}</span>
                           </div>
                         ))
@@ -373,7 +374,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
                       ? <p className="text-xs text-gray-400">Asnjë shpenzim në këtë periudhë.</p>
                       : d.expItems.map(e => (
                           <div key={e.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span className="truncate max-w-[200px]">{e.type} · {e.date}</span>
+                            <span className="truncate max-w-[200px]">{e.type} · {formatDate(e.date)}</span>
                             <span className="font-semibold text-red-500 flex-shrink-0 ml-2">-{fmt(e.amount)}</span>
                           </div>
                         ))
@@ -390,13 +391,13 @@ function BarazimiTab({ payments, expenses, fmt }) {
                   </p>
                   {d.trfOut.map(t => (
                     <div key={t.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span className="truncate max-w-[200px]">→ {t.to} · {t.date}{t.note ? ' · '+t.note : ''}</span>
+                      <span className="truncate max-w-[200px]">→ {t.to} · {formatDate(t.date)}{t.note ? ' · '+t.note : ''}</span>
                       <span className="font-semibold text-orange-500 flex-shrink-0 ml-2">-{fmt(t.amount)}</span>
                     </div>
                   ))}
                   {d.trfIn.map(t => (
                     <div key={t.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                      <span className="truncate max-w-[200px]">← {t.from} · {t.date}{t.note ? ' · '+t.note : ''}</span>
+                      <span className="truncate max-w-[200px]">← {t.from} · {formatDate(t.date)}{t.note ? ' · '+t.note : ''}</span>
                       <span className="font-semibold text-blue-500 flex-shrink-0 ml-2">+{fmt(t.amount)}</span>
                     </div>
                   ))}
@@ -532,7 +533,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
                     <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{t.from} → {t.to}</span>
                     {t.note && <span className="text-xs text-gray-400 ml-2">· {t.note}</span>}
                   </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0">{t.date}</span>
+                  <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(t.date)}</span>
                   <span className="text-sm font-black text-blue-600 flex-shrink-0">{fmt(t.amount)}</span>
                   <button onClick={() => deleteTrf(t.id)}
                     className="text-gray-300 hover:text-red-400 transition-colors text-xl leading-none flex-shrink-0 ml-1"

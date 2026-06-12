@@ -434,7 +434,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-              <div><p className="text-gray-400 mb-0.5">Data</p><p className="font-semibold text-gray-700">{linkedPayment.date}</p></div>
+              <div><p className="text-gray-400 mb-0.5">Data</p><p className="font-semibold text-gray-700">{formatDate(linkedPayment.date)}</p></div>
               <div><p className="text-gray-400 mb-0.5">Shuma</p><p className="font-bold text-emerald-600">{fmt(linkedPayment.amount)}</p></div>
               <div><p className="text-gray-400 mb-0.5">Metoda</p><p className="font-semibold text-gray-700">{linkedPayment.method}</p></div>
               <div>
@@ -468,7 +468,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                   <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2">
                     <div className="flex items-center justify-between mb-0.5">
                       <span className="text-xs font-semibold text-gray-700">{c.author}</span>
-                      <span className="text-[10px] text-gray-400">{c.date}</span>
+                      <span className="text-[10px] text-gray-400">{formatDate(c.date)}</span>
                     </div>
                     <p className="text-xs text-gray-600 leading-relaxed">{c.text}</p>
                   </div>
