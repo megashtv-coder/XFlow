@@ -35,7 +35,7 @@ function fmtTime(ts) {
    User Modal
 ══════════════════════════════════════════════════════════ */
 function UserModal({ user, onClose }) {
-  const { setUsers, showToast, currentUser } = useApp()
+  const { setUsers, showToast, currentUser, currentOrgId } = useApp()
   const isEdit = !!user
 
   const [form, setForm] = useState({
@@ -56,6 +56,7 @@ function UserModal({ user, onClose }) {
     if (!form.password.trim()) { setErr('Fjalëkalimi është i detyrueshëm.'); return }
 
     const payload = {
+      ...(isEdit ? user : {}),
       id:        isEdit ? user.id : `USR-${Date.now()}`,
       name:      form.name.trim(),
       username:  form.username.trim().toLowerCase(),
@@ -64,6 +65,7 @@ function UserModal({ user, onClose }) {
       active:    form.active,
       color:     form.color,
       createdAt: isEdit ? user.createdAt : new Date().toISOString().slice(0, 10),
+      orgId:     isEdit ? user.orgId : currentOrgId,
     }
 
     if (isEdit) {
