@@ -223,11 +223,18 @@ export default function Tasks() {
         .eq('orgId', currentOrg.id)
         .order('reminderDate', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
       setTasks(data || [])
     } catch (e) {
       console.error('Error loading tasks:', e)
-      showToast?.('Error loading tasks')
+      // Fall back to localStorage
+      try {
+        const saved = localStorage.getItem('xflow_tasks')
+        if (saved) setTasks(JSON.parse(saved))
+      } catch {}
     } finally {
       setLoading(false)
     }
@@ -244,22 +251,41 @@ export default function Tasks() {
 
   const syncTaskToSupabase = async (task) => {
     try {
-      if (!currentOrg?.id) return
+      if (!currentOrg?.id) {
+        console.error('No org ID')
+        return false
+      }
 
       const taskData = {
         ...task,
         orgId: currentOrg.id,
         updatedAt: new Date().toISOString(),
+        createdAt: task.createdAt || new Date().toISOString(),
       }
 
       const { error } = await supabase
         .from('tasks')
         .upsert(taskData, { onConflict: 'id' })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase upsert error:', error)
+        throw error
+      }
       return true
     } catch (e) {
       console.error('Error syncing task:', e)
+      // Still save locally as fallback
+      try {
+        const saved = localStorage.getItem('xflow_tasks') || '[]'
+        const local = JSON.parse(saved)
+        const idx = local.findIndex(t => t.id === task.id)
+        if (idx >= 0) {
+          local[idx] = task
+        } else {
+          local.push(task)
+        }
+        localStorage.setItem('xflow_tasks', JSON.stringify(local))
+      } catch {}
       return false
     }
   }
