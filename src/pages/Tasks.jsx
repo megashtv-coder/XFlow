@@ -12,6 +12,19 @@ function TaskModal({ task, onClose, onSave, customers }) {
     completed: false,
   })
 
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
+
+  const filteredCustomers = (customers || []).filter(c =>
+    c.name.toLowerCase().includes(customerSearch.toLowerCase())
+  )
+
+  const handleSelectCustomer = (customerName) => {
+    setFormData({ ...formData, customer: customerName })
+    setCustomerSearch('')
+    setShowCustomerDropdown(false)
+  }
+
   const handleSubmit = () => {
     if (!formData.customer.trim() || !formData.description.trim()) {
       alert('Plotëso customer dhe përshkrim!')
@@ -29,18 +42,37 @@ function TaskModal({ task, onClose, onSave, customers }) {
         </div>
 
         <div className="p-6 space-y-4">
-          <div>
+          <div className="relative">
             <label className="block text-xs font-bold text-gray-600 mb-2">Emri i Klientit</label>
-            <select
-              value={formData.customer}
-              onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
+            <input
+              type="text"
+              placeholder="Kërko klient..."
+              value={customerSearch || formData.customer}
+              onChange={(e) => {
+                setCustomerSearch(e.target.value)
+                setShowCustomerDropdown(true)
+              }}
+              onFocus={() => setShowCustomerDropdown(true)}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-            >
-              <option value="">-- Zgjidh klient --</option>
-              {customers && customers.map(c => (
-                <option key={c.id || c.name} value={c.name}>{c.name}</option>
-              ))}
-            </select>
+            />
+
+            {showCustomerDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                {filteredCustomers.length === 0 ? (
+                  <div className="px-3 py-2 text-xs text-gray-400">Nuk ka klientë</div>
+                ) : (
+                  filteredCustomers.map((c, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelectCustomer(c.name)}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                    >
+                      {c.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           <div>
