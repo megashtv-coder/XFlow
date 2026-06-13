@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { Plus, Trash2, Pencil, X, Calendar, User, CheckCircle2, Circle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
-import { EmptyState } from '../components/UI'
 
 function TaskModal({ task, onClose, onSave, customers }) {
   const [formData, setFormData] = useState(task || {
@@ -30,7 +29,6 @@ function TaskModal({ task, onClose, onSave, customers }) {
         </div>
 
         <div className="p-6 space-y-4">
-          {/* Customer dropdown */}
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-2">Emri i Klientit</label>
             <select
@@ -39,13 +37,12 @@ function TaskModal({ task, onClose, onSave, customers }) {
               className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               <option value="">-- Zgjidh klient --</option>
-              {customers.map(c => (
-                <option key={c.id} value={c.name}>{c.name}</option>
+              {customers && customers.map(c => (
+                <option key={c.id || c.name} value={c.name}>{c.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Reminder date */}
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-2">Data e Kujtesës</label>
             <input
@@ -56,7 +53,6 @@ function TaskModal({ task, onClose, onSave, customers }) {
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-2">Përshkrimi i Punës</label>
             <textarea
@@ -68,7 +64,6 @@ function TaskModal({ task, onClose, onSave, customers }) {
             />
           </div>
 
-          {/* Save button */}
           <div className="flex gap-2 pt-4">
             <button
               onClick={handleSubmit}
@@ -90,11 +85,9 @@ function TaskModal({ task, onClose, onSave, customers }) {
 }
 
 function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
-  const customer = customers.find(c => c.name === task.customer)
   const today = new Date().toISOString().slice(0, 10)
   const isOverdue = task.reminderDate < today && !task.completed
   const isToday = task.reminderDate === today
-  const isDue = isOverdue || isToday
 
   return (
     <div className={`p-4 rounded-lg border transition-all ${
@@ -110,6 +103,7 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
         <button
           onClick={() => onToggle(task.id)}
           className="mt-1 flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors"
+          title="Mark complete"
         >
           {task.completed ? (
             <CheckCircle2 size={18} className="text-emerald-500" />
@@ -120,13 +114,13 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-2">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-1.5 mb-1">
-                <User size={14} className="text-gray-400" />
+                <User size={14} className="text-gray-400 flex-shrink-0" />
                 <p className="font-bold text-gray-800 text-sm">{task.customer}</p>
               </div>
               <div className="flex items-center gap-1.5">
-                <Calendar size={14} className={`${
+                <Calendar size={14} className={`flex-shrink-0 ${
                   isOverdue ? 'text-red-500' : isToday ? 'text-orange-500' : 'text-gray-400'
                 }`} />
                 <p className={`text-xs font-semibold ${
@@ -167,16 +161,12 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
 }
 
 export default function Tasks() {
-  const appContext = useApp()
-  const { customers = [], showToast, logActivity } = appContext || {}
-
-  if (!appContext) {
-    return <div className="flex items-center justify-center h-full text-gray-500">Loading...</div>
-  }
+  const { customers = [], showToast, logActivity } = useApp() || {}
 
   const [tasks, setTasks] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem('xflow_tasks') || '[]')
+      const saved = localStorage.getItem('xflow_tasks')
+      return saved ? JSON.parse(saved) : []
     } catch (e) {
       console.error('Error loading tasks:', e)
       return []
@@ -187,10 +177,13 @@ export default function Tasks() {
   const [editingTask, setEditingTask] = useState(null)
   const [filterCompleted, setFilterCompleted] = useState(false)
 
-  // Save to localStorage
   const saveTasks = (newTasks) => {
     setTasks(newTasks)
-    localStorage.setItem('xflow_tasks', JSON.stringify(newTasks))
+    try {
+      localStorage.setItem('xflow_tasks', JSON.stringify(newTasks))
+    } catch (e) {
+      console.error('Error saving tasks:', e)
+    }
   }
 
   const handleAddTask = () => {
@@ -204,26 +197,30 @@ export default function Tasks() {
   }
 
   const handleSaveTask = (formData) => {
-    if (editingTask) {
-      const updated = tasks.map(t => t.id === editingTask.id ? formData : t)
-      saveTasks(updated)
-      logActivity(`Ndrysho detyrën: ${formData.customer} — ${formData.description.slice(0, 50)}`, 'Detyrat')
-      showToast('Detyra u ndryshua ✓')
-    } else {
-      saveTasks([...tasks, formData])
-      logActivity(`Krijo detyrë: ${formData.customer} — ${formData.description.slice(0, 50)}`, 'Detyrat')
-      showToast('Detyra u krijua ✓')
+    try {
+      if (editingTask) {
+        const updated = tasks.map(t => t.id === editingTask.id ? formData : t)
+        saveTasks(updated)
+        if (logActivity) logActivity(`Ndrysho detyrën: ${formData.customer}`, 'Detyrat')
+        if (showToast) showToast('Detyra u ndryshua ✓')
+      } else {
+        saveTasks([...tasks, formData])
+        if (logActivity) logActivity(`Krijo detyrë: ${formData.customer}`, 'Detyrat')
+        if (showToast) showToast('Detyra u krijua ✓')
+      }
+      setShowModal(false)
+    } catch (e) {
+      console.error('Error saving task:', e)
     }
-    setShowModal(false)
   }
 
   const handleDeleteTask = (taskId) => {
     const task = tasks.find(t => t.id === taskId)
-    if (confirm(`Fshi detyrën për ${task.customer}?`)) {
+    if (task && confirm(`Fshi detyrën për ${task.customer}?`)) {
       const updated = tasks.filter(t => t.id !== taskId)
       saveTasks(updated)
-      logActivity(`Fshi detyrën: ${task.customer}`, 'Detyrat')
-      showToast('Detyra u fshi')
+      if (logActivity) logActivity(`Fshi detyrën: ${task.customer}`, 'Detyrat')
+      if (showToast) showToast('Detyra u fshi')
     }
   }
 
@@ -232,14 +229,12 @@ export default function Tasks() {
     saveTasks(updated)
   }
 
-  // Filter tasks
   const filteredTasks = useMemo(() => {
     let result = tasks
     if (filterCompleted) {
       result = result.filter(t => !t.completed)
     }
     return result.sort((a, b) => {
-      // Overdue first, then today, then future
       const today = new Date().toISOString().slice(0, 10)
       const aIsOverdue = a.reminderDate < today && !a.completed
       const bIsOverdue = b.reminderDate < today && !b.completed
@@ -250,28 +245,26 @@ export default function Tasks() {
       if (!aIsOverdue && bIsOverdue) return 1
       if (aIsToday && !bIsToday) return -1
       if (!aIsToday && bIsToday) return 1
-      return a.reminderDate.localeCompare(b.reminderDate)
+      return new Date(a.reminderDate).getTime() - new Date(b.reminderDate).getTime()
     })
   }, [tasks, filterCompleted])
 
   return (
     <div className="h-full flex flex-col overflow-hidden bg-gray-50">
-      {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200 bg-white flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Detyrat</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{tasks.length} detyra totale</p>
+          <p className="text-xs text-gray-500 mt-0.5">{tasks.length} detyra</p>
         </div>
         <button
           onClick={handleAddTask}
           className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors"
         >
-          <Plus size={16} /> Detyrë e Re
+          <Plus size={16} /> E Re
         </button>
       </div>
 
-      {/* Filter */}
-      <div className="px-4 sm:px-6 py-3 bg-white border-b border-gray-100 flex items-center gap-3">
+      <div className="px-4 sm:px-6 py-3 bg-white border-b border-gray-100">
         <button
           onClick={() => setFilterCompleted(!filterCompleted)}
           className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
@@ -280,18 +273,26 @@ export default function Tasks() {
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          {filterCompleted ? '✓ Përlote Aktive' : 'Të Gjitha'}
+          {filterCompleted ? '✓ Aktive' : 'Të Gjitha'}
         </button>
       </div>
 
-      {/* Tasks list */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         {filteredTasks.length === 0 ? (
-          <EmptyState
-            title="Nuk ka detyra"
-            description={filterCompleted ? 'Të gjitha detyrat janë kompletuar! 🎉' : 'Krijo detyrën e parë tënde'}
-            action={!filterCompleted ? { label: 'Krijo Detyrë', onClick: handleAddTask } : null}
-          />
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <p className="text-gray-400 font-semibold mb-2">Nuk ka detyra</p>
+            <p className="text-sm text-gray-300 mb-4">
+              {filterCompleted ? 'Të gjitha detyrat janë kompletuar!' : 'Krijo detyrën e parë tënde'}
+            </p>
+            {!filterCompleted && (
+              <button
+                onClick={handleAddTask}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg transition-colors"
+              >
+                Krijo Detyrë
+              </button>
+            )}
+          </div>
         ) : (
           <div className="grid gap-3">
             {filteredTasks.map(task => (
@@ -308,7 +309,6 @@ export default function Tasks() {
         )}
       </div>
 
-      {/* Modal */}
       {showModal && (
         <TaskModal
           task={editingTask}
