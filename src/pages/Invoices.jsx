@@ -1472,7 +1472,7 @@ export default function Invoices() {
                         className={`hover:bg-red-50/30 transition-colors group ${selected.has(inv.id) ? 'bg-red-100' : ''}`}
                       >
                         <td className="table-td text-gray-400 hidden sm:table-cell">{formatDate(inv.date)}</td>
-                        <td className="table-td font-bold text-red-500 text-sm hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>{inv.id}</td>
+                        <td className="table-td font-bold text-black dark:text-white text-sm hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>{inv.id}</td>
                         <td className="table-td font-medium text-gray-800 cursor-pointer" onClick={() => setPreview(inv.id)}>
                           <div className="flex items-center gap-1.5">
                             {inv.customer}
