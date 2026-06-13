@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Plus, Trash2, Pencil, X, Calendar, User, CheckCircle2, Circle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
+import { supabase } from '../lib/supabase'
 
 function TaskModal({ task, onClose, onSave, customers }) {
   const [formData, setFormData] = useState(task || {
@@ -193,28 +194,88 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
 }
 
 export default function Tasks() {
-  const { customers = [], showToast, logActivity } = useApp() || {}
+  const appContext = useApp() || {}
+  const { customers = [], showToast, logActivity, currentOrg } = appContext
 
-  const [tasks, setTasks] = useState(() => {
-    try {
-      const saved = localStorage.getItem('xflow_tasks')
-      return saved ? JSON.parse(saved) : []
-    } catch (e) {
-      console.error('Error loading tasks:', e)
-      return []
-    }
-  })
-
+  const [tasks, setTasks] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [filterCompleted, setFilterCompleted] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  const saveTasks = (newTasks) => {
+  // Load tasks from Supabase on mount
+  useEffect(() => {
+    loadTasks()
+  }, [currentOrg?.id])
+
+  const loadTasks = async () => {
+    try {
+      setLoading(true)
+      if (!currentOrg?.id) {
+        setTasks([])
+        setLoading(false)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('orgId', currentOrg.id)
+        .order('reminderDate', { ascending: true })
+
+      if (error) throw error
+      setTasks(data || [])
+    } catch (e) {
+      console.error('Error loading tasks:', e)
+      showToast?.('Error loading tasks')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const saveTasks = async (newTasks) => {
     setTasks(newTasks)
     try {
       localStorage.setItem('xflow_tasks', JSON.stringify(newTasks))
     } catch (e) {
-      console.error('Error saving tasks:', e)
+      console.error('Error saving to localStorage:', e)
+    }
+  }
+
+  const syncTaskToSupabase = async (task) => {
+    try {
+      if (!currentOrg?.id) return
+
+      const taskData = {
+        ...task,
+        orgId: currentOrg.id,
+        updatedAt: new Date().toISOString(),
+      }
+
+      const { error } = await supabase
+        .from('tasks')
+        .upsert(taskData, { onConflict: 'id' })
+
+      if (error) throw error
+      return true
+    } catch (e) {
+      console.error('Error syncing task:', e)
+      return false
+    }
+  }
+
+  const deleteTaskFromSupabase = async (taskId) => {
+    try {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', taskId)
+
+      if (error) throw error
+      return true
+    } catch (e) {
+      console.error('Error deleting task:', e)
+      return false
     }
   }
 
@@ -228,17 +289,22 @@ export default function Tasks() {
     setShowModal(true)
   }
 
-  const handleSaveTask = (formData) => {
+  const handleSaveTask = async (formData) => {
     try {
-      if (editingTask) {
-        const updated = tasks.map(t => t.id === editingTask.id ? formData : t)
-        saveTasks(updated)
-        if (logActivity) logActivity(`Ndrysho detyrën: ${formData.customer}`, 'Detyrat')
-        if (showToast) showToast('Detyra u ndryshua ✓')
+      const synced = await syncTaskToSupabase(formData)
+      if (synced) {
+        if (editingTask) {
+          const updated = tasks.map(t => t.id === editingTask.id ? formData : t)
+          setTasks(updated)
+          if (logActivity) logActivity(`Ndrysho detyrën: ${formData.customer}`, 'Detyrat')
+          if (showToast) showToast('Detyra u ndryshua ✓')
+        } else {
+          setTasks([...tasks, formData])
+          if (logActivity) logActivity(`Krijo detyrë: ${formData.customer}`, 'Detyrat')
+          if (showToast) showToast('Detyra u krijua ✓')
+        }
       } else {
-        saveTasks([...tasks, formData])
-        if (logActivity) logActivity(`Krijo detyrë: ${formData.customer}`, 'Detyrat')
-        if (showToast) showToast('Detyra u krijua ✓')
+        if (showToast) showToast('Error saving task')
       }
       setShowModal(false)
     } catch (e) {
@@ -246,19 +312,31 @@ export default function Tasks() {
     }
   }
 
-  const handleDeleteTask = (taskId) => {
+  const handleDeleteTask = async (taskId) => {
     const task = tasks.find(t => t.id === taskId)
     if (task && confirm(`Fshi detyrën për ${task.customer}?`)) {
-      const updated = tasks.filter(t => t.id !== taskId)
-      saveTasks(updated)
-      if (logActivity) logActivity(`Fshi detyrën: ${task.customer}`, 'Detyrat')
-      if (showToast) showToast('Detyra u fshi')
+      const deleted = await deleteTaskFromSupabase(taskId)
+      if (deleted) {
+        const updated = tasks.filter(t => t.id !== taskId)
+        setTasks(updated)
+        if (logActivity) logActivity(`Fshi detyrën: ${task.customer}`, 'Detyrat')
+        if (showToast) showToast('Detyra u fshi')
+      } else {
+        if (showToast) showToast('Error deleting task')
+      }
     }
   }
 
-  const handleToggleTask = (taskId) => {
-    const updated = tasks.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t)
-    saveTasks(updated)
+  const handleToggleTask = async (taskId) => {
+    const task = tasks.find(t => t.id === taskId)
+    if (!task) return
+
+    const updatedTask = { ...task, completed: !task.completed }
+    const synced = await syncTaskToSupabase(updatedTask)
+    if (synced) {
+      const updated = tasks.map(t => t.id === taskId ? updatedTask : t)
+      setTasks(updated)
+    }
   }
 
   const filteredTasks = useMemo(() => {
@@ -310,7 +388,11 @@ export default function Tasks() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <p>Loading tasks...</p>
+          </div>
+        ) : filteredTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <p className="text-gray-400 font-semibold mb-2">Nuk ka detyra</p>
             <p className="text-sm text-gray-300 mb-4">

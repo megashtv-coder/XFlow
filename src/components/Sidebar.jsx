@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, ChevronRight, X, Bell,
@@ -5,6 +6,7 @@ import {
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
+import { supabase } from '../lib/supabase'
 
 export default function Sidebar() {
   const {
@@ -14,20 +16,36 @@ export default function Sidebar() {
   } = useApp()
 
   const { canAccessSuppliers } = useFeatures()
+  const [tasks, setTasks] = useState([])
 
-  const today          = new Date().toISOString().slice(0, 10)
+  const today = new Date().toISOString().slice(0, 10)
   const subNotifyCount = invoices.filter(i => i.notifyDate && i.notifyDate <= today).length
 
-  // Get tasks from localStorage
-  const getTasks = () => {
-    try {
-      const saved = localStorage.getItem('xflow_tasks')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
+  // Load tasks from Supabase
+  useEffect(() => {
+    if (!currentOrg?.id) {
+      setTasks([])
+      return
     }
-  }
-  const tasks = getTasks()
+
+    const loadTasks = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('orgId', currentOrg.id)
+
+        if (!error) {
+          setTasks(data || [])
+        }
+      } catch (e) {
+        console.error('Error loading tasks for badge:', e)
+      }
+    }
+
+    loadTasks()
+  }, [currentOrg?.id])
+
   const tasksDueBadge = tasks.filter(t => !t.completed && (t.reminderDate < today || t.reminderDate === today)).length
 
   const NAV = [
