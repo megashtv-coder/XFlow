@@ -245,27 +245,40 @@ export default function Tasks() {
 
   const syncTaskToSupabase = async (task) => {
     try {
-      // Only send fields that match the table schema
       const taskData = {
         id: task.id,
         customer: task.customer,
         description: task.description,
-        reminderDate: task.reminderDate,
+        reminderdate: task.reminderDate,
         completed: task.completed || false,
-        orgId: currentOrg?.id || 'default',
       }
 
-      console.log('Upserting task:', taskData)
+      console.log('Saving task:', taskData)
 
-      const { data, error } = await supabase
+      // Try to update first
+      const { data: existing, error: checkError } = await supabase
         .from('tasks')
-        .upsert(taskData)
+        .select('id')
+        .eq('id', task.id)
+        .single()
 
-      if (error) {
-        console.error('Supabase upsert error:', error.message, error.details)
-        throw error
+      let result
+      if (existing) {
+        // Update existing
+        const { error: updateError } = await supabase
+          .from('tasks')
+          .update(taskData)
+          .eq('id', task.id)
+        if (updateError) throw updateError
+        console.log('Task updated')
+      } else {
+        // Insert new
+        const { error: insertError } = await supabase
+          .from('tasks')
+          .insert([taskData])
+        if (insertError) throw insertError
+        console.log('Task inserted')
       }
-      console.log('Task saved to Supabase:', data)
       return true
     } catch (e) {
       console.error('Error syncing task:', e)
