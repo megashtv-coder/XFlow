@@ -77,7 +77,7 @@ export default function Sidebar() {
         lg:translate-x-0 lg:static lg:z-auto
         ${w}
       `}>
-        {/* Logo */}
+        {/* Logo + Collapse Button */}
         <div className={`flex items-center border-b border-gray-100 dark:border-gray-800 h-12 sm:h-14 flex-shrink-0 ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2 sm:gap-3 px-3 sm:px-4'}`}>
           <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center text-white flex-shrink-0 shadow-sm">
             <TrendingUp size={14} strokeWidth={2.5} />
@@ -95,6 +95,17 @@ export default function Sidebar() {
               <X size={16} />
             </button>
           )}
+          {/* Collapse toggle — visible only on desktop */}
+          <button
+            className="hidden lg:flex items-center justify-center p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+            onClick={() => setSidebarCollapsed(v => !v)}
+            title={sidebarCollapsed ? 'Zgjero menunë' : 'Minimizo menunë'}
+          >
+            {sidebarCollapsed
+              ? <ChevronRight size={16} />
+              : <ChevronLeft size={16} />
+            }
+          </button>
         </div>
 
         {/* Navigation */}
@@ -186,18 +197,6 @@ export default function Sidebar() {
             {!sidebarCollapsed && <span className="font-medium">Dilni</span>}
           </button>
         </div>
-
-        {/* Collapse toggle — visible only on desktop */}
-        <button
-          className="hidden lg:flex items-center justify-center h-10 border-t border-gray-100 dark:border-gray-800 text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-red-500 transition-colors flex-shrink-0"
-          onClick={() => setSidebarCollapsed(v => !v)}
-          title={sidebarCollapsed ? 'Zgjero menunë' : 'Minimizo menunë'}
-        >
-          {sidebarCollapsed
-            ? <ChevronRight size={16} />
-            : <ChevronLeft size={16} />
-          }
-        </button>
       </aside>
     </>
   )
