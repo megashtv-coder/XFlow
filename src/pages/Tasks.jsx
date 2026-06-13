@@ -167,11 +167,18 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
 }
 
 export default function Tasks() {
-  const { customers, showToast, logActivity, currentUser, currentOrg } = useApp()
+  const appContext = useApp()
+  const { customers = [], showToast, logActivity } = appContext || {}
+
+  if (!appContext) {
+    return <div className="flex items-center justify-center h-full text-gray-500">Loading...</div>
+  }
+
   const [tasks, setTasks] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('xflow_tasks') || '[]')
-    } catch {
+    } catch (e) {
+      console.error('Error loading tasks:', e)
       return []
     }
   })
