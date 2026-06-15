@@ -426,21 +426,17 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         </div>
       )}
 
-      {/* Depozituar tek — dropdown - Only for organizations with feature enabled */}
+      {/* Depozituar tek — slide select (cards) - Only for organizations with feature enabled */}
       {canUseDepositAccounts && (
         <FormGroup label="Depozituar tek *">
-          <select
-            className="form-control"
+          <SlideSelect
             value={form.depositedTo}
-            onChange={e => set('depositedTo', e.target.value)}
-          >
-            <option value="">— Zgjidh ku depozitohet —</option>
-            {depositedToOptions.map(opt => (
-              <option key={opt} value={opt}>
-                👤 {opt}
-              </option>
-            ))}
-          </select>
+            onChange={v => set('depositedTo', v)}
+            options={depositedToOptions}
+          />
+          {form.depositedTo && (
+            <p className="text-xs text-red-500 mt-1.5 font-medium">✓ {form.depositedTo}</p>
+          )}
         </FormGroup>
       )}
 
