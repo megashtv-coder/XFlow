@@ -1460,7 +1460,7 @@ export default function Invoices() {
                 <tbody>
                   {paged.map(inv => {
                     const rawPhone = cleanPhone(getPhone(inv.customer))
-                    const canContact = (inv.status === 'pending' || inv.status === 'overdue') && rawPhone
+                    const canContact = (inv.status === 'pending' || inv.status === 'overdue' || inv.status === 'paid') && rawPhone
                     const isOverdue  = inv.status === 'overdue' ||
                       (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
                     const msg = canContact ? encodeURIComponent(buildReminderMsg(inv)) : ''
