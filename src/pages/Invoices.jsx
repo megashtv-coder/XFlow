@@ -907,7 +907,15 @@ export default function Invoices() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
-              {search && <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500"><X size={11}/></button>}
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="text-gray-400 hover:text-gray-600 flex-shrink-0 cursor-pointer p-0.5 rounded hover:bg-gray-100 transition-colors"
+                  title="Fshi kërkimin"
+                >
+                  <X size={14}/>
+                </button>
+              )}
             </div>
           </div>
 
