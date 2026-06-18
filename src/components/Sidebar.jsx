@@ -25,9 +25,9 @@ export default function Sidebar() {
     i.status === 'pending' || i.status === 'overdue' || i.status === 'partial'
   ).length || null
 
-  // Subscriptions badge: invoices with notifyDate today or earlier
+  // Subscriptions badge: invoices with notifyDate exactly today
   const subNotifyCount = invoices.filter(i =>
-    i.notifyDate && i.notifyDate <= today
+    i.notifyDate && i.notifyDate === today
   ).length || null
 
   // Load tasks from Supabase
