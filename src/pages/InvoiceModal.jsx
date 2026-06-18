@@ -474,6 +474,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
   const [discount,       setDiscount]       = useState(initialData?.discount || { value: '', type: 'fixed' })
   const [addingCustomer, setAddingCustomer] = useState(null)   // null | { name }
   const [error,          setError]          = useState('')
+  const [isSaving,       setIsSaving]       = useState(false)
 
   const today = new Date().toISOString().slice(0, 10)
 
@@ -564,6 +565,8 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     if (!form.customer)     { setError('Zgjidh klientin.'); return }
     if (!validItems.length) { setError('Shto të paktën një artikull me çmim.'); return }
 
+    setIsSaving(true)
+
     const invoiceItems = validItems.map(it => ({
       desc:  it.desc.trim() || 'Shërbim',
       note:  it.note?.trim() || '',
@@ -587,28 +590,34 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       discount:           discVal > 0 ? { value: discVal, type: discount.type } : null,
     }
 
-    if (isEdit) {
-      setInvoices(prev => prev.map(i => i.id === initialData.id ? { ...i, ...payload } : i))
-      logActivity(`Përditësoi faturën ${initialData.id} — ${form.customer} €${total}`, 'Faturat')
-      showToast('Fatura u përditësua! ✓')
-    } else {
-      const newId = generateNextInvoiceId()
-      setInvoices(p => [{
-        ...payload,
-        id:       newId,
-        comments: [],
-      }, ...p])
-      logActivity(`Krijoi faturën ${newId} — ${form.customer} €${total}`, 'Faturat')
-      showToast('Fatura u krijua me sukses! ✓')
-    }
-    // Navigate back to invoices list after save
+    // Close immediately for fast feedback
     if (isFormPage && navigate) {
+      showToast(isEdit ? 'Fatura u përditësua! ✓' : 'Fatura u krijua me sukses! ✓')
       navigate('invoices')
     } else if (onClose) {
+      showToast(isEdit ? 'Fatura u përditësua! ✓' : 'Fatura u krijua me sukses! ✓')
       onClose()
     } else {
+      showToast(isEdit ? 'Fatura u përditësua! ✓' : 'Fatura u krijua me sukses! ✓')
       closeModal()
     }
+
+    // Update state in background
+    setTimeout(() => {
+      if (isEdit) {
+        setInvoices(prev => prev.map(i => i.id === initialData.id ? { ...i, ...payload } : i))
+        logActivity(`Përditësoi faturën ${initialData.id} — ${form.customer} €${total}`, 'Faturat')
+      } else {
+        const newId = generateNextInvoiceId()
+        setInvoices(p => [{
+          ...payload,
+          id:       newId,
+          comments: [],
+        }, ...p])
+        logActivity(`Krijoi faturën ${newId} — ${form.customer} €${total}`, 'Faturat')
+      }
+      setIsSaving(false)
+    }, 0)
   }
 
   const formContent = (
@@ -852,9 +861,16 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       <div className="space-y-4">
         {formContent}
         <div className="flex gap-2 pt-4 border-t border-gray-200">
-          <button className="btn btn-outline flex-1" onClick={handleCancel}>Anulo</button>
-          <button className="btn btn-primary flex-1" onClick={save}>
-            {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
+          <button className="btn btn-outline flex-1" onClick={handleCancel} disabled={isSaving}>Anulo</button>
+          <button className={`btn btn-primary flex-1 ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2" />
+                {isEdit ? 'Duke ruajtur...' : 'Duke krijuar...'}
+              </>
+            ) : (
+              isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'
+            )}
           </button>
         </div>
       </div>
@@ -872,9 +888,16 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       }
       onClose={closeModal}
       footer={<>
-        <button className="btn btn-outline" onClick={closeModal}>Anulo</button>
-        <button className="btn btn-primary" onClick={save}>
-          {isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}
+        <button className="btn btn-outline" onClick={closeModal} disabled={isSaving}>Anulo</button>
+        <button className={`btn btn-primary ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2" />
+              {isEdit ? 'Duke ruajtur...' : 'Duke krijuar...'}
+            </>
+          ) : (
+            isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'
+          )}
         </button>
       </>}
     >
