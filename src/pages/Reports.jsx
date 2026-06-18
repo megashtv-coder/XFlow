@@ -70,9 +70,9 @@ function FinanciareTab({ invoices, expenses, fmt }) {
   const statusColors = { paid:'#059669', pending:'#d97706', overdue:'#dc2626', draft:'#9ca3af' }
 
   const KPIS = [
-    { label:'Të ardhura totale', val: fmt(paid + 42000),    icon: TrendingUp,   bg:'#eff6ff', color:'#2563eb' },
-    { label:'Shpenzime totale',  val: fmt(totalExp),         icon: TrendingDown, bg:'#fef2f2', color:'#dc2626' },
-    { label:'Fitimi neto',       val: fmt(profit + 32000),   icon: DollarSign,   bg:'#ecfdf5', color:'#059669' },
+    { label:'Të ardhura totale', val: fmt(paid),    icon: TrendingUp,   bg:'#eff6ff', color:'#2563eb' },
+    { label:'Shpenzime totale',  val: fmt(totalExp), icon: TrendingDown, bg:'#fef2f2', color:'#dc2626' },
+    { label:'Fitimi neto',       val: fmt(profit),   icon: DollarSign,   bg:'#ecfdf5', color:'#059669' },
   ]
   const TABS = [
     { id:'revenue',  label:'Të ardhurat', key:'revenue',  color:'#3b82f6' },
@@ -610,9 +610,7 @@ function KlientetTab({ invoices }) {
     return MONTHS_SQ.map((month, i) => {
       const m = i + 1
       const current = countActive(invoices, chartYear, m)
-      const prev    = chartYear === 2026
-        ? EST_CLIENTS_2025[i]           // 2025 estimated
-        : countActive(invoices, prevYear, m) // real previous year
+      const prev    = countActive(invoices, prevYear, m) // real data from invoices
       return { month, [`${chartYear}`]: current, [`${prevYear}`]: prev }
     })
   }, [invoices, chartYear, prevYear])
@@ -655,7 +653,7 @@ function KlientetTab({ invoices }) {
           </div>
           <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400">
             <span className="w-3 h-1 bg-gray-400 inline-block rounded-full"/>
-            {prevYear} {chartYear === 2026 ? '(vlerësim)' : ''}
+            {prevYear}
           </div>
         </div>
         <div className="p-5 pt-4">
@@ -686,7 +684,7 @@ function KlientetTab({ invoices }) {
               <tr className="border-b border-gray-100 dark:border-gray-700">
                 <th className="table-th">Muaji</th>
                 <th className="table-th text-right">{chartYear}</th>
-                <th className="table-th text-right">{prevYear} {chartYear === 2026 ? '(est.)' : ''}</th>
+                <th className="table-th text-right">{prevYear}</th>
                 <th className="table-th text-right">Ndryshimi</th>
               </tr>
             </thead>
