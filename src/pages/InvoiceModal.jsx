@@ -56,7 +56,7 @@ function Combobox({
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
     debounceTimer.current = setTimeout(() => {
       setDebouncedSearch(value)
-    }, 150)
+    }, 50)
   }
 
   useEffect(() => {
@@ -82,11 +82,13 @@ function Combobox({
     })
   }, [options, getKey])
 
-  // Filter deduped options by debounced search
+  // Filter deduped options by debounced search with limit
   const filtered = useMemo(() => {
-    return deduplicatedOptions.filter(o =>
-      getLabel(o).toLowerCase().includes(debouncedSearch.toLowerCase())
+    const searchTerm = debouncedSearch.toLowerCase()
+    const results = deduplicatedOptions.filter(o =>
+      getLabel(o).toLowerCase().includes(searchTerm)
     )
+    return results.slice(0, 30)
   }, [deduplicatedOptions, debouncedSearch, getLabel])
   const selected = options.find(o => getLabel(o) === value)
 
