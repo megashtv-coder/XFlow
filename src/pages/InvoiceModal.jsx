@@ -36,9 +36,11 @@ function Combobox({
 }) {
   const [open, setOpen]     = useState(false)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const triggerRef          = useRef(null)
   const dropRef             = useRef(null)
   const [pos, setPos]       = useState({ top: 0, left: 0, width: 200 })
+  const debounceTimer       = useRef(null)
 
   const openDrop = () => {
     if (triggerRef.current) {
@@ -48,11 +50,20 @@ function Combobox({
     setOpen(v => !v)
   }
 
+  // Debounce search input
+  const handleSearchChange = (value) => {
+    setSearch(value)
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedSearch(value)
+    }, 150)
+  }
+
   useEffect(() => {
     if (!open) return
     const h = e => {
       if (!triggerRef.current?.contains(e.target) && !dropRef.current?.contains(e.target)) {
-        setOpen(false); setSearch('')
+        setOpen(false); setSearch(''); setDebouncedSearch('')
       }
     }
     document.addEventListener('mousedown', h)
@@ -71,12 +82,12 @@ function Combobox({
     })
   }, [options, getKey])
 
-  // Filter deduped options by search
+  // Filter deduped options by debounced search
   const filtered = useMemo(() => {
     return deduplicatedOptions.filter(o =>
-      getLabel(o).toLowerCase().includes(search.toLowerCase())
+      getLabel(o).toLowerCase().includes(debouncedSearch.toLowerCase())
     )
-  }, [deduplicatedOptions, search, getLabel])
+  }, [deduplicatedOptions, debouncedSearch, getLabel])
   const selected = options.find(o => getLabel(o) === value)
 
   return (
@@ -106,9 +117,9 @@ function Combobox({
                 className="bg-transparent outline-none text-xs w-full text-gray-700 placeholder-gray-400"
                 placeholder="Kërko..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
               />
-              {search && <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500"><X size={10}/></button>}
+              {search && <button onClick={() => { setSearch(''); setDebouncedSearch('') }} className="text-gray-300 hover:text-gray-500"><X size={10}/></button>}
             </div>
           </div>
           <div className="max-h-52 overflow-y-auto">
