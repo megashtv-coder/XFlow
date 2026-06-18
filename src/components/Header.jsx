@@ -135,29 +135,11 @@ export default function Header() {
         )}
       </div>
 
-      {/* Quick Add Button - Context Aware */}
+      {/* Quick Add Button - Always show dropdown */}
       <div className="relative flex-shrink-0">
         <button
           className="icon-btn bg-red-500 text-white hover:bg-red-600 rounded-lg p-2"
-          onClick={() => {
-            // Get the base page (remove :create, :edit, etc)
-            const basePage = page.split(':')[0]
-            // Map pages that have create functionality
-            const createPages = {
-              invoices: 'invoices:create',
-              customers: 'customers:create',
-              expenses: 'expenses:create',
-              payments: 'payments:create',
-              items: 'items:create',
-            }
-            if (createPages[basePage]) {
-              navigate(createPages[basePage])
-              setAddOpen(false)
-            } else {
-              // Show dropdown for pages without current context
-              setAddOpen(v => !v)
-            }
-          }}
+          onClick={() => setAddOpen(v => !v)}
           title="Shto element të ri"
         >
           <Plus size={18} />
