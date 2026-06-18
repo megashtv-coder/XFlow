@@ -19,7 +19,16 @@ export default function Sidebar() {
   const [tasks, setTasks] = useState([])
 
   const today = new Date().toISOString().slice(0, 10)
-  const subNotifyCount = invoices.filter(i => i.notifyDate && i.notifyDate <= today).length
+
+  // Invoices badge: all unpaid invoices (pending, overdue, partial)
+  const invoicesBadge = invoices.filter(i =>
+    i.status === 'pending' || i.status === 'overdue' || i.status === 'partial'
+  ).length || null
+
+  // Subscriptions badge: invoices with notifyDate today or earlier
+  const subNotifyCount = invoices.filter(i =>
+    i.notifyDate && i.notifyDate <= today
+  ).length || null
 
   // Load tasks from Supabase
   useEffect(() => {
@@ -49,8 +58,8 @@ export default function Sidebar() {
 
   const NAV = [
     { id: 'dashboard',     icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'invoices',      icon: FileText,        label: 'Faturat',    badge: invoices.filter(i => i.status === 'pending' || i.status === 'overdue').length || null },
-    { id: 'subscriptions', icon: Bell,            label: 'Abonimet',   badge: subNotifyCount || null, badgeColor: 'bg-orange-500' },
+    { id: 'invoices',      icon: FileText,        label: 'Faturat',    badge: invoicesBadge },
+    { id: 'subscriptions', icon: Bell,            label: 'Abonimet',   badge: subNotifyCount, badgeColor: 'bg-orange-500' },
     { id: 'tasks',         icon: CheckSquare,     label: 'Detyrat',    badge: tasksDueBadge || null, badgeColor: 'bg-red-500' },
     { id: 'customers',     icon: UsersIcon,       label: 'Klientët' },
     { id: 'items',         icon: Package,         label: 'Produktet' },
