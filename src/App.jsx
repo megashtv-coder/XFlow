@@ -24,6 +24,11 @@ const Suppliers = lazy(() => import('./pages/Suppliers'))
 const UsersPage = lazy(() => import('./pages/Users'))
 const CommunicationHistory = lazy(() => import('./pages/CommunicationHistory'))
 const Tasks = lazy(() => import('./pages/Tasks'))
+const PendingClientInvoices = lazy(() => import('./pages/PendingClientInvoices'))
+const PendingResellerInvoices = lazy(() => import('./pages/PendingResellerInvoices'))
+const PendingAllInvoices = lazy(() => import('./pages/PendingAllInvoices'))
+const CurrentYearExpenses = lazy(() => import('./pages/CurrentYearExpenses'))
+const CurrentYearRevenue = lazy(() => import('./pages/CurrentYearRevenue'))
 
 const ORG_PAGES = {
   dashboard:              Dashboard,
@@ -39,6 +44,11 @@ const ORG_PAGES = {
   users:                 UsersPage,
   communicationHistory:  CommunicationHistory,
   tasks:                 Tasks,
+  'pending-client':      PendingClientInvoices,
+  'pending-reseller':    PendingResellerInvoices,
+  'pending-all':         PendingAllInvoices,
+  'expenses-year':       CurrentYearExpenses,
+  'revenue-year':        CurrentYearRevenue,
 }
 
 function OrgAppLayout() {

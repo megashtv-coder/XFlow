@@ -27,9 +27,9 @@ const CAT_COLORS = {
 }
 
 /* ── Stat card komponent ── */
-function KpiCard({ icon: Icon, iconBg, iconColor, label, value, sub, subColor = 'text-gray-400' }) {
+function KpiCard({ icon: Icon, iconBg, iconColor, label, value, sub, subColor = 'text-gray-400', onClick }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
+    <div className={`bg-white rounded-xl border border-gray-100 p-5 flex items-start gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ${onClick ? 'cursor-pointer' : ''}`} onClick={onClick}>
       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: iconBg }}>
         <Icon size={18} style={{ color: iconColor }} />
       </div>
@@ -220,6 +220,7 @@ export default function Dashboard() {
           label={`Të ardhura ${thisYear}`}
           value={fmt(yearRevenue)}
           sub={`Pagesa të pranuara ${thisYear}`}
+          onClick={() => navigate('revenue-year')}
         />
         <KpiCard
           icon={TrendingDown}  iconBg="#fef2f2"  iconColor="#dc2626"
@@ -227,6 +228,7 @@ export default function Dashboard() {
           value={fmt(yearExpenses)}
           sub={`Shpenzime të regjistruara`}
           subColor="text-red-400"
+          onClick={() => navigate('expenses-year')}
         />
         <KpiCard
           icon={Clock}  iconBg="#fffbeb"  iconColor="#d97706"
@@ -234,6 +236,7 @@ export default function Dashboard() {
           value={fmt(pendingKlientAmt)}
           sub={`${pendingKlient.length} fatur${pendingKlient.length !== 1 ? 'a' : 'ë'} individuale`}
           subColor="text-amber-500"
+          onClick={() => navigate('pending-client')}
         />
         <KpiCard
           icon={Layers}  iconBg="#f5f3ff"  iconColor="#7c3aed"
@@ -241,6 +244,7 @@ export default function Dashboard() {
           value={fmt(pendingResellerAmt)}
           sub={`${pendingReseller.length} fatur${pendingReseller.length !== 1 ? 'a' : 'ë'} reseller`}
           subColor="text-purple-500"
+          onClick={() => navigate('pending-reseller')}
         />
         <KpiCard
           icon={AlertCircle}  iconBg="#fff7ed"  iconColor="#ea580c"
@@ -248,6 +252,7 @@ export default function Dashboard() {
           value={fmt(pendingTotalAmt)}
           sub={`${pendingInvoices.length} fatura gjithsej`}
           subColor="text-orange-500"
+          onClick={() => navigate('pending-all')}
         />
       </div>
 
