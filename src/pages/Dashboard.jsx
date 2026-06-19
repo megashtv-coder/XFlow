@@ -380,8 +380,8 @@ export default function Dashboard() {
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000 ? v/1000+'k' : v} />
               <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
-              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="url(#salesGradient)" radius={[3,3,0,0]} maxBarSize={22} />
-              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#e2e8f0" radius={[3,3,0,0]} maxBarSize={22} />
+              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="#6366f1" radius={[3,3,0,0]} maxBarSize={22} />
+              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#cbd5e1" radius={[3,3,0,0]} maxBarSize={22} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>

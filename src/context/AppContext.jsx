@@ -622,14 +622,17 @@ export function AppProvider({ children }) {
   }, [])
 
   const navigate = useCallback((p) => {
+    // Parse page and query params from string like "invoices?filter=pending&type=individual"
+    const [basePage, queryString] = p.split('?')
+
     // Guard route access based on features
     const guardResult = guardRoute({
-      route: p,
+      route: basePage,
       orgId: currentOrgId,
     })
 
     if (!guardResult.allowed) {
-      logAccessDenial({ route: p, orgId: currentOrgId }, guardResult.reason || 'Access denied')
+      logAccessDenial({ route: basePage, orgId: currentOrgId }, guardResult.reason || 'Access denied')
       // Show toast and redirect to allowed page
       setToast({ msg: 'Ky modul nuk është në dispozicion për organizatën tuaj.', type: 'error' })
       if (guardResult.redirectTo) {
@@ -638,11 +641,22 @@ export function AppProvider({ children }) {
       return
     }
 
-    setPage(p)
+    setPage(basePage)
     // Update URL so page state is preserved on refresh
     const url = new URL(window.location)
-    url.searchParams.set('page', p)
-    window.history.pushState({ page: p }, '', url.toString())
+    url.searchParams.set('page', basePage)
+
+    // Add query parameters if present
+    if (queryString) {
+      queryString.split('&').forEach(param => {
+        const [key, value] = param.split('=')
+        if (key && value) {
+          url.searchParams.set(key, value)
+        }
+      })
+    }
+
+    window.history.pushState({ page: basePage }, '', url.toString())
     setSidebarOpen(false)
     setLoading(true)
     setTimeout(() => setLoading(false), 350)
