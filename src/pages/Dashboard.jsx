@@ -311,35 +311,42 @@ export default function Dashboard() {
             {catData.length === 0 ? (
               <p className="text-xs text-gray-400 text-center py-8 italic">Nuk ka shpenzime për këtë periudhë</p>
             ) : (
-              <>
-                <ResponsiveContainer width="100%" height={120}>
-                  <PieChart>
-                    <Pie data={catData} cx="50%" cy="50%" innerRadius={32} outerRadius={55}
-                      paddingAngle={3} dataKey="value">
-                      {catData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                    </Pie>
-                    <Tooltip formatter={v => [`€${Number(v).toLocaleString('de-DE')}`, '']}
-                      contentStyle={{ border: '1px solid #f3f4f6', borderRadius: 10, fontSize: 11 }} />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Pie chart - left */}
+                <div className="flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart>
+                      <Pie data={catData} cx="50%" cy="50%" innerRadius={40} outerRadius={70}
+                        paddingAngle={3} dataKey="value">
+                        {catData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                      </Pie>
+                      <Tooltip formatter={v => [`€${Number(v).toLocaleString('de-DE')}`, '']}
+                        contentStyle={{ border: '1px solid #f3f4f6', borderRadius: 10, fontSize: 11, backgroundColor: '#ffffff', opacity: 0.95 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
 
-                <div className="space-y-2 mt-3">
-                  {catData.map((e, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ background: e.color }} />
-                      <span className="text-xs text-gray-600 flex-1 truncate">{e.name}</span>
-                      <span className="text-xs font-bold text-gray-800">€{e.value.toLocaleString('de-DE')}</span>
-                      <span className="text-[10px] text-gray-400 w-10 text-right">
-                        {catTotal > 0 ? Math.round(e.value / catTotal * 100) : 0}%
-                      </span>
+                {/* Top 5 categories - right */}
+                <div className="flex flex-col justify-center space-y-3">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Top 5 Kategorije</p>
+                  {catData.slice(0, 5).map((e, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="flex items-center flex-1 min-w-0">
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: e.color }} />
+                        <span className="text-xs text-gray-700 flex-1 truncate ml-2">{e.name}</span>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xs font-bold text-gray-800">€{e.value.toLocaleString('de-DE')}</p>
+                        <p className="text-[10px] text-gray-400">{catTotal > 0 ? Math.round(e.value / catTotal * 100) : 0}%</p>
+                      </div>
                     </div>
                   ))}
-                  <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
                     <span className="text-xs font-bold text-gray-500">Total</span>
                     <span className="text-sm font-bold text-gray-800">€{catTotal.toLocaleString('de-DE')}</span>
                   </div>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -350,19 +357,31 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-50">
           <p className="text-sm font-bold text-gray-800">Shitje sipas muajit — 12 muaj</p>
           <div className="flex flex-wrap gap-3 text-[11px] text-gray-400">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500 inline-block"/>Shitje {thisYear}</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-indigo-500 inline-block"/>Shitje {prevYear}</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}/>Shitje {thisYear}</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-gray-200 inline-block"/>Shitje {prevYear}</span>
           </div>
         </div>
         <div className="px-2 py-4">
+          <defs>
+            <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6366f1" />
+              <stop offset="100%" stopColor="#818cf8" />
+            </linearGradient>
+          </defs>
           <ResponsiveContainer width="100%" height={220}>
             <ComposedChart data={salesComparison} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+              <defs>
+                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#818cf8" stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000 ? v/1000+'k' : v} />
-              <Tooltip content={<ChartTooltip />} />
-              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="#ef4444" radius={[3,3,0,0]} maxBarSize={22} />
-              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#6366f1" radius={[3,3,0,0]} maxBarSize={22} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
+              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="url(#salesGradient)" radius={[3,3,0,0]} maxBarSize={22} />
+              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#e2e8f0" radius={[3,3,0,0]} maxBarSize={22} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
