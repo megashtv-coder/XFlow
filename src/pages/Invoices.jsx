@@ -718,6 +718,25 @@ export default function Invoices() {
   const [statusFilter, setStatus]   = useState('all')
   const [typeFilter,   setTypeFilter]= useState('all')   // 'all' | 'reseller' | 'individual'
   const [paginationPage,  setPaginationPage] = useState(1)
+
+  // Read filters from URL parameters
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location)
+    const filter = url.searchParams.get('filter')
+    const type = url.searchParams.get('type')
+
+    if (filter === 'pending') {
+      setStatus('pending')
+      if (type === 'individual') setTypeFilter('individual')
+      else if (type === 'reseller') setTypeFilter('reseller')
+      else setTypeFilter('all')
+      // Remove URL params after reading
+      url.searchParams.delete('filter')
+      url.searchParams.delete('type')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [])
   const [perPage,      setPerPage]  = useState(50)
   const [sortField,    setSortField]= useState('id')
   const [sortDir,      setSortDir]  = useState('desc')

@@ -110,6 +110,25 @@ export default function Payments() {
   const [deletingId,  setDeletingId] = useState(null)
   const [importOpen,  setImportOpen] = useState(false)
 
+  // Read filters from URL parameters
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location)
+    const filter = url.searchParams.get('filter')
+    const year = url.searchParams.get('year')
+
+    if (filter === 'year' && year) {
+      // Set month filter to show only payments from the specified year
+      setMonthFilt('all') // Show all months of that year, we'll filter by year in the data
+      // Remove URL params after reading
+      url.searchParams.delete('filter')
+      url.searchParams.delete('year')
+      window.history.replaceState({}, '', url.toString())
+      // Store year in sessionStorage temporarily for filtering
+      sessionStorage.setItem('xflow_payment_year', year)
+    }
+  }, [])
+
   // Detect if we're in form mode (page like "payments:create" or "payments:ID:edit")
   const pageMatch = page.split(':')
   const isFormMode = pageMatch[0] === 'payments' && (pageMatch[1] === 'create' || pageMatch[1]?.includes('PAY-'))
@@ -127,16 +146,20 @@ export default function Payments() {
   const methods = [...new Set(payments.map(p => p.method))]
 
   /* filtering */
-  const filtered = useMemo(() => payments.filter(p => {
-    const matchSearch  = !search
-      || p.customer.toLowerCase().includes(search.toLowerCase())
-      || p.invoiceId.includes(search)
-      || (p.reference || '').toLowerCase().includes(search.toLowerCase())
-    const matchMonth   = monthFilt  === 'all' || p.date.startsWith(monthFilt)
-    const matchPartner = partnerFilt === 'all' || p.depositedTo === partnerFilt
-    const matchMethod  = methodFilt  === 'all' || p.method === methodFilt
-    return matchSearch && matchMonth && matchPartner && matchMethod
-  }), [payments, search, monthFilt, partnerFilt, methodFilt])
+  const filtered = useMemo(() => {
+    const yearFilter = sessionStorage.getItem('xflow_payment_year')
+    return payments.filter(p => {
+      const matchSearch  = !search
+        || p.customer.toLowerCase().includes(search.toLowerCase())
+        || p.invoiceId.includes(search)
+        || (p.reference || '').toLowerCase().includes(search.toLowerCase())
+      const matchMonth   = monthFilt  === 'all' || p.date.startsWith(monthFilt)
+      const matchPartner = partnerFilt === 'all' || p.depositedTo === partnerFilt
+      const matchMethod  = methodFilt  === 'all' || p.method === methodFilt
+      const matchYear    = !yearFilter || p.date.startsWith(yearFilter)
+      return matchSearch && matchMonth && matchPartner && matchMethod && matchYear
+    })
+  }, [payments, search, monthFilt, partnerFilt, methodFilt])
 
   const toggleSort = field => {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')

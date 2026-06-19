@@ -297,6 +297,23 @@ export default function ExpensesPage() {
   const [importOpen,     setImportOpen]    = useState(false)
   const [openDropdown,   setOpenDropdown]  = useState(null)
 
+  // Read filters from URL parameters
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location)
+    const filter = url.searchParams.get('filter')
+    const year = url.searchParams.get('year')
+
+    if (filter === 'year' && year) {
+      // Store year in sessionStorage temporarily for filtering
+      sessionStorage.setItem('xflow_expense_year', year)
+      // Remove URL params after reading
+      url.searchParams.delete('filter')
+      url.searchParams.delete('year')
+      window.history.replaceState({}, '', url.toString())
+    }
+  }, [])
+
   // Detect if we're in form mode (page like "expenses:create" or "expenses:ID:edit")
   const pageMatch = page.split(':')
   const isFormMode = pageMatch[0] === 'expenses' && (pageMatch[1] === 'create' || pageMatch[1]?.includes('EXP-'))
@@ -328,13 +345,17 @@ export default function ExpensesPage() {
   /* unique types in data */
   const usedTypes = [...new Set(expenses.map(e => e.type).filter(Boolean))]
 
-  const filtered = useMemo(() => expenses.filter(e => {
-    const matchSearch  = !search || (e.type||'').toLowerCase().includes(search.toLowerCase()) || (e.vendor||'').toLowerCase().includes(search.toLowerCase())
-    const matchPartner = partnerFilt === 'all' || e.paidBy === partnerFilt
-    const matchType    = typeFilt === 'all' || e.type === typeFilt
-    const matchRecur   = recurFilt === 'all' || (recurFilt === 'recurring' ? e.recurring : !e.recurring)
-    return matchSearch && matchPartner && matchType && matchRecur
-  }), [expenses, search, partnerFilt, typeFilt, recurFilt])
+  const filtered = useMemo(() => {
+    const yearFilter = sessionStorage.getItem('xflow_expense_year')
+    return expenses.filter(e => {
+      const matchSearch  = !search || (e.type||'').toLowerCase().includes(search.toLowerCase()) || (e.vendor||'').toLowerCase().includes(search.toLowerCase())
+      const matchPartner = partnerFilt === 'all' || e.paidBy === partnerFilt
+      const matchType    = typeFilt === 'all' || e.type === typeFilt
+      const matchRecur   = recurFilt === 'all' || (recurFilt === 'recurring' ? e.recurring : !e.recurring)
+      const matchYear    = !yearFilter || (e.date||'').startsWith(yearFilter)
+      return matchSearch && matchPartner && matchType && matchRecur && matchYear
+    })
+  }, [expenses, search, partnerFilt, typeFilt, recurFilt])
 
   const toggleSort = field => {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')

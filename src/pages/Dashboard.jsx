@@ -220,7 +220,7 @@ export default function Dashboard() {
           label={`Të ardhura ${thisYear}`}
           value={fmt(yearRevenue)}
           sub={`Pagesa të pranuara ${thisYear}`}
-          onClick={() => navigate('revenue-year')}
+          onClick={() => navigate(`payments?filter=year&year=${thisYear}`)}
         />
         <KpiCard
           icon={TrendingDown}  iconBg="#fef2f2"  iconColor="#dc2626"
@@ -228,7 +228,7 @@ export default function Dashboard() {
           value={fmt(yearExpenses)}
           sub={`Shpenzime të regjistruara`}
           subColor="text-red-400"
-          onClick={() => navigate('expenses-year')}
+          onClick={() => navigate(`expenses?filter=year&year=${thisYear}`)}
         />
         <KpiCard
           icon={Clock}  iconBg="#fffbeb"  iconColor="#d97706"
@@ -236,7 +236,7 @@ export default function Dashboard() {
           value={fmt(pendingKlientAmt)}
           sub={`${pendingKlient.length} fatur${pendingKlient.length !== 1 ? 'a' : 'ë'} individuale`}
           subColor="text-amber-500"
-          onClick={() => navigate('pending-client')}
+          onClick={() => navigate('invoices?filter=pending&type=individual')}
         />
         <KpiCard
           icon={Layers}  iconBg="#f5f3ff"  iconColor="#7c3aed"
@@ -244,7 +244,7 @@ export default function Dashboard() {
           value={fmt(pendingResellerAmt)}
           sub={`${pendingReseller.length} fatur${pendingReseller.length !== 1 ? 'a' : 'ë'} reseller`}
           subColor="text-purple-500"
-          onClick={() => navigate('pending-reseller')}
+          onClick={() => navigate('invoices?filter=pending&type=reseller')}
         />
         <KpiCard
           icon={AlertCircle}  iconBg="#fff7ed"  iconColor="#ea580c"
@@ -252,7 +252,7 @@ export default function Dashboard() {
           value={fmt(pendingTotalAmt)}
           sub={`${pendingInvoices.length} fatura gjithsej`}
           subColor="text-orange-500"
-          onClick={() => navigate('pending-all')}
+          onClick={() => navigate('invoices?filter=pending')}
         />
       </div>
 
