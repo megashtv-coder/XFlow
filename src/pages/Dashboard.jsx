@@ -17,12 +17,14 @@ const MONTH_LBL = ['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','
 
 /* ── Ngjyrat për kategorinë ── */
 const CAT_COLORS = {
-  'Shërbime': '#2563eb',
+  'Shërbime':  '#2563eb',
   'Software':  '#7c3aed',
   'Marketing': '#d97706',
   'Ushqim':    '#059669',
   'Pajisje':   '#dc2626',
   'Udhëtime':  '#be185d',
+  'Pagat':     '#ec4899',
+  'Hardware':  '#f59e0b',
   'Tjera':     '#6b7280',
 }
 
