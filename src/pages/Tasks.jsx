@@ -151,12 +151,12 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            <p className={`font-semibold text-sm ${
+            <p className={`font-bold text-base ${
               task.completed ? 'line-through text-gray-400' : 'text-gray-900'
             }`}>
-              {task.description}
+              {task.customer}
             </p>
-            <p className="text-xs text-gray-600 mt-1">{task.customer}</p>
+            <p className="text-xs text-gray-600 mt-1">{task.description}</p>
           </div>
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ${statusColor}`}>
             {statusBadge}
