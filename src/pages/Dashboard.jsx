@@ -15,17 +15,21 @@ import { ExpenseModal }  from './Expenses'
 
 const MONTH_LBL = ['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','Nën','Dhj']
 
-/* ── Ngjyrat për kategorinë ── */
-const CAT_COLORS = {
-  'Shërbime':  '#2563eb',
-  'Software':  '#7c3aed',
-  'Marketing': '#d97706',
-  'Ushqim':    '#059669',
-  'Pajisje':   '#dc2626',
-  'Udhëtime':  '#be185d',
-  'Pagat':     '#ec4899',
-  'Hardware':  '#f59e0b',
-  'Tjera':     '#6b7280',
+/* ── Ngjyrat për shpenzimet ── */
+const EXPENSE_TYPE_COLORS = [
+  '#2563eb', '#7c3aed', '#d97706', '#059669', '#dc2626',
+  '#be185d', '#ec4899', '#f59e0b', '#06b6d4', '#8b5cf6',
+  '#0891b2', '#84cc16', '#ea580c', '#f97316', '#6366f1',
+]
+
+// Funksion për të zgjedhur ngjyrë sipas emrit të shpenzimit
+const getExpenseTypeColor = (name) => {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash) + name.charCodeAt(i)
+    hash = hash & hash
+  }
+  return EXPENSE_TYPE_COLORS[Math.abs(hash) % EXPENSE_TYPE_COLORS.length]
 }
 
 /* ── Stat card komponent ── */
@@ -139,7 +143,7 @@ export default function Dashboard() {
   const pendingResellerAmt = pendingReseller.reduce((s, i) => s + i.amount, 0)
   const pendingTotalAmt    = pendingInvoices.reduce((s, i) => s + i.amount, 0)
 
-  /* ── Shpenzime sipas kategorisë (me filter) ── */
+  /* ── Shpenzime sipas emrit të shpenzimit (me filter) ── */
   const catData = useMemo(() => {
     let filtered = expenses
     if (catFilter === '1m')   filtered = expenses.filter(e => e.date?.startsWith(thisMonth))
@@ -148,11 +152,11 @@ export default function Dashboard() {
 
     const groups = {}
     filtered.forEach(e => {
-      const cat = e.category || 'Tjera'
-      groups[cat] = (groups[cat] || 0) + e.amount
+      const expType = e.type || e.category || 'Tjera'
+      groups[expType] = (groups[expType] || 0) + e.amount
     })
     return Object.entries(groups)
-      .map(([name, value]) => ({ name, value, color: CAT_COLORS[name] || '#6b7280' }))
+      .map(([name, value]) => ({ name, value, color: getExpenseTypeColor(name) }))
       .sort((a, b) => b.value - a.value)
   }, [expenses, catFilter, thisMonth, thisYear, prevYear])
 
@@ -340,20 +344,18 @@ export default function Dashboard() {
                   </ResponsiveContainer>
                 </div>
 
-                {/* Top 5 expenses - right */}
+                {/* Top 5 expenses by type - right */}
                 <div className="flex flex-col justify-center space-y-3">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Top 5 Shpenzimet</p>
-                  {topExpenses.map((e, i) => (
-                    <div key={e.id || i} className="flex items-center gap-2">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Top 5 Sipas Emrit</p>
+                  {catData.slice(0, 5).map((e, i) => (
+                    <div key={i} className="flex items-center gap-3">
                       <div className="flex items-center flex-1 min-w-0">
-                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: CAT_COLORS[e.category] || '#6b7280' }} />
-                        <div className="flex-1 truncate ml-2">
-                          <p className="text-xs text-gray-700 truncate">{e.type || e.description}</p>
-                          <p className="text-[10px] text-gray-400 truncate">{e.vendor || e.category || 'Tjera'}</p>
-                        </div>
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: e.color }} />
+                        <span className="text-xs text-gray-700 flex-1 truncate ml-2">{e.name}</span>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-xs font-bold text-gray-800">€{(e.amount || 0).toLocaleString('de-DE')}</p>
+                        <p className="text-xs font-bold text-gray-800">€{e.value.toLocaleString('de-DE')}</p>
+                        <p className="text-[10px] text-gray-400">{catTotal > 0 ? Math.round(e.value / catTotal * 100) : 0}%</p>
                       </div>
                     </div>
                   ))}
