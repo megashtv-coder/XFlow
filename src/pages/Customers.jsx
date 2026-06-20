@@ -591,6 +591,7 @@ export default function Customers() {
   const [search,        setSearch]        = useState('')
   const [typeFilt,      setTypeFilt]      = useState('all')
   const [countryFilt,   setCountryFilt]   = useState('all')
+  const [sortBy,        setSortBy]        = useState('default')
   const [importOpen,    setImportOpen]    = useState(false)
   const [selected,      setSelected]      = useState(new Set())
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null) // null | 'single' | 'multiple'
@@ -705,19 +706,32 @@ export default function Customers() {
     return names
   }, [invoices, today])
 
-  const filtered = useMemo(() => customers.filter(c => {
-    const name = c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim()
-    const matchSearch  = !search ||
-      name.toLowerCase().includes(search.toLowerCase()) ||
-      (c.email      || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.phone      || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.app        || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.username   || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.referredBy || '').toLowerCase().includes(search.toLowerCase())
-    const matchType    = typeFilt    === 'all' || c.type    === typeFilt
-    const matchCountry = countryFilt === 'all' || c.country === countryFilt
-    return matchSearch && matchType && matchCountry
-  }), [customers, search, typeFilt, countryFilt])
+  const filtered = useMemo(() => {
+    let result = customers.filter(c => {
+      const name = c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim()
+      const matchSearch  = !search ||
+        name.toLowerCase().includes(search.toLowerCase()) ||
+        (c.email      || '').toLowerCase().includes(search.toLowerCase()) ||
+        (c.phone      || '').toLowerCase().includes(search.toLowerCase()) ||
+        (c.app        || '').toLowerCase().includes(search.toLowerCase()) ||
+        (c.username   || '').toLowerCase().includes(search.toLowerCase()) ||
+        (c.referredBy || '').toLowerCase().includes(search.toLowerCase())
+      const matchType    = typeFilt    === 'all' || c.type    === typeFilt
+      const matchCountry = countryFilt === 'all' || c.country === countryFilt
+      return matchSearch && matchType && matchCountry
+    })
+
+    // Apply sorting
+    if (sortBy === 'alphabetic') {
+      result.sort((a, b) => {
+        const nameA = (a.name || `${a.firstName || ''} ${a.lastName || ''}`.trim()).toLowerCase()
+        const nameB = (b.name || `${b.firstName || ''} ${b.lastName || ''}`.trim()).toLowerCase()
+        return nameA.localeCompare(nameB)
+      })
+    }
+
+    return result
+  }, [customers, search, typeFilt, countryFilt, sortBy])
 
   /* stats */
   const totalResellers   = customers.filter(c => c.type === 'reseller').length
@@ -863,6 +877,14 @@ export default function Customers() {
         >
           <option value="all">Të gjitha shtetet</option>
           {usedCountries.sort().map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+
+        <select
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          value={sortBy} onChange={e => setSortBy(e.target.value)}
+        >
+          <option value="default">Renditja — Parazgjedhur</option>
+          <option value="alphabetic">A — Z (Alfabetik)</option>
         </select>
 
         <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto">
