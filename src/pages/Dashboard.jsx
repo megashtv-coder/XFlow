@@ -177,9 +177,9 @@ export default function Dashboard() {
     }))
   }, [invoices])
 
-  const openInvoiceModal  = () => setModal(<InvoiceModal />)
-  const openCustomerModal = () => setModal(<CustomerModal onClose={closeModal} />)
-  const openExpenseModal  = () => setModal(<ExpenseModal  onClose={closeModal} />)
+  const openInvoiceModal  = () => navigate('invoices:create')
+  const openCustomerModal = () => navigate('customers:create')
+  const openExpenseModal  = () => navigate('expenses:create')
 
   return (
     <div className="space-y-6 max-w-6xl">
