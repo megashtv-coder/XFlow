@@ -158,6 +158,18 @@ export default function Dashboard() {
 
   const catTotal = catData.reduce((s, c) => s + c.value, 0)
 
+  /* ── Top 5 shpenzimet sipas shumës ── */
+  const topExpenses = useMemo(() => {
+    let filtered = expenses
+    if (catFilter === '1m')   filtered = expenses.filter(e => e.date?.startsWith(thisMonth))
+    if (catFilter === '12m')  filtered = expenses.filter(e => e.date?.startsWith(thisYear))
+    if (catFilter === 'prev') filtered = expenses.filter(e => e.date?.startsWith(prevYear))
+
+    return filtered
+      .sort((a, b) => (b.amount || 0) - (a.amount || 0))
+      .slice(0, 5)
+  }, [expenses, catFilter, thisMonth, thisYear, prevYear])
+
   /* ── Shitje sipas muajit: krahasim me vitin 2025 ── */
   const salesComparison = useMemo(() => {
     const now = new Date()
@@ -328,18 +340,20 @@ export default function Dashboard() {
                   </ResponsiveContainer>
                 </div>
 
-                {/* Top 5 categories - right */}
+                {/* Top 5 expenses - right */}
                 <div className="flex flex-col justify-center space-y-3">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Top 5 Kategorije</p>
-                  {catData.slice(0, 5).map((e, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Top 5 Shpenzimet</p>
+                  {topExpenses.map((e, i) => (
+                    <div key={e.id || i} className="flex items-center gap-2">
                       <div className="flex items-center flex-1 min-w-0">
-                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: e.color }} />
-                        <span className="text-xs text-gray-700 flex-1 truncate ml-2">{e.name}</span>
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: CAT_COLORS[e.category] || '#6b7280' }} />
+                        <div className="flex-1 truncate ml-2">
+                          <p className="text-xs text-gray-700 truncate">{e.type || e.description}</p>
+                          <p className="text-[10px] text-gray-400 truncate">{e.vendor || e.category || 'Tjera'}</p>
+                        </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-xs font-bold text-gray-800">€{e.value.toLocaleString('de-DE')}</p>
-                        <p className="text-[10px] text-gray-400">{catTotal > 0 ? Math.round(e.value / catTotal * 100) : 0}%</p>
+                        <p className="text-xs font-bold text-gray-800">€{(e.amount || 0).toLocaleString('de-DE')}</p>
                       </div>
                     </div>
                   ))}
