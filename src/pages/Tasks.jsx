@@ -123,70 +123,72 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
   const isToday = task.reminderDate === today
 
   return (
-    <div className={`p-4 rounded-lg border transition-all ${
+    <div className={`p-4 rounded-xl border-2 transition-all ${
       task.completed
-        ? 'bg-gray-50 border-gray-100 opacity-60'
+        ? 'bg-gray-50 border-gray-100 opacity-50'
         : isOverdue
-        ? 'bg-red-50 border-red-200'
+        ? 'bg-red-50 border-red-200 shadow-sm hover:shadow-md'
         : isToday
-        ? 'bg-orange-50 border-orange-200'
-        : 'bg-white border-gray-200 hover:border-gray-300'
+        ? 'bg-amber-50 border-amber-200 shadow-sm hover:shadow-md'
+        : 'bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300'
     }`}>
       <div className="flex items-start gap-3">
         <button
           onClick={() => onToggle(task.id)}
-          className="mt-1 flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors"
-          title="Mark complete"
+          className="mt-1.5 flex-shrink-0 text-gray-300 hover:text-green-500 transition-colors"
+          title="Shëno si i plotësuar"
         >
           {task.completed ? (
-            <CheckCircle2 size={18} className="text-emerald-500" />
+            <CheckCircle2 size={20} className="text-green-500" />
           ) : (
-            <Circle size={18} />
+            <Circle size={20} />
           )}
         </button>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5 mb-1">
-                <User size={14} className="text-gray-400 flex-shrink-0" />
-                <p className="font-bold text-gray-800 text-sm">{task.customer}</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar size={14} className={`flex-shrink-0 ${
-                  isOverdue ? 'text-red-500' : isToday ? 'text-orange-500' : 'text-gray-400'
-                }`} />
-                <p className={`text-xs font-semibold ${
-                  isOverdue ? 'text-red-600' : isToday ? 'text-orange-600' : 'text-gray-600'
-                }`}>
-                  {formatDate(task.reminderDate)}
-                  {isOverdue && ' (VONUAR)'}
-                  {isToday && ' (SOT)'}
-                </p>
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="flex-1 min-w-0">
+              <p className={`font-semibold text-sm mb-2 ${
+                task.completed ? 'line-through text-gray-400' : 'text-gray-900'
+              }`}>
+                {task.description}
+              </p>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <User size={14} className="text-gray-400 flex-shrink-0" />
+                  <p className="text-xs text-gray-600">{task.customer}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} className={`flex-shrink-0 ${
+                    isOverdue ? 'text-red-500' : isToday ? 'text-amber-500' : 'text-gray-400'
+                  }`} />
+                  <p className={`text-xs font-semibold ${
+                    isOverdue ? 'text-red-600' : isToday ? 'text-amber-600' : 'text-gray-600'
+                  }`}>
+                    {formatDate(task.reminderDate)}
+                    {isOverdue && ' • VONUAR'}
+                    {isToday && ' • SOT'}
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="flex items-center gap-1 flex-shrink-0 ml-2">
               <button
                 onClick={() => onEdit(task)}
-                className="icon-btn text-gray-400 hover:text-red-500 hover:bg-red-50"
+                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 title="Ndrysho"
               >
-                <Pencil size={14} />
+                <Pencil size={16} />
               </button>
               <button
                 onClick={() => onDelete(task.id)}
-                className="icon-btn text-gray-400 hover:text-red-500 hover:bg-red-50"
+                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                 title="Fshi"
               >
-                <Trash2 size={14} />
+                <Trash2 size={16} />
               </button>
             </div>
           </div>
-          <p className={`text-sm leading-relaxed ${
-            task.completed ? 'line-through text-gray-400' : 'text-gray-700'
-          }`}>
-            {task.description}
-          </p>
         </div>
       </div>
     </div>
@@ -402,16 +404,17 @@ export default function Tasks() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden bg-gray-50">
-      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 bg-white flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-5 border-b border-gray-200 bg-white flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-800">Detyrat</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{tasks.length} detyra</p>
+          <h1 className="text-2xl font-bold text-gray-900">Detyrat</h1>
+          <p className="text-sm text-gray-500 mt-1">{tasks.length} detyra</p>
         </div>
         <button
           onClick={handleAddTask}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors"
+          className="flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg transition-colors shadow-sm hover:shadow-md"
+          title="Detyrë e re"
         >
-          <Plus size={16} /> E Re
+          <Plus size={20} />
         </button>
       </div>
 
@@ -431,25 +434,28 @@ export default function Tasks() {
       <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         {loading ? (
           <div className="flex items-center justify-center h-full text-gray-400">
-            <p>Loading tasks...</p>
+            <p className="text-sm">Po ngarkon detyrat...</p>
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <p className="text-gray-400 font-semibold mb-2">Nuk ka detyra</p>
-            <p className="text-sm text-gray-300 mb-4">
-              {filterCompleted ? 'Të gjitha detyrat janë kompletuar!' : 'Krijo detyrën e parë tënde'}
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle2 size={32} className="text-gray-300" />
+            </div>
+            <p className="text-gray-600 font-semibold mb-1">Nuk ka detyra</p>
+            <p className="text-sm text-gray-400 mb-6">
+              {filterCompleted ? 'Të gjitha detyrat janë kompletuar! 🎉' : 'Krijo detyrën e parë tënde'}
             </p>
             {!filterCompleted && (
               <button
                 onClick={handleAddTask}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg transition-colors"
+                className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm hover:shadow-md"
               >
-                Krijo Detyrë
+                + Detyrë e Re
               </button>
             )}
           </div>
         ) : (
-          <div className="grid gap-3">
+          <div className="grid gap-3 max-w-4xl">
             {filteredTasks.map(task => (
               <TaskCard
                 key={task.id}
