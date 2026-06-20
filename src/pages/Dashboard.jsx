@@ -22,11 +22,21 @@ const EXPENSE_TYPE_COLORS = [
   '#0891b2', '#84cc16', '#ea580c', '#f97316', '#6366f1',
 ]
 
+// Normalizoj emrin e shpenzimit (remove extra spaces, standardize)
+const normalizeExpenseType = (name) => {
+  if (!name) return 'Tjera'
+  return name
+    .trim()
+    .replace(/\s+/g, ' ') // Remove extra spaces
+    .replace(/[-–—]/g, '-') // Standardize dashes
+}
+
 // Funksion për të zgjedhur ngjyrë sipas emrit të shpenzimit
 const getExpenseTypeColor = (name) => {
+  const normalized = normalizeExpenseType(name)
   let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = ((hash << 5) - hash) + name.charCodeAt(i)
+  for (let i = 0; i < normalized.length; i++) {
+    hash = ((hash << 5) - hash) + normalized.charCodeAt(i)
     hash = hash & hash
   }
   return EXPENSE_TYPE_COLORS[Math.abs(hash) % EXPENSE_TYPE_COLORS.length]
@@ -152,7 +162,7 @@ export default function Dashboard() {
 
     const groups = {}
     filtered.forEach(e => {
-      const expType = e.type || e.category || 'Tjera'
+      const expType = normalizeExpenseType(e.type || e.category || 'Tjera')
       groups[expType] = (groups[expType] || 0) + e.amount
     })
     return Object.entries(groups)
