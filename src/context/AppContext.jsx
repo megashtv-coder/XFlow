@@ -404,11 +404,6 @@ export function AppProvider({ children }) {
       }
 
       setDbLoading(false)
-
-      // RREGULLIM: Subscribe për real-time updates nga paisje të tjera
-      if (supabase) {
-        subscribeToRealtimeUpdates()
-      }
     }).catch(() => {
       // Fallback në rast gabimi rrjeti
       setInvoices(mockInvoices);        prevInvoices.current  = mockInvoices
@@ -427,144 +422,11 @@ export function AppProvider({ children }) {
   }, [])
 
   /* ══════════════════════════════════════════════════════════
-     REAL-TIME SUBSCRIPTIONS — për multi-device sync
+     REAL-TIME SUBSCRIPTIONS — për multi-device sync (TODO: fix filter)
   ══════════════════════════════════════════════════════════ */
-  const subscribeToRealtimeUpdates = () => {
-    if (!supabase || !currentOrgId) return
-
-    console.log('[RealtimeSync] Aktivizoj subscriptions për org:', currentOrgId)
-
-    // Subscribe në invoices
-    const invSub = supabase
-      .channel(`invoices:${currentOrgId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'invoices', filter: `data->>'orgId'=eq.${currentOrgId}` },
-        (payload) => {
-          console.log('[RealtimeSync] Invoice update:', payload.eventType, payload.new?.id)
-          if (payload.eventType === 'DELETE') {
-            setInvoices(prev => prev.filter(i => i.id !== payload.old.id))
-          } else {
-            const newData = payload.new?.data || payload.new
-            setInvoices(prev => {
-              const exists = prev.find(i => i.id === newData.id)
-              return exists
-                ? prev.map(i => i.id === newData.id ? newData : i)
-                : [...prev, newData]
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Subscribe në customers
-    const custSub = supabase
-      .channel(`customers:${currentOrgId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'customers', filter: `data->>'orgId'=eq.${currentOrgId}` },
-        (payload) => {
-          console.log('[RealtimeSync] Customer update:', payload.eventType, payload.new?.id)
-          if (payload.eventType === 'DELETE') {
-            setCustomers(prev => prev.filter(c => c.id !== payload.old.id))
-          } else {
-            const newData = payload.new?.data || payload.new
-            setCustomers(prev => {
-              const exists = prev.find(c => c.id === newData.id)
-              return exists
-                ? prev.map(c => c.id === newData.id ? newData : c)
-                : [...prev, newData]
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Subscribe në expenses
-    const expSub = supabase
-      .channel(`expenses:${currentOrgId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'expenses', filter: `data->>'orgId'=eq.${currentOrgId}` },
-        (payload) => {
-          console.log('[RealtimeSync] Expense update:', payload.eventType, payload.new?.id)
-          if (payload.eventType === 'DELETE') {
-            setExpenses(prev => prev.filter(e => e.id !== payload.old.id))
-          } else {
-            const newData = payload.new?.data || payload.new
-            setExpenses(prev => {
-              const exists = prev.find(e => e.id === newData.id)
-              return exists
-                ? prev.map(e => e.id === newData.id ? newData : e)
-                : [...prev, newData]
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Subscribe në payments
-    const paymentSub = supabase
-      .channel(`payments:${currentOrgId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'payments', filter: `data->>'orgId'=eq.${currentOrgId}` },
-        (payload) => {
-          console.log('[RealtimeSync] Payment update:', payload.eventType, payload.new?.id)
-          if (payload.eventType === 'DELETE') {
-            setPayments(prev => prev.filter(p => p.id !== payload.old.id))
-          } else {
-            const newData = payload.new?.data || payload.new
-            setPayments(prev => {
-              const exists = prev.find(p => p.id === newData.id)
-              return exists
-                ? prev.map(p => p.id === newData.id ? newData : p)
-                : [...prev, newData]
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Subscribe në transfers
-    const transSub = supabase
-      .channel(`transfers:${currentOrgId}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'transfers', filter: `data->>'orgId'=eq.${currentOrgId}` },
-        (payload) => {
-          console.log('[RealtimeSync] Transfer update:', payload.eventType, payload.new?.id)
-          if (payload.eventType === 'DELETE') {
-            setTransfers(prev => prev.filter(t => t.id !== payload.old.id))
-          } else {
-            const newData = payload.new?.data || payload.new
-            setTransfers(prev => {
-              const exists = prev.find(t => t.id === newData.id)
-              return exists
-                ? prev.map(t => t.id === newData.id ? newData : t)
-                : [...prev, newData]
-            })
-          }
-        }
-      )
-      .subscribe()
-
-    // Cleanup function
-    return () => {
-      invSub?.unsubscribe()
-      custSub?.unsubscribe()
-      expSub?.unsubscribe()
-      paymentSub?.unsubscribe()
-      transSub?.unsubscribe()
-    }
-  }
-
-  // Re-subscribe kur ndryshon org
-  useEffect(() => {
-    if (!supabase || !currentOrgId || dbLoading) return
-    const cleanup = subscribeToRealtimeUpdates()
-    return cleanup
-  }, [currentOrgId, dbLoading])
+  // TODO: Supabase postgres_changes filter syntax needs review
+  // Currently disabled to prevent blank page issue
+  // Will re-enable with proper filter when tested
 
   /* ══════════════════════════════════════════════════════════
      SYNC — kur ndryshohen të dhënat, ruhen automatikisht
