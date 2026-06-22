@@ -19,7 +19,8 @@ const AppContext = createContext(null)
 const fromRows = (rows) => (rows || []).map(r => r.data)
 
 // Sinkronizon ndryshimet e një tabele: upsert të reja/ndryshuara, delete të fshira
-function diffSync(table, curr, prevRef, orgId) {
+// RREGULLIM: Async/await me proper error handling
+async function diffSync(table, curr, prevRef, orgId) {
   if (!supabase) return
   const prev = prevRef.current
   if (prev === curr) return               // asnjë ndryshim
@@ -32,25 +33,42 @@ function diffSync(table, curr, prevRef, orgId) {
 
   prevRef.current = curr
 
+  // Upsert — prit që të përfundojë para se të bësh delete
   if (toUpsert.length) {
-    supabase.from(table).upsert(
-      toUpsert.map(d => ({ id: d.id, data: { ...d, orgId: orgId || d.orgId } }))
-    ).then(result => {
-      if (result.error) {
-        console.error(`[diffSync] Error upserting ${table}:`, result.error)
+    try {
+      const { error } = await supabase
+        .from(table)
+        .upsert(
+          toUpsert.map(d => ({
+            id: d.id,
+            data: { ...d, orgId: orgId || d.orgId, _synced: new Date().toISOString() }
+          }))
+        )
+      if (error) {
+        console.error(`[diffSync] Upsert error në ${table}:`, error)
+      } else {
+        console.log(`[diffSync] ✓ Upsert në ${table}: ${toUpsert.length} rreshta`)
       }
-    }).catch(err => {
-      console.error(`[diffSync] Error upserting ${table}:`, err)
-    })
+    } catch (err) {
+      console.error(`[diffSync] Exception në upsert ${table}:`, err)
+    }
   }
+
+  // Delete — vetëm pas upsert
   if (toDelete.length) {
-    supabase.from(table).delete().in('id', toDelete.map(d => d.id)).then(result => {
-      if (result.error) {
-        console.error(`[diffSync] Error deleting from ${table}:`, result.error)
+    try {
+      const { error } = await supabase
+        .from(table)
+        .delete()
+        .in('id', toDelete.map(d => d.id))
+      if (error) {
+        console.error(`[diffSync] Delete error në ${table}:`, error)
+      } else {
+        console.log(`[diffSync] ✓ Delete nga ${table}: ${toDelete.length} rreshta`)
       }
-    }).catch(err => {
-      console.error(`[diffSync] Error deleting from ${table}:`, err)
-    })
+    } catch (err) {
+      console.error(`[diffSync] Exception në delete ${table}:`, err)
+    }
   }
 }
 
@@ -386,6 +404,11 @@ export function AppProvider({ children }) {
       }
 
       setDbLoading(false)
+
+      // RREGULLIM: Subscribe për real-time updates nga paisje të tjera
+      if (supabase) {
+        subscribeToRealtimeUpdates()
+      }
     }).catch(() => {
       // Fallback në rast gabimi rrjeti
       setInvoices(mockInvoices);        prevInvoices.current  = mockInvoices
@@ -404,17 +427,177 @@ export function AppProvider({ children }) {
   }, [])
 
   /* ══════════════════════════════════════════════════════════
+     REAL-TIME SUBSCRIPTIONS — për multi-device sync
+  ══════════════════════════════════════════════════════════ */
+  const subscribeToRealtimeUpdates = () => {
+    if (!supabase || !currentOrgId) return
+
+    console.log('[RealtimeSync] Aktivizoj subscriptions për org:', currentOrgId)
+
+    // Subscribe në invoices
+    const invSub = supabase
+      .channel(`invoices:${currentOrgId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'invoices', filter: `data->>'orgId'=eq.${currentOrgId}` },
+        (payload) => {
+          console.log('[RealtimeSync] Invoice update:', payload.eventType, payload.new?.id)
+          if (payload.eventType === 'DELETE') {
+            setInvoices(prev => prev.filter(i => i.id !== payload.old.id))
+          } else {
+            const newData = payload.new?.data || payload.new
+            setInvoices(prev => {
+              const exists = prev.find(i => i.id === newData.id)
+              return exists
+                ? prev.map(i => i.id === newData.id ? newData : i)
+                : [...prev, newData]
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe në customers
+    const custSub = supabase
+      .channel(`customers:${currentOrgId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'customers', filter: `data->>'orgId'=eq.${currentOrgId}` },
+        (payload) => {
+          console.log('[RealtimeSync] Customer update:', payload.eventType, payload.new?.id)
+          if (payload.eventType === 'DELETE') {
+            setCustomers(prev => prev.filter(c => c.id !== payload.old.id))
+          } else {
+            const newData = payload.new?.data || payload.new
+            setCustomers(prev => {
+              const exists = prev.find(c => c.id === newData.id)
+              return exists
+                ? prev.map(c => c.id === newData.id ? newData : c)
+                : [...prev, newData]
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe në expenses
+    const expSub = supabase
+      .channel(`expenses:${currentOrgId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'expenses', filter: `data->>'orgId'=eq.${currentOrgId}` },
+        (payload) => {
+          console.log('[RealtimeSync] Expense update:', payload.eventType, payload.new?.id)
+          if (payload.eventType === 'DELETE') {
+            setExpenses(prev => prev.filter(e => e.id !== payload.old.id))
+          } else {
+            const newData = payload.new?.data || payload.new
+            setExpenses(prev => {
+              const exists = prev.find(e => e.id === newData.id)
+              return exists
+                ? prev.map(e => e.id === newData.id ? newData : e)
+                : [...prev, newData]
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe në payments
+    const paymentSub = supabase
+      .channel(`payments:${currentOrgId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'payments', filter: `data->>'orgId'=eq.${currentOrgId}` },
+        (payload) => {
+          console.log('[RealtimeSync] Payment update:', payload.eventType, payload.new?.id)
+          if (payload.eventType === 'DELETE') {
+            setPayments(prev => prev.filter(p => p.id !== payload.old.id))
+          } else {
+            const newData = payload.new?.data || payload.new
+            setPayments(prev => {
+              const exists = prev.find(p => p.id === newData.id)
+              return exists
+                ? prev.map(p => p.id === newData.id ? newData : p)
+                : [...prev, newData]
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    // Subscribe në transfers
+    const transSub = supabase
+      .channel(`transfers:${currentOrgId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'transfers', filter: `data->>'orgId'=eq.${currentOrgId}` },
+        (payload) => {
+          console.log('[RealtimeSync] Transfer update:', payload.eventType, payload.new?.id)
+          if (payload.eventType === 'DELETE') {
+            setTransfers(prev => prev.filter(t => t.id !== payload.old.id))
+          } else {
+            const newData = payload.new?.data || payload.new
+            setTransfers(prev => {
+              const exists = prev.find(t => t.id === newData.id)
+              return exists
+                ? prev.map(t => t.id === newData.id ? newData : t)
+                : [...prev, newData]
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    // Cleanup function
+    return () => {
+      invSub?.unsubscribe()
+      custSub?.unsubscribe()
+      expSub?.unsubscribe()
+      paymentSub?.unsubscribe()
+      transSub?.unsubscribe()
+    }
+  }
+
+  // Re-subscribe kur ndryshon org
+  useEffect(() => {
+    if (!supabase || !currentOrgId || dbLoading) return
+    const cleanup = subscribeToRealtimeUpdates()
+    return cleanup
+  }, [currentOrgId, dbLoading])
+
+  /* ══════════════════════════════════════════════════════════
      SYNC — kur ndryshohen të dhënat, ruhen automatikisht
   ══════════════════════════════════════════════════════════ */
   const canSync = !dbLoading && !isTester && !!currentOrgId
 
-  useEffect(() => { if (canSync) diffSync('invoices',  invoices,  prevInvoices,  currentOrgId) }, [invoices,  canSync])
-  useEffect(() => { if (canSync) diffSync('customers', customers, prevCustomers, currentOrgId) }, [customers, canSync])
-  useEffect(() => { if (canSync) diffSync('expenses',  expenses,  prevExpenses,  currentOrgId) }, [expenses,  canSync])
-  useEffect(() => { if (canSync) diffSync('payments',  payments,  prevPayments,  currentOrgId) }, [payments,  canSync])
-  useEffect(() => { if (canSync) diffSync('transfers', transfers, prevTransfers, currentOrgId) }, [transfers, canSync])
-  useEffect(() => { if (canSync) diffSync('vendors',   vendors,   prevVendors,   currentOrgId) }, [vendors,   canSync])
-  useEffect(() => { if (canSync) diffSync('items',     items,     prevItems,     currentOrgId) }, [items,     canSync])
+  useEffect(() => {
+    if (canSync) diffSync('invoices',  invoices,  prevInvoices,  currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [invoices,  canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('customers', customers, prevCustomers, currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [customers, canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('expenses',  expenses,  prevExpenses,  currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [expenses,  canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('payments',  payments,  prevPayments,  currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [payments,  canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('transfers', transfers, prevTransfers, currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [transfers, canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('vendors',   vendors,   prevVendors,   currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [vendors,   canSync])
+
+  useEffect(() => {
+    if (canSync) diffSync('items',     items,     prevItems,     currentOrgId).catch(e => console.error('Sync error:', e))
+  }, [items,     canSync])
 
   // Always save activities to localStorage, and also sync to Supabase if available
   useEffect(() => {
