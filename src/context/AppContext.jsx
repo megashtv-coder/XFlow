@@ -422,11 +422,56 @@ export function AppProvider({ children }) {
   }, [])
 
   /* ══════════════════════════════════════════════════════════
-     REAL-TIME SUBSCRIPTIONS — për multi-device sync (TODO: fix filter)
+     POLLING — për multi-device sync (safe fallback)
   ══════════════════════════════════════════════════════════ */
-  // TODO: Supabase postgres_changes filter syntax needs review
-  // Currently disabled to prevent blank page issue
-  // Will re-enable with proper filter when tested
+  // Frekuenca e kontrollit (ms)
+  const POLL_INTERVAL = 5000 // 5 sekonda
+
+  const pollForUpdates = async () => {
+    if (!supabase || !currentOrgId || isTester) return
+
+    try {
+      // Kontrollo invoices
+      const { data: invData } = await supabase
+        .from('invoices')
+        .select('id,data')
+        .limit(1000)
+
+      if (invData?.length) {
+        const loaded = fromRows(invData)
+        if (JSON.stringify(loaded) !== JSON.stringify(invoices)) {
+          console.log('[Polling] Updates në invoices nga paisje të tjera')
+          setInvoices(loaded)
+          prevInvoices.current = loaded
+        }
+      }
+
+      // Kontrollo customers
+      const { data: custData } = await supabase
+        .from('customers')
+        .select('id,data')
+        .limit(1000)
+
+      if (custData?.length) {
+        const loaded = fromRows(custData)
+        if (JSON.stringify(loaded) !== JSON.stringify(customers)) {
+          console.log('[Polling] Updates në customers nga paisje të tjera')
+          setCustomers(loaded)
+          prevCustomers.current = loaded
+        }
+      }
+    } catch (err) {
+      console.error('[Polling] Error:', err)
+    }
+  }
+
+  // Aktivizo polling çdo 5 sekonda
+  useEffect(() => {
+    if (!supabase || !currentOrgId || dbLoading) return
+
+    const interval = setInterval(pollForUpdates, POLL_INTERVAL)
+    return () => clearInterval(interval)
+  }, [supabase, currentOrgId, dbLoading, invoices, customers, isTester])
 
   /* ══════════════════════════════════════════════════════════
      SYNC — kur ndryshohen të dhënat, ruhen automatikisht
