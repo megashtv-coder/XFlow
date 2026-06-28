@@ -257,23 +257,43 @@ export default function Tasks() {
   const syncTaskToSupabase = async (taskData) => {
     try {
       const { reminderDate, ...rest } = taskData
-      const payload = { ...rest, reminderdate: reminderDate }
+      const payload = {
+        ...rest,
+        reminderdate: reminderDate,
+        orgId: currentOrg?.id || 'default'
+      }
+
+      console.log('[Tasks] Syncing to Supabase:', { id: taskData.id, action: taskData.id?.startsWith('TSK-') ? 'INSERT' : 'UPDATE' })
 
       if (taskData.id?.startsWith('TSK-')) {
-        const { error: insertError } = await supabase
+        // New task - INSERT
+        const { data, error: insertError } = await supabase
           .from('tasks')
           .insert([payload])
-        if (insertError) throw insertError
+          .select()
+
+        if (insertError) {
+          console.error('[Tasks] Insert error:', insertError)
+          throw insertError
+        }
+        console.log('[Tasks] Insert success:', data)
       } else {
-        const { error: updateError } = await supabase
+        // Edit task - UPDATE
+        const { data, error: updateError } = await supabase
           .from('tasks')
           .update(payload)
           .eq('id', taskData.id)
-        if (updateError) throw updateError
+          .select()
+
+        if (updateError) {
+          console.error('[Tasks] Update error:', updateError)
+          throw updateError
+        }
+        console.log('[Tasks] Update success:', data)
       }
       return true
     } catch (e) {
-      console.error('Error syncing task:', e)
+      console.error('[Tasks] Sync error:', e.message || e)
       return false
     }
   }
