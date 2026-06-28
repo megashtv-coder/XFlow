@@ -831,6 +831,9 @@ export default function Invoices() {
 
   const today = new Date().toISOString().slice(0, 10)
 
+  // Normalize text: convert spaces and underscores to uniform format for fuzzy search
+  const normalize = (text) => (text || '').toLowerCase().replace(/[\s_-]/g, ' ').trim()
+
   const filtered = useMemo(() => invoices.filter(i => {
     // Status filter - special handling for 'overdue'
     if (statusFilter !== 'all') {
@@ -846,10 +849,10 @@ export default function Invoices() {
     if (typeFilter === 'reseller'   && getCustomerType(i.customer) !== 'reseller')   return false
     if (typeFilter === 'individual' && getCustomerType(i.customer) === 'reseller')    return false
     if (search) {
-      const searchLower = search.toLowerCase()
-      const matchCustomer = i.customer.toLowerCase().includes(searchLower)
+      const searchNorm = normalize(search)
+      const matchCustomer = normalize(i.customer).includes(searchNorm)
       const matchId = i.id.includes(search)
-      const matchReferent = i.referent && i.referent.toLowerCase().includes(searchLower)
+      const matchReferent = i.referent && normalize(i.referent).includes(searchNorm)
       if (!matchCustomer && !matchId && !matchReferent) return false
     }
     return true

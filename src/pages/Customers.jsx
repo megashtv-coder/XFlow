@@ -706,16 +706,20 @@ export default function Customers() {
     return names
   }, [invoices, today])
 
+  // Normalize text: convert spaces, underscores, dashes to uniform format for fuzzy search
+  const normalize = (text) => (text || '').toLowerCase().replace(/[\s_-]/g, ' ').trim()
+
   const filtered = useMemo(() => {
     let result = customers.filter(c => {
       const name = c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim()
+      const searchNorm = normalize(search)
       const matchSearch  = !search ||
-        name.toLowerCase().includes(search.toLowerCase()) ||
-        (c.email      || '').toLowerCase().includes(search.toLowerCase()) ||
-        (c.phone      || '').toLowerCase().includes(search.toLowerCase()) ||
-        (c.app        || '').toLowerCase().includes(search.toLowerCase()) ||
-        (c.username   || '').toLowerCase().includes(search.toLowerCase()) ||
-        (c.referredBy || '').toLowerCase().includes(search.toLowerCase())
+        normalize(name).includes(searchNorm) ||
+        normalize(c.email || '').includes(searchNorm) ||
+        normalize(c.phone || '').includes(searchNorm) ||
+        normalize(c.app || '').includes(searchNorm) ||
+        normalize(c.username || '').includes(searchNorm) ||
+        normalize(c.referredBy || '').includes(searchNorm)
       const matchType    = typeFilt    === 'all' || c.type    === typeFilt
       const matchCountry = countryFilt === 'all' || c.country === countryFilt
       return matchSearch && matchType && matchCountry
