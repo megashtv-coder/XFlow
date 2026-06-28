@@ -256,11 +256,12 @@ export default function Tasks() {
 
   const syncTaskToSupabase = async (taskData) => {
     try {
-      const { reminderDate, ...rest } = taskData
+      const { reminderDate, createdAt, ...rest } = taskData
       const payload = {
         ...rest,
         reminderdate: reminderDate,
         orgId: currentOrg?.id || 'default'
+        // Note: createdAt removed - column doesn't exist in Supabase schema
       }
 
       console.log('[Tasks] Syncing to Supabase:', { id: taskData.id, action: taskData.id?.startsWith('TSK-') ? 'INSERT' : 'UPDATE' })
