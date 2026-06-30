@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect, lazy, Suspense } from 'react'
 import {
   Receipt, Trash2, Plus, Search, X, RefreshCw,
-  ChevronLeft, ChevronRight, Filter, Users, Wallet, FileSpreadsheet,
+  ChevronLeft, ChevronRight, Filter, Users, Wallet, FileSpreadsheet, Download,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
@@ -283,6 +283,144 @@ function DeleteConfirm({ exp, onClose }) {
 }
 
 /* ══════════════════════════════════════════════════════════ */
+/* ── Export Modal Component ── */
+function ExpensesExportModal({ isOpen, onClose, expenses, fmt }) {
+  const [exportMonth, setExportMonth] = useState('')
+  const [exportFormat, setExportFormat] = useState('csv')
+
+  if (!isOpen) return null
+
+  const filtered = exportMonth
+    ? expenses.filter(e => (e.date || '').startsWith(exportMonth))
+    : expenses
+
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      alert('Nuk ka shpenzime për eksporto me këta filtera')
+      return
+    }
+
+    if (exportFormat === 'csv') {
+      exportToCSV(filtered, fmt)
+    } else {
+      exportToJSON(filtered)
+    }
+
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">Eksporto Shpenzimet</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Muaji (opsional)</label>
+            <input
+              type="month"
+              value={exportMonth}
+              onChange={(e) => setExportMonth(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Format</label>
+            <div className="flex gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="csv"
+                  checked={exportFormat === 'csv'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">CSV</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="json"
+                  checked={exportFormat === 'json'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">JSON</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">{filtered.length}</span> shpenzime do të eksportohen
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50"
+          >
+            Anulo
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Download size={16} /> Eksporto
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Export Helper Functions ── */
+function exportToCSV(expenses, fmt) {
+  const headers = ['Data', 'Lloji', 'Shitësi', 'Shuma', 'Paguar nga', 'Frekuenca']
+  const rows = expenses.map(e => [
+    e.date || '—',
+    e.type || '—',
+    e.vendor || '—',
+    e.amount,
+    e.paidBy || '—',
+    e.recurring ? e.recurringFreq : 'Një herë',
+  ])
+
+  const csv = [
+    headers.join(','),
+    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `shpenzimet-${new Date().toISOString().slice(0, 10)}.csv`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+function exportToJSON(expenses) {
+  const json = JSON.stringify(expenses, null, 2)
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `shpenzimet-${new Date().toISOString().slice(0, 10)}.json`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 export default function ExpensesPage() {
   const { expenses, setExpenses, closeModal, fmt, showToast, page, navigate, logActivity } = useApp()
 
@@ -295,6 +433,7 @@ export default function ExpensesPage() {
   const [sortField,      setSortField]     = useState('date')
   const [sortDir,        setSortDir]       = useState('desc')
   const [importOpen,     setImportOpen]    = useState(false)
+  const [exportOpen,     setExportOpen]    = useState(false)
   const [openDropdown,   setOpenDropdown]  = useState(null)
 
   // Read filters from URL parameters
@@ -435,6 +574,15 @@ export default function ExpensesPage() {
           <p className="text-sm text-gray-400 mt-0.5">Totali: {fmt(allTotal)}</p>
         </div>
         <div className="flex items-center gap-1.5">
+          {/* Export - Hidden on mobile */}
+          <button
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            onClick={() => setExportOpen(true)}
+            title="Eksporto"
+          >
+            <Download size={16}/>
+          </button>
+
           {/* Import - Hidden on mobile */}
           <button
             className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
@@ -769,6 +917,14 @@ export default function ExpensesPage() {
           </div>
         </div>
       )}
+
+      {/* Export Modal */}
+      <ExpensesExportModal
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        expenses={expenses}
+        fmt={fmt}
+      />
 
       {/* Floating Action Button - Mobile only */}
       <div
