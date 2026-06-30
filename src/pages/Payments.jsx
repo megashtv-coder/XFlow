@@ -30,6 +30,117 @@ const METHOD_ICON = {
   'Crypto': '₿', 'Stripe': '⚡',
 }
 
+/* ── Export Modal Component ── */
+function PaymentsExportModal({ isOpen, onClose, payments, fmt }) {
+  const [exportMonth, setExportMonth] = useState('')
+  const [exportFormat, setExportFormat] = useState('csv')
+
+  if (!isOpen) return null
+
+  const filtered = exportMonth
+    ? payments.filter(p => p.date.startsWith(exportMonth))
+    : payments
+
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      alert('Nuk ka pagesa për eksporto me këta filtera')
+      return
+    }
+
+    if (exportFormat === 'csv') {
+      exportCSV(filtered, exportMonth, 'all', fmt)
+    } else {
+      exportToJSON(filtered)
+    }
+
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">Eksporto Pagesat</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Muaji (opsional)</label>
+            <input
+              type="month"
+              value={exportMonth}
+              onChange={(e) => setExportMonth(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Format</label>
+            <div className="flex gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="csv"
+                  checked={exportFormat === 'csv'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">CSV</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="json"
+                  checked={exportFormat === 'json'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">JSON</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">{filtered.length}</span> pagesa do të eksportohen
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50"
+          >
+            Anulo
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Download size={16} /> Eksporto
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Export Helper Functions ── */
+function exportToJSON(payments) {
+  const json = JSON.stringify(payments, null, 2)
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `pagesat-${new Date().toISOString().slice(0, 10)}.json`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 /* ── CSV export ── */
 function exportCSV(payments, month, partner, fmt) {
   const label    = partner === 'all' ? 'Te-gjitha' : `Tek-${partner}`
@@ -109,6 +220,7 @@ export default function Payments() {
   const [sortDir,     setSortDir]   = useState('desc')
   const [deletingId,  setDeletingId] = useState(null)
   const [importOpen,  setImportOpen] = useState(false)
+  const [exportOpen,  setExportOpen] = useState(false)
 
   // Read filters from URL parameters
   useEffect(() => {
@@ -267,7 +379,7 @@ export default function Payments() {
           {/* Export - Hidden on mobile */}
           <button
             className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-            onClick={() => exportCSV(filtered, monthFilt !== 'all' ? monthFilt : '', partnerFilt, fmt)}
+            onClick={() => setExportOpen(true)}
             title="Eksporto"
           >
             <Download size={16}/>
@@ -628,6 +740,14 @@ export default function Payments() {
           )}
         </div>
       )}
+
+      {/* Export Modal */}
+      <PaymentsExportModal
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        payments={payments}
+        fmt={fmt}
+      />
 
       {/* Floating Action Button - Mobile only */}
       <div
