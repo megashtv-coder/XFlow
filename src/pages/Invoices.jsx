@@ -35,6 +35,179 @@ function buildInvoiceMsg(inv) {
   return `Fatura per: ${inv.customer}\nData e abonimit: ${inv.date || '—'}\nData e skadimit te abonimit: ${inv.subscriptionExpiry || '—'}\nAfati i pageses: ${inv.due || '—'}\nPer pagese: €${inv.amount}`
 }
 
+/* ── Export Modal Component ─────────────────────────── */
+function ExportModal({ isOpen, onClose, invoices, fmt }) {
+  const [exportStatus, setExportStatus] = useState('all')
+  const [exportMonth, setExportMonth] = useState('')
+  const [exportFormat, setExportFormat] = useState('csv')
+
+  if (!isOpen) return null
+
+  const today = new Date().toISOString().slice(0, 10)
+
+  const filtered = invoices.filter(inv => {
+    // Filter by status
+    if (exportStatus !== 'all') {
+      if (exportStatus === 'paid' && inv.status !== 'paid') return false
+      if (exportStatus === 'pending' && inv.status !== 'pending') return false
+      if (exportStatus === 'overdue' && inv.status === 'paid') return false
+    }
+
+    // Filter by month
+    if (exportMonth) {
+      const invMonth = inv.date?.slice(0, 7)
+      if (invMonth !== exportMonth) return false
+    }
+
+    return true
+  })
+
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      alert('Nuk ka fatura për eksporto me këta filtera')
+      return
+    }
+
+    if (exportFormat === 'csv') {
+      exportToCSV(filtered, fmt)
+    } else {
+      exportToJSON(filtered)
+    }
+
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">Eksporto Faturat</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          {/* Status Filter */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Statusi</label>
+            <select
+              value={exportStatus}
+              onChange={(e) => setExportStatus(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="all">Të gjitha</option>
+              <option value="paid">Të paguara</option>
+              <option value="pending">Në pritje</option>
+              <option value="overdue">Të vonuara</option>
+            </select>
+          </div>
+
+          {/* Month Filter */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Muaji (opsional)</label>
+            <input
+              type="month"
+              value={exportMonth}
+              onChange={(e) => setExportMonth(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
+
+          {/* Format Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Format</label>
+            <div className="flex gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="csv"
+                  checked={exportFormat === 'csv'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">CSV</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="json"
+                  checked={exportFormat === 'json'}
+                  onChange={(e) => setExportFormat(e.target.value)}
+                />
+                <span className="text-sm text-gray-700">JSON</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold">{filtered.length}</span> fatura do të eksportohen
+            </p>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50"
+          >
+            Anulo
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Download size={16} /> Eksporto
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Export Helper Functions ─────────────────────────── */
+function exportToCSV(invoices, fmt) {
+  const headers = ['ID', 'Klienti', 'Data', 'Shuma', 'Statusi', 'Afati i Pageses']
+  const rows = invoices.map(inv => [
+    inv.id,
+    inv.customer,
+    inv.date || '—',
+    inv.amount,
+    inv.status,
+    inv.due || '—',
+  ])
+
+  const csv = [
+    headers.join(','),
+    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+  ].join('\n')
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `faturat-${new Date().toISOString().slice(0, 10)}.csv`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
+function exportToJSON(invoices) {
+  const json = JSON.stringify(invoices, null, 2)
+  const blob = new Blob([json], { type: 'application/json;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', `faturat-${new Date().toISOString().slice(0, 10)}.json`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 /* ── compact invoice card (left panel list) ─────────── */
 function InvoiceListCard({ inv, selected, onClick }) {
   const { fmt, customers } = useApp()
@@ -743,6 +916,7 @@ export default function Invoices() {
   const [preview,      setPreview]  = useState(null)
   const [viewMode,     setViewMode] = useState('table')
   const [importOpen,   setImportOpen] = useState(false)
+  const [exportOpen,   setExportOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState(null) // Track which row's dropdown is open
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
   const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
@@ -1043,6 +1217,7 @@ export default function Invoices() {
 
             {/* Export */}
             <button
+              onClick={() => setExportOpen(true)}
               className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               title="Eksporto"
             >
@@ -1126,6 +1301,7 @@ export default function Invoices() {
           <div className="flex items-center gap-1.5 flex-wrap">
             {/* Export - Icon only - Hidden on mobile */}
             <button
+              onClick={() => setExportOpen(true)}
               className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               title="Eksporto faturat"
             >
@@ -1684,6 +1860,14 @@ export default function Invoices() {
           </>
         )}
       </div>
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
+        invoices={invoices}
+        fmt={fmt}
+      />
 
       {/* Customer Details Modal */}
       {selectedCustomer && (
