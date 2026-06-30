@@ -157,18 +157,34 @@ function FinanciareTab({ invoices, expenses, fmt }) {
           </div>
           <table className="w-full">
             <tbody>
-              {[...customers].sort((a,b) => b.total - a.total).slice(0,5).map((c,i) => (
-                <tr key={c.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
-                  <td className="table-td w-10">
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                      style={{ background: i===0?'#f59e0b':i===1?'#94a3b8':i===2?'#cd7c3d':'#e5e7eb', color: i>=3?'#6b7280':undefined }}>
-                      {i+1}
-                    </span>
-                  </td>
-                  <td className="table-td font-semibold text-gray-700 dark:text-gray-300 text-xs">{c.name}</td>
-                  <td className="table-td text-right font-bold text-red-500 text-sm">{fmt(c.total)}</td>
-                </tr>
-              ))}
+              {useMemo(() => {
+                // Calculate total per customer from invoices
+                const customerTotals = {}
+                invoices.forEach(inv => {
+                  if (!customerTotals[inv.customer]) {
+                    customerTotals[inv.customer] = 0
+                  }
+                  customerTotals[inv.customer] += inv.amount || 0
+                })
+
+                // Sort by total and get top 5
+                return [...customers]
+                  .map(c => ({ ...c, calculatedTotal: customerTotals[c.name] || 0 }))
+                  .sort((a,b) => b.calculatedTotal - a.calculatedTotal)
+                  .slice(0,5)
+                  .map((c,i) => (
+                    <tr key={c.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors">
+                      <td className="table-td w-10">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                          style={{ background: i===0?'#f59e0b':i===1?'#94a3b8':i===2?'#cd7c3d':'#e5e7eb', color: i>=3?'#6b7280':undefined }}>
+                          {i+1}
+                        </span>
+                      </td>
+                      <td className="table-td font-semibold text-gray-700 dark:text-gray-300 text-xs">{c.name}</td>
+                      <td className="table-td text-right font-bold text-red-500 text-sm">{fmt(c.calculatedTotal)}</td>
+                    </tr>
+                  ))
+              }, [invoices, customers])}
             </tbody>
           </table>
         </div>
