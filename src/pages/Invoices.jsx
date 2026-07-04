@@ -927,15 +927,6 @@ export default function Invoices() {
       localStorage.removeItem('xflow_invoice_preview')
     }
   }, [preview])
-
-  // Clear preview when navigating to create/edit mode
-  useEffect(() => {
-    const pageMatch = page.split(':')
-    const isFormMode = pageMatch[0] === 'invoices' && (pageMatch[1] === 'create' || pageMatch[1]?.includes('-'))
-    if (isFormMode) {
-      setPreview(null)
-    }
-  }, [page])
   const [openDropdown, setOpenDropdown] = useState(null) // Track which row's dropdown is open
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
   const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
@@ -1091,6 +1082,13 @@ export default function Invoices() {
 
   const hasLongOverdue = useCallback(customerName => longOverdueSet.has(customerName), [longOverdueSet])
 
+  // Clear preview and navigate (used for create/edit buttons)
+  const navigateWithClearPreview = useCallback((path) => {
+    setPreview(null)
+    localStorage.removeItem('xflow_invoice_preview')
+    navigate(path)
+  }, [navigate])
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = () => setOpenDropdown(null)
@@ -1114,7 +1112,7 @@ export default function Invoices() {
             </div>
             <button
               className="flex items-center gap-1 btn btn-primary btn-sm text-xs px-2.5 py-1.5"
-              onClick={() => navigate('invoices:create')}
+              onClick={() => navigateWithClearPreview('invoices:create')}
             >
               <Plus size={12}/> Faturë
             </button>
@@ -1237,7 +1235,7 @@ export default function Invoices() {
             {/* New Invoice */}
             <button
               className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg"
-              onClick={() => navigate('invoices:create')}
+              onClick={() => navigateWithClearPreview('invoices:create')}
               title="Faturë e re"
             >
               +
@@ -1341,7 +1339,7 @@ export default function Invoices() {
             {/* New Invoice - Primary button with + icon - Hidden on mobile (see FAB below) */}
             <button
               className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg"
-              onClick={() => navigate('invoices:create')}
+              onClick={() => navigateWithClearPreview('invoices:create')}
               title="Faturë e re"
             >
               +
@@ -1634,7 +1632,7 @@ export default function Invoices() {
             icon={FileText}
             title="Nuk u gjetën fatura"
             sub="Ndryshoni filtrat ose krijoni një faturë të re"
-            action={<button className="btn btn-primary mt-2" onClick={() => navigate('invoices:create')}>+ Faturë e re</button>}
+            action={<button className="btn btn-primary mt-2" onClick={() => navigateWithClearPreview('invoices:create')}>+ Faturë e re</button>}
           />
         ) : (
           <>
@@ -1895,7 +1893,7 @@ export default function Invoices() {
       {/* Floating Action Button - Mobile only */}
       <div
         className="fab sm:hidden"
-        onClick={() => navigate('invoices:create')}
+        onClick={() => navigateWithClearPreview('invoices:create')}
         title="Faturë e re"
       >
         <Plus size={28}/>
