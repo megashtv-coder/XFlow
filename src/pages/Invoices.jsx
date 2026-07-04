@@ -481,6 +481,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
               {inv.country && <p className="text-xs text-gray-500 mt-1">{inv.country}</p>}
               {inv.email   && <p className="text-xs text-gray-400 mt-0.5">{inv.email}</p>}
               {custObj?.phone && <p className="text-xs text-gray-400 mt-0.5">📞 {custObj.phone}</p>}
+              {custObj?.referredBy && <p className="text-xs text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
             </div>
             <div className="text-left sm:text-right sm:min-w-[190px]">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Totali për pagesë</p>
@@ -519,9 +520,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                   </span>
                 </div>
                 {inv.subscriptionExpiry && (
-                  <div className="flex items-center justify-between sm:justify-end gap-4">
-                    <span className="text-gray-400">Skadimi:</span>
-                    <span className="font-medium text-red-600 w-24 text-right">{formatDate(inv.subscriptionExpiry)}</span>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100 -mx-3">
+                    <span className="text-amber-600 font-semibold">⏰ Skadimi:</span>
+                    <span className="font-bold text-amber-700 w-24 text-right">{formatDate(inv.subscriptionExpiry)}</span>
                   </div>
                 )}
                 {inv.notifyDate && (
