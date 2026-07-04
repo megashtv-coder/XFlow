@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense, useMemo } from 'react'
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react'
 import {
   FileText, Download, Pencil, Trash2, CreditCard,
   MessageCircle, Send, XCircle, X, MessageSquare,
@@ -931,8 +931,26 @@ export default function Invoices() {
   const [confirmDelAll, setConfirmDelAll] = useState(false) // Confirmation dialog for bulk delete
   const [deletingInvoiceId, setDeletingInvoiceId] = useState(null) // Track which invoice is being deleted from dropdown
 
-  const getCustomerType = name =>
-    customers.find(c => c.name === name)?.type || 'individual'
+  // Optimize customer lookups: O(1) instead of O(n)
+  const customerMap = useMemo(() => new Map(customers.map(c => [c.name, c])), [customers])
+
+  // Memoize long overdue check to avoid scanning all invoices per row
+  const longOverdueSet = useMemo(() => {
+    const today = new Date()
+    const overdue = new Set()
+    invoices.forEach(inv => {
+      if (inv.status === 'paid' || inv.status === 'void' || !inv.due) return
+      const dueDate = new Date(inv.due)
+      const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24))
+      if (daysOverdue > 21) overdue.add(inv.customer)
+    })
+    return overdue
+  }, [invoices])
+
+  const getCustomerType = useCallback(name =>
+    customerMap.get(name)?.type || 'individual',
+    [customerMap]
+  )
 
   function handleImportInvoices(rows) {
     console.error('🔴🔴🔴 IMPORT ORGID CHECK:')
@@ -1038,7 +1056,7 @@ export default function Invoices() {
       if (!matchCustomer && !matchId && !matchReferent) return false
     }
     return true
-  }), [invoices, statusFilter, typeFilter, search, getCustomerType])
+  }), [invoices, statusFilter, typeFilter, search, customerMap])
 
   const toggleSort = field => {
     if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
@@ -1055,22 +1073,12 @@ export default function Invoices() {
     return sortDir === 'asc' ? cmp : -cmp
   }), [filtered, sortField, sortDir])
 
-  const getPhone = name => {
-    const c = customers.find(c => c.name === name)
+  const getPhone = useCallback(name => {
+    const c = customerMap.get(name)
     return c?.phone || ''
-  }
+  }, [customerMap])
 
-  // Check if customer has invoices overdue more than 3 weeks (21 days)
-  const hasLongOverdue = (customerName) => {
-    const today = new Date()
-    return invoices.some(inv => {
-      if (inv.customer !== customerName || inv.status === 'paid' || inv.status === 'void') return false
-      if (!inv.due) return false
-      const dueDate = new Date(inv.due)
-      const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24))
-      return daysOverdue > 21  // More than 3 weeks
-    })
-  }
+  const hasLongOverdue = useCallback(customerName => longOverdueSet.has(customerName), [longOverdueSet])
 
   // Close dropdown when clicking outside
   useEffect(() => {
