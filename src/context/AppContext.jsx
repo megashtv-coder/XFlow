@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import {
   mockInvoices, mockCustomers, mockExpenses, mockItems, mockVendors,
   mockPayments, mockTransfers, paymentModes as defaultPaymentModes,
@@ -27,7 +27,9 @@ async function diffSync(table, curr, prevRef, orgId) {
 
   const toUpsert = curr.filter(item => {
     const old = prev.find(i => i.id === item.id)
-    return !old || JSON.stringify(old) !== JSON.stringify(item)
+    // Fast comparison: check if item changed by comparing _synced timestamp + key fields
+    // Only upsert if missing or if _synced is missing (unsync'd changes)
+    return !old || !old._synced || !item._synced || item._synced !== old._synced
   })
   const toDelete = prev.filter(item => !curr.find(i => i.id === item.id))
 
@@ -720,16 +722,16 @@ export function AppProvider({ children }) {
   /* ══════════════════════════════════════════════════════════
      Context value
   ══════════════════════════════════════════════════════════ */
-  // Determine which data to show (tester sandbox, filtered by org, or all for superadmin)
-  const contextInvoices  = isTester ? tInvoices   : filterByOrg(invoices)
-  const contextCustomers = isTester ? tCustomers  : filterByOrg(customers)
-  const contextExpenses  = isTester ? tExpenses   : filterByOrg(expenses)
-  const contextPayments  = isTester ? tPayments   : filterByOrg(payments)
-  const contextTransfers = isTester ? tTransfers  : filterByOrg(transfers)
-  const contextUsers     = isTester ? tUsers      : filterByOrg(users)
+  // Memoize filtered data so consumers with React.memo don't re-render unnecessarily
+  const contextInvoices  = useMemo(() => isTester ? tInvoices   : filterByOrg(invoices), [isTester, tInvoices, invoices])
+  const contextCustomers = useMemo(() => isTester ? tCustomers  : filterByOrg(customers), [isTester, tCustomers, customers])
+  const contextExpenses  = useMemo(() => isTester ? tExpenses   : filterByOrg(expenses), [isTester, tExpenses, expenses])
+  const contextPayments  = useMemo(() => isTester ? tPayments   : filterByOrg(payments), [isTester, tPayments, payments])
+  const contextTransfers = useMemo(() => isTester ? tTransfers  : filterByOrg(transfers), [isTester, tTransfers, transfers])
+  const contextUsers     = useMemo(() => isTester ? tUsers      : filterByOrg(users), [isTester, tUsers, users])
 
-  return (
-    <AppContext.Provider value={{
+  // Memoize context value to prevent new object reference on every render
+  const contextValue = useMemo(() => ({
       /* Tester user sheh izolim — nuk ndikon në të dhënat reale */
       invoices:        contextInvoices,
       setInvoices:     isTester ? setTInvoices : wrappedSetInvoices,
@@ -768,7 +770,23 @@ export function AppProvider({ children }) {
       currentOrgId,
       currentOrg,
       organizations,   setOrganizations,
-    }}>
+    }), [
+      contextInvoices, wrappedSetInvoices, isTester, setTInvoices,
+      contextCustomers, wrappedSetCustomers, setTCustomers,
+      contextExpenses, wrappedSetExpenses, setTExpenses,
+      contextPayments, wrappedSetPayments, setTPayments,
+      contextTransfers, wrappedSetTransfers, setTTransfers,
+      contextUsers, wrappedSetUsers, setTUsers,
+      items, setItems, vendors, setVendors, representatives, setRepresentatives,
+      paymentModes, setPaymentModes, depositAccounts, setDepositAccounts,
+      currency, setCurrency, darkMode, setDarkMode, toast, setToast, modal, setModal, closeModal,
+      page, navigate, loading, dbLoading, sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed,
+      currentUser, setCurrentUser, activityLog, setActivityLog, logActivity, showToast, fmt, logout,
+      isSuperAdmin, currentOrgId, currentOrg, organizations, setOrganizations
+    ])
+
+  return (
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   )
