@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react'
 import {
   FileText, Download, Pencil, Trash2, CreditCard,
   MessageCircle, Send, XCircle, X, MessageSquare,
@@ -209,9 +209,9 @@ function exportToJSON(invoices) {
 }
 
 /* ── compact invoice card (left panel list) ─────────── */
-function InvoiceListCard({ inv, selected, onClick }) {
-  const { fmt, customers } = useApp()
-  const isReseller = customers.find(c => c.name === inv.customer)?.type === 'reseller'
+const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onClick, customerMap }) {
+  const { fmt } = useApp()
+  const isReseller = customerMap.get(inv.customer)?.type === 'reseller'
   const diff = inv.due
     ? Math.round((new Date(inv.due) - Date.now()) / 86_400_000)
     : null
@@ -261,7 +261,7 @@ function InvoiceListCard({ inv, selected, onClick }) {
       </div>
     </div>
   )
-}
+})
 
 /* ── invoice side panel (right panel) ───────────────── */
 function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
@@ -1166,6 +1166,7 @@ export default function Invoices() {
                   inv={inv}
                   selected={preview === inv.id}
                   onClick={() => setPreview(inv.id)}
+                  customerMap={customerMap}
                 />
               ))
             )}
