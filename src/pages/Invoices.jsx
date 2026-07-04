@@ -457,19 +457,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
 
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex justify-between items-start px-6 pt-6 pb-3">
-            <div>
-              {inv.country && (
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-400 text-sm">🌍</span>
-                  <span className="text-sm font-semibold text-gray-600">{inv.country}</span>
-                </div>
-              )}
-            </div>
-            <div className="text-right">
-              <h2 className="text-2xl font-light tracking-[0.22em] text-red-600 uppercase">Faturë</h2>
-              <p className="text-xs font-bold text-gray-500 mt-0.5">Numri i faturës {inv.id}</p>
-            </div>
+          <div className="text-right px-6 pt-4 pb-2">
+            <h2 className="text-2xl font-light tracking-[0.22em] text-red-600 uppercase">Faturë</h2>
+            <p className="text-xs font-bold text-gray-500 mt-0.5">Numri i faturës {inv.id}</p>
           </div>
 
           {/* Top section: Customer info and Total */}
