@@ -237,7 +237,7 @@ function InvoiceListCard({ inv, selected, onClick }) {
 
   return (
     <div
-      className={`px-4 py-3 cursor-pointer border-b border-gray-100 transition-all ${
+      className={`px-4 py-4 cursor-pointer border-b border-gray-100 transition-all ${
         selected
           ? 'bg-red-50 border-l-[3px] border-l-red-500'
           : 'hover:bg-gray-50 border-l-[3px] border-l-transparent'
@@ -247,16 +247,16 @@ function InvoiceListCard({ inv, selected, onClick }) {
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 min-w-0">
-            <p className="font-semibold text-gray-800 text-sm truncate">{inv.customer}</p>
+            <p className="font-semibold text-gray-800 text-base truncate">{inv.customer}</p>
             {isReseller && (
               <span className="text-[9px] font-bold px-1 py-0.5 bg-purple-100 text-purple-600 rounded flex-shrink-0">R</span>
             )}
           </div>
-          <p className="text-[11px] text-black dark:text-white mt-0.5">{inv.id} · {formatDate(inv.date)}</p>
+          <p className="text-sm text-black dark:text-white mt-1">{inv.id} · {formatDate(inv.date)}</p>
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="font-bold text-gray-800 text-sm">{fmt(inv.amount)}</p>
-          <p className={`text-[10px] font-bold mt-0.5 ${dueCls}`}>{dueLabel}</p>
+          <p className="font-bold text-gray-800 text-base">{fmt(inv.amount)}</p>
+          <p className={`text-xs font-bold mt-1 ${dueCls}`}>{dueLabel}</p>
         </div>
       </div>
     </div>
