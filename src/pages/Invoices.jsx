@@ -835,7 +835,9 @@ function KanbanBoard({ invoices, setPreview }) {
 /* Main Invoices page                                         */
 /* ══════════════════════════════════════════════════════════ */
 export default function Invoices() {
-  console.log('🆕 PARTIAL PAYMENTS SYSTEM LOADED - Invoices.jsx updated')
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('🆕 PARTIAL PAYMENTS SYSTEM LOADED - Invoices.jsx updated')
+  }
   const {
     invoices, setInvoices,
     customers,
@@ -1513,6 +1515,8 @@ export default function Invoices() {
             const rawPhone = cleanPhone(getPhone(inv.customer))
             const canContact = (inv.status === 'pending' || inv.status === 'overdue') && rawPhone
             const isOverdue = inv.status === 'overdue' || (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
+            const msgEncoded = canContact ? encodeURIComponent(buildReminderMsg(inv)) : ''
+            const reminderMsg = canContact ? buildReminderMsg(inv) : ''
 
             return (
               <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3">
@@ -1561,12 +1565,12 @@ export default function Invoices() {
 
                         {canContact && (
                           <a
-                            href={`https://wa.me/${rawPhone}?text=${encodeURIComponent(buildReminderMsg(inv))}`}
+                            href={`https://wa.me/${rawPhone}?text=${msgEncoded}`}
                             target="_blank" rel="noopener noreferrer"
                             className={`block w-full text-left px-3 py-2 text-sm hover:bg-green-50 flex items-center gap-2 border-b ${isOverdue ? 'text-orange-600' : 'text-green-600'}`}
                             onClick={e => {
                               e.stopPropagation()
-                              MessageLogService.logWhatsAppMessage(inv.customer, rawPhone, buildReminderMsg(inv), inv.id, 'prepared')
+                              MessageLogService.logWhatsAppMessage(inv.customer, rawPhone, reminderMsg, inv.id, 'prepared')
                               setOpenDropdown(null)
                             }}
                           >
