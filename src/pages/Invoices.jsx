@@ -284,8 +284,11 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
   const custObj  = customers.find(c => c.name === inv.customer)
   const rawPhone = cleanPhone(custObj?.phone || '')
   const today    = new Date().toISOString().slice(0, 10)
+  const daysUntilDue = inv.due
+    ? Math.round((new Date(inv.due) - Date.now()) / 86_400_000)
+    : null
   const isOverdue = inv.status === 'overdue' ||
-    (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
+    (daysUntilDue !== null && daysUntilDue < 0 && inv.status !== 'paid' && inv.status !== 'void')
 
   const canContact = (inv.status === 'pending' || inv.status === 'partial' || inv.status === 'overdue' || isOverdue) && rawPhone
   const canPay     = inv.status === 'pending' || inv.status === 'partial' || inv.status === 'overdue' || inv.status === 'draft'
