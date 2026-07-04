@@ -927,6 +927,15 @@ export default function Invoices() {
       localStorage.removeItem('xflow_invoice_preview')
     }
   }, [preview])
+
+  // Clear preview when navigating to create/edit mode
+  useEffect(() => {
+    const pageMatch = page.split(':')
+    const isFormMode = pageMatch[0] === 'invoices' && (pageMatch[1] === 'create' || pageMatch[1]?.includes('-'))
+    if (isFormMode) {
+      setPreview(null)
+    }
+  }, [page])
   const [openDropdown, setOpenDropdown] = useState(null) // Track which row's dropdown is open
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
   const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
