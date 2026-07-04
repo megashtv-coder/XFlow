@@ -470,41 +470,41 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
           </div>
 
           {/* Top section: Customer info and Total */}
-          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 px-6 pb-2">
-            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-2">
-              <p className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-1.5">Fatura për</p>
+          <div className="flex flex-col sm:flex-row justify-between gap-2.5 sm:gap-3 px-6 pb-1.5">
+            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-1.5">
+              <p className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Fatura për</p>
               <button
                 onClick={() => setSelectedCustomer(custObj)}
-                className="font-bold text-red-600 text-lg leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left"
+                className="font-bold text-red-600 text-base leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left"
               >
                 {inv.customer}
               </button>
-              {inv.country && <p className="text-sm text-gray-500 mt-0.5">{inv.country}</p>}
-              {inv.email   && <p className="text-sm text-gray-400 mt-0.5">{inv.email}</p>}
-              {custObj?.phone && <p className="text-sm text-gray-400 mt-0.5">📞 {custObj.phone}</p>}
-              {custObj?.referredBy && <p className="text-sm text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
+              {inv.country && <p className="text-xs text-gray-500 mt-0.5">{inv.country}</p>}
+              {inv.email   && <p className="text-xs text-gray-400 mt-0.5">{inv.email}</p>}
+              {custObj?.phone && <p className="text-xs text-gray-400 mt-0.5">📞 {custObj.phone}</p>}
+              {custObj?.referredBy && <p className="text-xs text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
             </div>
-            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-2">
-              <p className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-1.5">Totali për pagesë</p>
-              <p className="text-2xl font-bold text-gray-800 leading-tight mb-1.5">{fmt(inv.amount)}</p>
+            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-1.5">
+              <p className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1">Totali për pagesë</p>
+              <p className="text-xl font-bold text-gray-800 leading-tight mb-1">{fmt(inv.amount)}</p>
               <div className="flex items-center gap-2">
                 <StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/>
               </div>
 
               {/* Shfaq shumin e paguar dhe balancën për faturat e paguara pjesërisht */}
               {inv.status === 'partial' && inv.paidAmount > 0 && (
-                <div className="mt-1.5 p-1.5 bg-red-50 rounded-lg border border-red-100">
+                <div className="mt-1 p-1 bg-red-50 rounded-lg border border-red-100">
                   <div className="flex items-center justify-between gap-2 text-xs mb-0.5">
-                    <span className="text-red-500 font-semibold">Paguar:</span>
-                    <span className="font-bold text-red-600">{fmt(inv.paidAmount)}</span>
+                    <span className="text-red-500 font-semibold text-[11px]">Paguar:</span>
+                    <span className="font-bold text-red-600 text-[11px]">{fmt(inv.paidAmount)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-amber-600 font-semibold">Mbetur:</span>
-                    <span className="font-bold text-amber-700">{fmt(inv.amount - inv.paidAmount)}</span>
+                    <span className="text-amber-600 font-semibold text-[11px]">Mbetur:</span>
+                    <span className="font-bold text-amber-700 text-[11px]">{fmt(inv.amount - inv.paidAmount)}</span>
                   </div>
-                  <div className="mt-1 w-full bg-gray-200 rounded-full h-1">
+                  <div className="mt-0.5 w-full bg-gray-200 rounded-full h-0.5">
                     <div
-                      className="bg-red-500 h-1 rounded-full transition-all"
+                      className="bg-red-500 h-0.5 rounded-full transition-all"
                       style={{ width: `${(inv.paidAmount / inv.amount) * 100}%` }}
                     ></div>
                   </div>
@@ -514,27 +514,27 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
           </div>
 
           {/* Bottom section: Dates in grid (2 cols on mobile, 2 rows on desktop) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 px-6 pb-3">
-            <div className="bg-gray-50 rounded-lg border border-gray-100 p-2">
-              <span className="text-gray-400 text-xs mb-0.5 font-semibold uppercase tracking-wide block">Data e faturës:</span>
-              <span className="font-semibold text-gray-700 text-base block">{formatDate(inv.date)}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 px-6 pb-3">
+            <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5">
+              <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block">Data e faturës:</span>
+              <span className="font-semibold text-gray-700 text-sm block">{formatDate(inv.date)}</span>
             </div>
-            <div className="bg-gray-50 rounded-lg border border-gray-100 p-2">
-              <span className="text-gray-400 text-xs mb-0.5 font-semibold uppercase tracking-wide block">Afati i pagesës:</span>
-              <span className={`font-semibold text-base block ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
+            <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5">
+              <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block">Afati i pagesës:</span>
+              <span className={`font-semibold text-sm block ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
                 {formatDate(inv.due)}
               </span>
             </div>
             {inv.subscriptionExpiry && (
-              <div className="bg-amber-50 rounded-lg border border-amber-100 p-2">
-                <span className="text-amber-600 font-semibold text-xs mb-0.5 uppercase tracking-wide block">⏰ Skadimi:</span>
-                <span className="font-semibold text-amber-700 text-base block">{formatDate(inv.subscriptionExpiry)}</span>
+              <div className="bg-amber-50 rounded-lg border border-amber-100 p-1.5">
+                <span className="text-amber-600 font-semibold text-[11px] mb-0.5 uppercase tracking-wide block">⏰ Skadimi:</span>
+                <span className="font-semibold text-amber-700 text-sm block">{formatDate(inv.subscriptionExpiry)}</span>
               </div>
             )}
             {inv.notifyDate && (
-              <div className="bg-gray-50 rounded-lg border border-gray-100 p-2">
-                <span className="text-gray-400 text-xs mb-0.5 font-semibold uppercase tracking-wide block">🔔 Njoftim:</span>
-                <span className="font-semibold text-orange-600 text-base block">{inv.notifyDate}</span>
+              <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5">
+                <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block">🔔 Njoftim:</span>
+                <span className="font-semibold text-orange-600 text-sm block">{inv.notifyDate}</span>
               </div>
             )}
           </div>
