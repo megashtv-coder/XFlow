@@ -469,36 +469,48 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between gap-4 sm:gap-6 px-6 pb-5">
-            <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1.5">Fatura për</p>
+          <div className="flex flex-col sm:flex-row justify-between gap-6 sm:gap-8 px-6 pb-5">
+            <div className="flex-1">
+              <p className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-2">Fatura për</p>
               <button
                 onClick={() => setSelectedCustomer(custObj)}
-                className="font-bold text-red-600 text-base leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left"
+                className="font-bold text-red-600 text-lg leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left"
               >
                 {inv.customer}
               </button>
-              {inv.country && <p className="text-xs text-gray-500 mt-1">{inv.country}</p>}
-              {inv.email   && <p className="text-xs text-gray-400 mt-0.5">{inv.email}</p>}
-              {custObj?.phone && <p className="text-xs text-gray-400 mt-0.5">📞 {custObj.phone}</p>}
-              {custObj?.referredBy && <p className="text-xs text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
+              {inv.country && <p className="text-sm text-gray-500 mt-1.5">{inv.country}</p>}
+              {inv.email   && <p className="text-sm text-gray-400 mt-0.5">{inv.email}</p>}
+              {custObj?.phone && <p className="text-sm text-gray-400 mt-0.5">📞 {custObj.phone}</p>}
+              {custObj?.referredBy && <p className="text-sm text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
+
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs mb-1 font-semibold uppercase tracking-wide">Data e faturës:</span>
+                  <span className="font-semibold text-gray-700 text-lg">{formatDate(inv.date)}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs mb-1 font-semibold uppercase tracking-wide">Afati i pagesës:</span>
+                  <span className={`font-semibold text-lg ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
+                    {formatDate(inv.due)}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="text-left sm:text-right sm:min-w-[190px]">
-              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Totali për pagesë</p>
-              <p className="text-[1.7rem] font-bold text-gray-800 leading-tight mb-3">{fmt(inv.amount)}</p>
+            <div className="sm:min-w-[220px]">
+              <p className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-2">Totali për pagesë</p>
+              <p className="text-4xl font-bold text-gray-800 leading-tight mb-4">{fmt(inv.amount)}</p>
 
               {/* Shfaq shumin e paguar dhe balancën për faturat e paguara pjesërisht */}
               {inv.status === 'partial' && inv.paidAmount > 0 && (
-                <div className="mb-3 p-2 bg-red-50 rounded-lg border border-red-100">
-                  <div className="flex items-center justify-between sm:justify-end gap-4 text-xs mb-1.5">
+                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-100">
+                  <div className="flex items-center justify-between gap-4 text-sm mb-2">
                     <span className="text-red-500 font-semibold">Paguar:</span>
-                    <span className="font-bold text-red-600 w-24 text-right">{fmt(inv.paidAmount)}</span>
+                    <span className="font-bold text-red-600">{fmt(inv.paidAmount)}</span>
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-4 text-xs">
+                  <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="text-amber-600 font-semibold">Mbetur:</span>
-                    <span className="font-bold text-amber-700 w-24 text-right">{fmt(inv.amount - inv.paidAmount)}</span>
+                    <span className="font-bold text-amber-700">{fmt(inv.amount - inv.paidAmount)}</span>
                   </div>
-                  {/* Indikatori i progresit */}
                   <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-red-500 h-2 rounded-full transition-all"
@@ -508,84 +520,70 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <div className="flex flex-col">
-                    <span className="text-gray-400 text-xs mb-1 font-medium">Data e faturës:</span>
-                    <span className="font-semibold text-gray-700 text-base">{formatDate(inv.date)}</span>
+              <div className="space-y-3">
+                {inv.subscriptionExpiry && (
+                  <div className="flex flex-col bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-100">
+                    <span className="text-amber-600 font-semibold text-xs mb-1 uppercase tracking-wide">⏰ Skadimi:</span>
+                    <span className="font-bold text-amber-700 text-lg">{formatDate(inv.subscriptionExpiry)}</span>
                   </div>
+                )}
+                {inv.notifyDate && (
                   <div className="flex flex-col">
-                    <span className="text-gray-400 text-xs mb-1 font-medium">Afati i pagesës:</span>
-                    <span className={`font-semibold text-base ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
-                      {formatDate(inv.due)}
-                    </span>
+                    <span className="text-gray-400 text-xs mb-1 font-semibold uppercase tracking-wide">🔔 Njoftim:</span>
+                    <span className="font-semibold text-orange-600 text-lg">{inv.notifyDate}</span>
                   </div>
-                </div>
-                <div className="space-y-3">
-                  {inv.subscriptionExpiry && (
-                    <div className="flex flex-col bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-100">
-                      <span className="text-amber-600 font-semibold text-xs mb-1">⏰ Skadimi:</span>
-                      <span className="font-bold text-amber-700 text-base">{formatDate(inv.subscriptionExpiry)}</span>
-                    </div>
-                  )}
-                  {inv.notifyDate && (
-                    <div className="flex flex-col">
-                      <span className="text-gray-400 text-xs mb-1 font-medium">🔔 Njoftim:</span>
-                      <span className="font-semibold text-orange-600 text-base">{inv.notifyDate}</span>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-              <div className="mt-2 flex justify-start sm:justify-end">
+              <div className="mt-3 flex justify-start">
                 <StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/>
               </div>
             </div>
           </div>
 
           <div className="px-6 pb-4 overflow-x-auto">
-            <table className="w-full text-xs border-collapse min-w-[380px]">
+            <table className="w-full text-sm border-collapse min-w-[380px]">
               <thead>
                 <tr className="bg-red-500 text-white">
-                  <th className="text-center px-3 py-2.5 rounded-tl-lg w-8">#</th>
-                  <th className="text-left px-3 py-2.5">Artikulli &amp; Përshkrimi</th>
-                  <th className="text-right px-3 py-2.5 w-14">Sasia</th>
-                  <th className="text-right px-3 py-2.5 w-20">Çmimi</th>
-                  <th className="text-right px-3 py-2.5 rounded-tr-lg w-24">Shuma</th>
+                  <th className="text-center px-3 py-3 rounded-tl-lg w-8 font-semibold">#</th>
+                  <th className="text-left px-3 py-3 font-semibold">Artikulli &amp; Përshkrimi</th>
+                  <th className="text-right px-3 py-3 w-16 font-semibold">Sasia</th>
+                  <th className="text-right px-3 py-3 w-20 font-semibold">Çmimi</th>
+                  <th className="text-right px-3 py-3 rounded-tr-lg w-24 font-semibold">Shuma</th>
                 </tr>
               </thead>
               <tbody>
                 {inv.items.map((item, i) => (
                   <tr key={i} className="border-b border-gray-100 hover:bg-gray-50/50">
-                    <td className="px-3 py-2.5 text-center text-gray-400">{i + 1}</td>
-                    <td className="px-3 py-2.5">
-                      <p className="text-gray-700 font-medium">{item.desc}</p>
+                    <td className="px-3 py-3 text-center text-gray-500 text-sm">{i + 1}</td>
+                    <td className="px-3 py-3">
+                      <p className="text-gray-700 font-medium text-sm">{item.desc}</p>
                       {item.note && <p className="text-xs text-gray-400 italic mt-0.5">{item.note}</p>}
                     </td>
-                    <td className="px-3 py-2.5 text-right text-gray-600">{item.qty}</td>
-                    <td className="px-3 py-2.5 text-right text-gray-600">{fmt(item.price)}</td>
-                    <td className="px-3 py-2.5 text-right font-bold text-gray-800">{fmt(item.qty * item.price)}</td>
+                    <td className="px-3 py-3 text-right text-gray-700 text-sm">{item.qty}</td>
+                    <td className="px-3 py-3 text-right text-gray-700 text-sm">{fmt(item.price)}</td>
+                    <td className="px-3 py-3 text-right font-bold text-gray-900 text-sm">{fmt(item.qty * item.price)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="flex justify-end mt-3 pt-3 border-t-2 border-blue-200">
-              <div className="flex items-center gap-10 text-sm">
-                <span className="font-bold text-red-600">Totali</span>
-                <span className="font-bold text-gray-800 text-base">{fmt(inv.amount)}</span>
+            <div className="flex justify-end mt-4 pt-4 border-t-2 border-blue-200">
+              <div className="flex items-center gap-12">
+                <span className="font-bold text-red-600 text-lg">Totali</span>
+                <span className="font-bold text-gray-900 text-xl">{fmt(inv.amount)}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-red-50 px-6 py-3 text-center">
-            <p className="text-xs text-red-500 font-medium">Faleminderit për besimin tuaj!</p>
+          <div className="bg-red-50 px-6 py-4 text-center">
+            <p className="text-sm text-red-500 font-medium">Faleminderit për besimin tuaj!</p>
           </div>
         </div>
 
         {linkedPayment && (
-          <div className="bg-emerald-50 rounded-xl border border-emerald-100 p-4">
-            <div className="flex items-center justify-between mb-2.5">
-              <p className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
-                <CreditCard size={13}/> Pagesa e regjistruar
+          <div className="bg-emerald-50 rounded-xl border border-emerald-100 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-bold text-emerald-700 flex items-center gap-1.5">
+                <CreditCard size={15}/> Pagesa e regjistruar
               </p>
               <div className="flex items-center gap-1">
                 <button
@@ -593,12 +591,12 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                   title="Ndrysho pagesën"
                   onClick={() => setModal(<PaymentModal payment={linkedPayment} onClose={closeModal}/>)}
                 >
-                  <Pencil size={13}/>
+                  <Pencil size={15}/>
                 </button>
                 {confirmDelPayment ? (
                   <div className="flex items-center gap-1">
-                    <button className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded" onClick={doDeletePayment}>Po</button>
-                    <button className="px-2 py-0.5 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50" onClick={() => setConfirmDelPayment(false)}>Jo</button>
+                    <button className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded" onClick={doDeletePayment}>Po</button>
+                    <button className="px-2 py-1 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50" onClick={() => setConfirmDelPayment(false)}>Jo</button>
                   </div>
                 ) : (
                   <button
@@ -606,49 +604,49 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                     title="Fshij pagesën"
                     onClick={() => setConfirmDelPayment(true)}
                   >
-                    <Trash2 size={13}/>
+                    <Trash2 size={15}/>
                   </button>
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-              <div><p className="text-gray-400 mb-0.5">Data</p><p className="font-semibold text-gray-700">{formatDate(linkedPayment.date)}</p></div>
-              <div><p className="text-gray-400 mb-0.5">Shuma</p><p className="font-bold text-emerald-600">{fmt(linkedPayment.amount)}</p></div>
-              <div><p className="text-gray-400 mb-0.5">Metoda</p><p className="font-semibold text-gray-700">{linkedPayment.method}</p></div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-sm">
+              <div><p className="text-gray-500 mb-1 font-semibold text-xs">Data</p><p className="font-semibold text-gray-800">{formatDate(linkedPayment.date)}</p></div>
+              <div><p className="text-gray-500 mb-1 font-semibold text-xs">Shuma</p><p className="font-bold text-emerald-700">{fmt(linkedPayment.amount)}</p></div>
+              <div><p className="text-gray-500 mb-1 font-semibold text-xs">Metoda</p><p className="font-semibold text-gray-800">{linkedPayment.method}</p></div>
               <div>
-                <p className="text-gray-400 mb-0.5">Tek</p>
-                <p className={`font-bold ${linkedPayment.depositedTo === 'Enndy' ? 'text-red-500' : 'text-purple-600'}`}>
+                <p className="text-gray-500 mb-1 font-semibold text-xs">Tek</p>
+                <p className={`font-bold text-sm ${linkedPayment.depositedTo === 'Enndy' ? 'text-red-600' : 'text-purple-700'}`}>
                   {linkedPayment.depositedTo}
                 </p>
               </div>
             </div>
             {linkedPayment.fee > 0 && (
-              <p className="text-[11px] text-amber-600 mt-2 text-center">
+              <p className="text-sm text-amber-700 mt-3 text-center font-medium">
                 Fee: -{fmt(linkedPayment.fee)} · Neto: {fmt(linkedPayment.net)}
               </p>
             )}
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-            <MessageSquare size={12}/> Komentet e stafit
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-1.5">
+            <MessageSquare size={14}/> Komentet e stafit
           </h4>
           {(inv.comments || []).length === 0 ? (
-            <p className="text-xs text-gray-300 italic mb-3">Nuk ka komente ende.</p>
+            <p className="text-sm text-gray-400 italic mb-4">Nuk ka komente ende.</p>
           ) : (
-            <div className="space-y-2.5 mb-3">
+            <div className="space-y-3 mb-4">
               {(inv.comments || []).map((c, i) => (
                 <div key={i} className="flex gap-2">
-                  <div className="w-7 h-7 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-500 flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600 flex-shrink-0 mt-0.5">
                     {c.author[0]}
                   </div>
-                  <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <span className="text-xs font-semibold text-gray-700">{c.author}</span>
-                      <span className="text-[10px] text-gray-400">{formatDate(c.date)}</span>
+                  <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2.5">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-gray-800">{c.author}</span>
+                      <span className="text-xs text-gray-500">{formatDate(c.date)}</span>
                     </div>
-                    <p className="text-xs text-gray-600 leading-relaxed">{c.text}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed">{c.text}</p>
                   </div>
                 </div>
               ))}
@@ -656,7 +654,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
           )}
           <div className="flex gap-2">
             <textarea
-              className="form-control text-xs resize-none flex-1"
+              className="form-control text-sm resize-none flex-1"
               rows={2}
               placeholder="Shto koment rreth kësaj fature… (Enter = dërgo)"
               value={comment}
@@ -666,11 +664,11 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
               }}
             />
             <button
-              className="self-end btn btn-primary btn-sm text-xs px-3 py-1.5 flex items-center gap-1"
+              className="self-end btn btn-primary btn-sm text-sm px-3 py-2 flex items-center gap-1"
               onClick={addComment}
               disabled={!comment.trim()}
             >
-              <Send size={12}/> Dërgo
+              <Send size={14}/> Dërgo
             </button>
           </div>
         </div>
