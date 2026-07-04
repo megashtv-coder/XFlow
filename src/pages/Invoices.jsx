@@ -519,9 +519,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
               <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block">Data e faturës:</span>
               <span className="font-semibold text-gray-700 text-sm block">{formatDate(inv.date)}</span>
             </div>
-            <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5">
-              <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block">Afati i pagesës:</span>
-              <span className={`font-semibold text-sm block ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
+            <div className={`rounded-lg border p-1.5 ${isOverdue ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-100'}`}>
+              <span className={`text-[11px] mb-0.5 font-semibold uppercase tracking-wide block ${isOverdue ? 'text-red-600' : 'text-gray-400'}`}>Afati i pagesës:</span>
+              <span className={`font-semibold text-sm block ${isOverdue ? 'text-red-600 font-bold' : 'text-gray-700'}`}>
                 {formatDate(inv.due)}
               </span>
             </div>
