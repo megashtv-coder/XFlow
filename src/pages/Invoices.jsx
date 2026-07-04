@@ -508,29 +508,33 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
                 </div>
               )}
 
-              <div className="space-y-1 text-xs">
-                <div className="flex items-center justify-between sm:justify-end gap-4">
-                  <span className="text-gray-400">Data e faturës:</span>
-                  <span className="font-medium text-gray-700 w-24 text-right">{formatDate(inv.date)}</span>
-                </div>
-                <div className="flex items-center justify-between sm:justify-end gap-4">
-                  <span className="text-gray-400">Afati i pagesës:</span>
-                  <span className={`font-semibold w-24 text-right ${isOverdue ? 'text-red-500' : 'text-gray-700'}`}>
-{formatDate(inv.due)}
-                  </span>
-                </div>
-                {inv.subscriptionExpiry && (
-                  <div className="flex items-center justify-between sm:justify-end gap-4 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100 -mx-3">
-                    <span className="text-amber-600 font-semibold">⏰ Skadimi:</span>
-                    <span className="font-bold text-amber-700 w-24 text-right">{formatDate(inv.subscriptionExpiry)}</span>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 text-xs mb-1 font-medium">Data e faturës:</span>
+                    <span className="font-semibold text-gray-700 text-base">{formatDate(inv.date)}</span>
                   </div>
-                )}
-                {inv.notifyDate && (
-                  <div className="flex items-center justify-between sm:justify-end gap-4">
-                    <span className="text-gray-400">🔔 Njoftim:</span>
-                    <span className="font-medium text-orange-600 w-24 text-right">{inv.notifyDate}</span>
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 text-xs mb-1 font-medium">Afati i pagesës:</span>
+                    <span className={`font-semibold text-base ${isOverdue ? 'text-red-600' : 'text-gray-700'}`}>
+                      {formatDate(inv.due)}
+                    </span>
                   </div>
-                )}
+                </div>
+                <div className="space-y-3">
+                  {inv.subscriptionExpiry && (
+                    <div className="flex flex-col bg-amber-50 px-3 py-2.5 rounded-lg border border-amber-100">
+                      <span className="text-amber-600 font-semibold text-xs mb-1">⏰ Skadimi:</span>
+                      <span className="font-bold text-amber-700 text-base">{formatDate(inv.subscriptionExpiry)}</span>
+                    </div>
+                  )}
+                  {inv.notifyDate && (
+                    <div className="flex flex-col">
+                      <span className="text-gray-400 text-xs mb-1 font-medium">🔔 Njoftim:</span>
+                      <span className="font-semibold text-orange-600 text-base">{inv.notifyDate}</span>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="mt-2 flex justify-start sm:justify-end">
                 <StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/>
