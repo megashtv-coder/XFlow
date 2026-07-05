@@ -196,53 +196,51 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         orgId:          currentOrgId,
       }
 
+      /* 1 — regjistro pagesën (diffSync will persist to Supabase automatically) */
+      setPayments(prev => [payment, ...prev])
+
+      /* 2 — kalkuloj shumin totale të paguar për këtë faturë (must happen immediately, not in setTimeout) */
+      setInvoices(prev => prev.map(i => {
+        if (i.id !== selectedInv.id) return i
+
+        const newPaidAmount = (i.paidAmount || 0) + Number(form.amount)
+        const invoiceTotal = i.amount
+
+        let status = 'pending'
+        if (newPaidAmount >= invoiceTotal) {
+          status = 'paid'
+        } else if (newPaidAmount > 0) {
+          status = 'partial'
+        }
+
+        const updates = { ...i, paidAmount: newPaidAmount, status }
+        if (status === 'paid' && !i.paidDate) {
+          updates.paidDate = form.paidDate
+        }
+        return updates
+      }))
+
+      /* 3 — krijo shpenzim automatikisht nëse ka fee */
+      if (fee > 0) {
+        setExpenses(prev => [{
+          id:            `EXP-${Date.now() + 1}`,
+          date:          form.date,
+          type:          'Pagesa tjera',
+          vendor:        form.method,
+          paidFrom:      form.depositAccount || '',
+          reference:     `Fee transaksioni — ${form.method} (${selectedInv.id})`,
+          paidBy:        form.depositedTo,
+          recurring:     false,
+          recurringFreq: '',
+          amount:        fee,
+        }, ...prev])
+      }
+
       /* Close modal immediately for fast feedback */
       showToast(`Pagesa u regjistrua! Neto: ${fmt(net)} ✓`)
       onClose()
 
-      /* Then do updates in background — diffSync will handle Supabase */
-      setTimeout(() => {
-        /* 1 — regjistro pagesën (diffSync will persist to Supabase automatically) */
-        setPayments(prev => [payment, ...prev])
-        logActivity(`Regjistroi pagesën ${payment.id} — ${selectedInv.customer} €${Number(form.amount)}`, 'Pagesat')
-
-        /* 2 — kalkuloj shumin totale të paguar për këtë faturë */
-        setInvoices(prev => prev.map(i => {
-          if (i.id !== selectedInv.id) return i
-
-          const newPaidAmount = (i.paidAmount || 0) + Number(form.amount)
-          const invoiceTotal = i.amount
-
-          let status = 'pending'
-          if (newPaidAmount >= invoiceTotal) {
-            status = 'paid'
-          } else if (newPaidAmount > 0) {
-            status = 'partial'
-          }
-
-          const updates = { ...i, paidAmount: newPaidAmount, status }
-          if (status === 'paid' && !i.paidDate) {
-            updates.paidDate = form.paidDate
-          }
-          return updates
-        }))
-
-        /* 3 — krijo shpenzim automatikisht nëse ka fee */
-        if (fee > 0) {
-          setExpenses(prev => [{
-            id:            `EXP-${Date.now() + 1}`,
-            date:          form.date,
-            type:          'Pagesa tjera',
-            vendor:        form.method,
-            paidFrom:      form.depositAccount || '',
-            reference:     `Fee transaksioni — ${form.method} (${selectedInv.id})`,
-            paidBy:        form.depositedTo,
-            recurring:     false,
-            recurringFreq: '',
-            amount:        fee,
-          }, ...prev])
-        }
-      }, 0)
+      logActivity(`Regjistroi pagesën ${payment.id} — ${selectedInv.customer} €${Number(form.amount)}`, 'Pagesat')
     } finally {
       setIsSaving(false)
     }
