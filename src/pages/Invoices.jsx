@@ -910,23 +910,10 @@ export default function Invoices() {
   const [perPage,      setPerPage]  = useState(50)
   const [sortField,    setSortField]= useState('id')
   const [sortDir,      setSortDir]  = useState('desc')
-  const [preview,      setPreview]  = useState(() => {
-    if (typeof window === 'undefined') return null
-    const saved = localStorage.getItem('xflow_invoice_preview')
-    return saved || null
-  })
+  const [preview,      setPreview]  = useState(null)
   const [viewMode,     setViewMode] = useState('table')
   const [importOpen,   setImportOpen] = useState(false)
   const [exportOpen,   setExportOpen] = useState(false)
-
-  // Save preview state to localStorage whenever it changes
-  useEffect(() => {
-    if (preview) {
-      localStorage.setItem('xflow_invoice_preview', preview)
-    } else {
-      localStorage.removeItem('xflow_invoice_preview')
-    }
-  }, [preview])
   const [openDropdown, setOpenDropdown] = useState(null) // Track which row's dropdown is open
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer details modal
   const [selected,     setSelected] = useState(new Set()) // Selected invoices for bulk delete
@@ -1085,7 +1072,6 @@ export default function Invoices() {
   // Clear preview and navigate (used for create/edit buttons)
   const navigateWithClearPreview = useCallback((path) => {
     setPreview(null)
-    localStorage.removeItem('xflow_invoice_preview')
     navigate(path)
   }, [navigate])
 
