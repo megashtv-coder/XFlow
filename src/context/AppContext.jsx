@@ -448,8 +448,13 @@ export function AppProvider({ children }) {
   }, [expenses,  canSync])
 
   useEffect(() => {
-    if (canSync) diffSync('payments',  payments,  prevPayments,  currentOrgId).catch(e => console.error('Sync error:', e))
-  }, [payments,  canSync])
+    if (!canSync) {
+      console.log('[Payments] Sync skipped: canSync=false', { dbLoading, isTester, hasOrgId: !!currentOrgId })
+      return
+    }
+    console.log('[Payments] Sync triggered:', { count: payments?.length, prevCount: prevPayments.current?.length })
+    diffSync('payments',  payments,  prevPayments,  currentOrgId).catch(e => console.error('[Payments] Sync error:', e))
+  }, [payments,  canSync, currentOrgId])
 
   useEffect(() => {
     if (canSync) diffSync('transfers', transfers, prevTransfers, currentOrgId).catch(e => console.error('Sync error:', e))
