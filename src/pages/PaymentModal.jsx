@@ -208,13 +208,25 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
       }
 
       /* Save to Supabase first */
+      console.log('[Payment] Attempting to save:', { id: payment.id, orgId: payment.orgId, supabaseExists: !!supabase })
       if (supabase) {
-        const { error } = await supabase.from('payments').insert([payment])
-        if (error) {
-          console.error('[Payment] Insert error:', error)
-          showToast(`Gabim në ruajje: ${error.message}`, 'error')
+        try {
+          const { data, error } = await supabase.from('payments').insert([payment])
+          console.log('[Payment] Insert response:', { data, error })
+          if (error) {
+            console.error('[Payment] Insert error:', error)
+            setIsSaving(false)
+            showToast(`Gabim në ruajje: ${error.message}`, 'error')
+            return
+          }
+        } catch (e) {
+          console.error('[Payment] Insert exception:', e)
+          setIsSaving(false)
+          showToast(`Gabim në ruajje: ${e.message}`, 'error')
           return
         }
+      } else {
+        console.warn('[Payment] Supabase not available, payment will not be persisted')
       }
 
       /* Close modal immediately for fast feedback */
