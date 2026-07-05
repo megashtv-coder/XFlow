@@ -89,6 +89,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
     setPayments, setExpenses,
     paymentModes, depositAccounts,
     showToast, fmt, logActivity,
+    currentOrgId,
   } = useApp()
 
   const { canUseDepositAccounts } = useFeatures()
@@ -171,7 +172,12 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
 
         /* Save to Supabase */
         if (supabase) {
-          await supabase.from('payments').update(payload).eq('id', editPayment.id)
+          const { error } = await supabase.from('payments').update(payload).eq('id', editPayment.id)
+          if (error) {
+            console.error('[Payment] Update error:', error)
+            showToast(`Gabim në ruajje: ${error.message}`, 'error')
+            return
+          }
         }
 
         setPayments(prev => prev.map(p =>
@@ -198,11 +204,17 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         reference:      form.reference,
         depositedTo:    form.depositedTo,
         notes:          form.notes,
+        orgId:          currentOrgId,
       }
 
       /* Save to Supabase first */
       if (supabase) {
-        await supabase.from('payments').insert([payment])
+        const { error } = await supabase.from('payments').insert([payment])
+        if (error) {
+          console.error('[Payment] Insert error:', error)
+          showToast(`Gabim në ruajje: ${error.message}`, 'error')
+          return
+        }
       }
 
       /* Close modal immediately for fast feedback */
