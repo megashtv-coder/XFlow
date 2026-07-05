@@ -38,18 +38,18 @@ async function diffSync(table, curr, prevRef, orgId) {
   // Upsert — prit që të përfundojë para se të bësh delete
   if (toUpsert.length) {
     try {
-      const { error } = await supabase
+      const payload = toUpsert.map(d => ({
+        id: d.id,
+        data: { ...d, orgId: orgId || d.orgId, _synced: new Date().toISOString() }
+      }))
+      console.log(`[diffSync] Upserting ${toUpsert.length} to ${table}:`, payload.slice(0, 1))
+      const { data, error } = await supabase
         .from(table)
-        .upsert(
-          toUpsert.map(d => ({
-            id: d.id,
-            data: { ...d, orgId: orgId || d.orgId, _synced: new Date().toISOString() }
-          }))
-        )
+        .upsert(payload)
       if (error) {
-        console.error(`[diffSync] Upsert error në ${table}:`, error)
+        console.error(`[diffSync] Upsert error në ${table}:`, error, 'payload:', payload)
       } else {
-        console.log(`[diffSync] ✓ Upsert në ${table}: ${toUpsert.length} rreshta`)
+        console.log(`[diffSync] ✓ Upsert në ${table}: ${toUpsert.length} rreshta`, data)
       }
     } catch (err) {
       console.error(`[diffSync] Exception në upsert ${table}:`, err)
