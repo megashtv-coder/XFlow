@@ -213,7 +213,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
           status = 'partial'
         }
 
-        const updates = { ...i, paidAmount: newPaidAmount, status }
+        const updates = { ...i, paidAmount: newPaidAmount, status, _synced: null }
         if (status === 'paid' && !i.paidDate) {
           updates.paidDate = form.paidDate
         }
