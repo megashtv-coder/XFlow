@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
 import { Modal, FormGroup } from '../components/UI'
 import { depositedToOptions } from '../data/mockData'
-import { supabase } from '../lib/supabase'
 
 /* ── horizontal chip-slider per deposit accounts ── */
 function SlideSelect({ value, onChange, options }) {
@@ -170,16 +169,6 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
           notes:          form.notes,
         }
 
-        /* Save to Supabase */
-        if (supabase) {
-          const { error } = await supabase.from('payments').update(payload).eq('id', editPayment.id)
-          if (error) {
-            console.error('[Payment] Update error:', error)
-            showToast(`Gabim në ruajje: ${error.message}`, 'error')
-            return
-          }
-        }
-
         setPayments(prev => prev.map(p =>
           p.id === editPayment.id ? { ...p, ...payload } : p
         ))
@@ -207,35 +196,13 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         orgId:          currentOrgId,
       }
 
-      /* Save to Supabase first */
-      console.log('[Payment] Attempting to save:', { id: payment.id, orgId: payment.orgId, supabaseExists: !!supabase })
-      if (supabase) {
-        try {
-          const { data, error } = await supabase.from('payments').insert([payment])
-          console.log('[Payment] Insert response:', { data, error })
-          if (error) {
-            console.error('[Payment] Insert error:', error)
-            setIsSaving(false)
-            showToast(`Gabim në ruajje: ${error.message}`, 'error')
-            return
-          }
-        } catch (e) {
-          console.error('[Payment] Insert exception:', e)
-          setIsSaving(false)
-          showToast(`Gabim në ruajje: ${e.message}`, 'error')
-          return
-        }
-      } else {
-        console.warn('[Payment] Supabase not available, payment will not be persisted')
-      }
-
       /* Close modal immediately for fast feedback */
       showToast(`Pagesa u regjistrua! Neto: ${fmt(net)} ✓`)
       onClose()
 
-      /* Then do updates in background */
+      /* Then do updates in background — diffSync will handle Supabase */
       setTimeout(() => {
-        /* 1 — regjistro pagesën */
+        /* 1 — regjistro pagesën (diffSync will persist to Supabase automatically) */
         setPayments(prev => [payment, ...prev])
         logActivity(`Regjistroi pagesën ${payment.id} — ${selectedInv.customer} €${Number(form.amount)}`, 'Pagesat')
 
