@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
 import { Modal, FormGroup } from '../components/UI'
 import { depositedToOptions } from '../data/mockData'
+import { supabase } from '../lib/supabase'
 
 /* ── horizontal chip-slider per deposit accounts ── */
 function SlideSelect({ value, onChange, options }) {
@@ -156,21 +157,25 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
     try {
       if (isEdit) {
         /* ── UPDATE existing payment ── */
+        const payload = {
+          amount:         Number(form.amount),
+          fee,
+          net,
+          date:           form.date,
+          method:         form.method,
+          depositAccount: form.depositAccount,
+          reference:      form.reference,
+          depositedTo:    form.depositedTo,
+          notes:          form.notes,
+        }
+
+        /* Save to Supabase */
+        if (supabase) {
+          await supabase.from('payments').update(payload).eq('id', editPayment.id)
+        }
+
         setPayments(prev => prev.map(p =>
-          p.id === editPayment.id
-            ? {
-                ...p,
-                amount:         Number(form.amount),
-                fee,
-                net,
-                date:           form.date,
-                method:         form.method,
-                depositAccount: form.depositAccount,
-                reference:      form.reference,
-                depositedTo:    form.depositedTo,
-                notes:          form.notes,
-              }
-            : p
+          p.id === editPayment.id ? { ...p, ...payload } : p
         ))
         logActivity(`Përditësoi pagesën ${editPayment.id} — ${editPayment.customer} €${Number(form.amount)}`, 'Pagesat')
         showToast(`Pagesa u përditësua! Neto: ${fmt(net)} ✓`)
@@ -193,6 +198,11 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         reference:      form.reference,
         depositedTo:    form.depositedTo,
         notes:          form.notes,
+      }
+
+      /* Save to Supabase first */
+      if (supabase) {
+        await supabase.from('payments').insert([payment])
       }
 
       /* Close modal immediately for fast feedback */
