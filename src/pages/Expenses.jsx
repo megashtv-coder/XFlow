@@ -88,7 +88,16 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
     const payload = { ...form, amount: Number(form.amount) }
 
     if (isEdit) {
-      setExpenses(prev => prev.map(e => e.id === expense.id ? payload : e))
+      setExpenses(prev => {
+        // If editing a recurring expense, delete old instances from today onwards
+        if (form.recurring && !form.parentId) {
+          const today = new Date().toISOString().slice(0, 10)
+          const updated = prev.map(e => e.id === expense.id ? payload : e)
+          // Delete instances from today onwards (they will be regenerated with new config)
+          return updated.filter(e => !(e.parentId === expense.id && e.date >= today))
+        }
+        return prev.map(e => e.id === expense.id ? payload : e)
+      })
       logActivity(`Përditësoi shpenzimin ${expense.id} — ${form.type} €${Number(form.amount)}`, 'Shpenzimet')
       showToast('Shpenzimi u përditësua! ✓')
     } else {
@@ -656,7 +665,7 @@ export default function ExpensesPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {recurringItems.map(e => (
-              <div key={e.id} className="bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-blue-200 transition-colors">
+              <button key={e.id} onClick={() => navigate(`expenses:${e.id}:edit`)} className="text-left bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-red-400 hover:shadow-md transition-all cursor-pointer">
                 <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
                   <RefreshCw size={15} className="text-red-400" />
                 </div>
@@ -670,7 +679,7 @@ export default function ExpensesPage() {
                     {e.recurringFreq}
                   </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
