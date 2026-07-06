@@ -66,10 +66,13 @@ function SlideSelect({ value, onChange, options, placeholder = 'Zgjidh llogarin�
 
 /* ── Modal shpenzimi ── */
 export function ExpenseModal({ expense, onClose, isFormPage }) {
-  const { setExpenses, depositAccounts, showToast, currentOrgId, logActivity } = useApp()
+  const { setExpenses, depositAccounts, showToast, currentOrgId, logActivity, vendors, setVendors } = useApp()
   const { canUsePartnerExpenseFields } = useFeatures()
   const isEdit = !!expense
   const today = new Date().toISOString().slice(0, 10)
+
+  // Get vendors list - use app vendors, fallback to mockVendors
+  const vendorsList = vendors && vendors.length > 0 ? vendors : mockVendors
 
   const empty = {
     date: today, type: expenseTypes[0], vendor: '',
@@ -78,7 +81,25 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
   }
   const [form, setForm] = useState(isEdit ? { ...expense } : empty)
   const [err,  setErr]  = useState('')
+  const [newVendor, setNewVendor] = useState('')
+  const [showNewVendor, setShowNewVendor] = useState(false)
+  const [newType, setNewType] = useState('')
+  const [showNewType, setShowNewType] = useState(false)
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
+
+  const addNewVendor = () => {
+    if (!newVendor.trim()) return
+    if (vendorsList.some(v => v.name === newVendor)) {
+      showToast('Ky furnitor ekziston tashmë', 'warning')
+      return
+    }
+    const vendor = { id: `V-${Date.now()}`, name: newVendor }
+    setVendors(prev => [...prev, vendor])
+    set('vendor', newVendor)
+    setNewVendor('')
+    setShowNewVendor(false)
+    showToast(`Furnitori "${newVendor}" u shtua! ✓`)
+  }
 
   const save = () => {
     if (!form.type)   { setErr('Zgjidh llojin e shpenzimit.'); return }
@@ -135,19 +156,71 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
 
       {/* Lloji i shpenzimit */}
       <FormGroup label="Për çfarë është bërë shpenzimi *">
-        <select className="form-control" value={form.type}
-          onChange={e => set('type', e.target.value)}>
-          {expenseTypes.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+        {!showNewType ? (
+          <select className="form-control" value={form.type}
+            onChange={e => {
+              if (e.target.value === '__new__') {
+                setShowNewType(true)
+              } else {
+                set('type', e.target.value)
+              }
+            }}>
+            {expenseTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            <option value="__new__" className="font-bold text-red-500">+ Shto lloj të ri</option>
+          </select>
+        ) : (
+          <div className="flex gap-2">
+            <input className="form-control flex-1" type="text" placeholder="Lloji i ri i shpenzimit"
+              value={newType} onChange={e => setNewType(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && (set('type', newType), setShowNewType(false), setNewType(''))} />
+            <button type="button" onClick={() => { set('type', newType); setShowNewType(false); setNewType('') }}
+              className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600">
+              Shto
+            </button>
+            <button type="button" onClick={() => { setShowNewType(false); setNewType('') }}
+              className="px-3 py-2 bg-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-300">
+              Anulo
+            </button>
+          </div>
+        )}
       </FormGroup>
 
       {/* Furnitori */}
       <FormGroup label="Furnitori">
-        <select className="form-control" value={form.vendor}
-          onChange={e => set('vendor', e.target.value)}>
-          <option value="">Zgjidh furnitorin...</option>
-          {mockVendors.map(v => <option key={v.id} value={v.name}>{v.name}</option>)}
-        </select>
+        {!showNewVendor ? (
+          <div className="flex gap-2">
+            <select className="form-control flex-1" value={form.vendor}
+              onChange={e => {
+                if (e.target.value === '__new__') {
+                  setShowNewVendor(true)
+                } else {
+                  set('vendor', e.target.value)
+                }
+              }}>
+              <option value="">Zgjidh furnitorin...</option>
+              {vendorsList && vendorsList.map && vendorsList.map(v => (
+                <option key={v.id || v.name} value={typeof v === 'string' ? v : v.name}>
+                  {typeof v === 'string' ? v : v.name}
+                </option>
+              ))}
+              <option value="__new__" className="font-bold text-red-500">+ Shto furnitor të ri</option>
+            </select>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <input className="form-control flex-1" type="text" placeholder="Emri i furnitorit të ri"
+              value={newVendor} onChange={e => setNewVendor(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && addNewVendor()} />
+            <button type="button" onClick={addNewVendor}
+              className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600">
+              Shto
+            </button>
+            <button type="button" onClick={() => { setShowNewVendor(false); setNewVendor('') }}
+              className="px-3 py-2 bg-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-300">
+              Anulo
+            </button>
+          </div>
+        )}
       </FormGroup>
 
       {/* Nga cila llogari - Only for organizations with partner expense feature enabled */}
