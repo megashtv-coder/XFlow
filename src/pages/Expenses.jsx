@@ -14,12 +14,13 @@ const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 
 // sort/page defaults
 
-const FREQ_OPTIONS = ['Mujore', 'Vjetore', 'Ditore']
+const FREQ_OPTIONS = ['Ditore', 'Javore', 'Mujore', 'Vjetore']
 
 const FREQ_COLOR = {
+  Ditore:  'bg-amber-50 text-amber-600',
+  Javore:  'bg-blue-50 text-blue-500',
   Mujore:  'bg-red-50 text-red-500',
   Vjetore: 'bg-purple-50 text-purple-600',
-  Ditore:  'bg-amber-50 text-amber-600',
 }
 
 /* ── Slide-select për llogaritë ── */

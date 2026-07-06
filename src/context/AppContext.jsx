@@ -299,9 +299,65 @@ export function AppProvider({ children }) {
 
       const loadedInvoices  = load(inv,  [])
       const loadedCustomers = load(cust, [])
-      const loadedExpenses  = load(exp,  [])
+      let loadedExpenses    = load(exp,  [])
       const loadedPayments  = load(pay,  [])
       const loadedTransfers = load(tran, [])
+
+      // Generate instances for recurring expenses that are due (past or today)
+      const expandRecurringExpensesForToday = (expenses) => {
+        const today = new Date().toISOString().slice(0, 10)
+        const todayDate = new Date(today)
+        const currentDay = todayDate.getDate()
+        const currentMonth = todayDate.getMonth()
+        const currentYear = todayDate.getFullYear()
+
+        const recurringParents = expenses.filter(e => e.recurring && !e.parentId)
+        const instances = recurringParents.flatMap(parent => {
+          const parentDate = new Date(parent.date || today)
+          const parentDay = parentDate.getDate()
+          const result = []
+
+          // Calculate from start month to now (don't create future instances)
+          const startDate = new Date(parent.date || today)
+          const startMonth = startDate.getMonth()
+          const startYear = startDate.getFullYear()
+
+          for (let y = startYear; y <= currentYear; y++) {
+            const endMonth = y === currentYear ? currentMonth : 11
+            const startM = y === startYear ? startMonth : 0
+
+            for (let m = startM; m <= endMonth; m++) {
+              let instanceDate = new Date(y, m, parentDay)
+
+              // If day doesn't exist in month (e.g., Feb 30), use last day of month
+              if (instanceDate.getMonth() !== m) {
+                instanceDate = new Date(y, m + 1, 0)
+              }
+
+              // Only create instance if it's today or in the past
+              if (instanceDate <= todayDate) {
+                const dateStr = instanceDate.toISOString().slice(0, 10)
+                result.push({
+                  ...parent,
+                  id: `${parent.id}-${dateStr}`,
+                  date: dateStr,
+                  recurring: false,
+                  parentId: parent.id,
+                })
+              }
+            }
+          }
+
+          return result
+        })
+
+        // Check for duplicates and only add new instances
+        const existingIds = new Set(expenses.filter(e => e.parentId).map(e => e.id))
+        const newInstances = instances.filter(inst => !existingIds.has(inst.id))
+        return newInstances.length ? [...expenses, ...newInstances] : expenses
+      }
+
+      loadedExpenses = expandRecurringExpensesForToday(loadedExpenses)
       const loadedVendors   = load(vend, mockVendors)
       const loadedItems     = load(itm,  mockItems)
 
