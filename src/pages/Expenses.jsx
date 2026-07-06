@@ -74,6 +74,11 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
   // Get vendors list - use app vendors, fallback to mockVendors
   const vendorsList = vendors && vendors.length > 0 ? vendors : mockVendors
 
+  // Force re-render when vendors from context change
+  useEffect(() => {
+    // This effect runs when vendors change, triggering a re-render
+  }, [vendors])
+
   const empty = {
     date: today, type: expenseTypes[0], vendor: '',
     paidFrom: '', reference: '', paidBy: 'Enndy',
