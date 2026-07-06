@@ -123,11 +123,13 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
         // If editing a recurring expense, delete old instances from today onwards
         if (form.recurring && !form.parentId) {
           const today = new Date().toISOString().slice(0, 10)
-          const updated = prev.map(e => e.id === expense.id ? payload : e)
+          // Reset _synced to force diffSync to detect the change
+          const updated = prev.map(e => e.id === expense.id ? { ...payload, _synced: null } : e)
           // Delete instances from today onwards (they will be regenerated with new config)
           return updated.filter(e => !(e.parentId === expense.id && e.date >= today))
         }
-        return prev.map(e => e.id === expense.id ? payload : e)
+        // Reset _synced even for non-recurring to ensure changes are synced
+        return prev.map(e => e.id === expense.id ? { ...payload, _synced: null } : e)
       })
       logActivity(`Përditësoi shpenzimin ${expense.id} — ${form.type} €${Number(form.amount)}`, 'Shpenzimet')
       showToast('Shpenzimi u përditësua! ✓')
