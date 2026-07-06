@@ -76,7 +76,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
 
   // Force re-render when vendors from context change
   useEffect(() => {
-    // This effect runs when vendors change, triggering a re-render
+    console.log('[ExpenseModal] Vendors updated from context:', vendors?.length || 0)
   }, [vendors])
 
   const empty = {
@@ -94,12 +94,17 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
 
   const addNewVendor = () => {
     if (!newVendor.trim()) return
-    if (vendorsList.some(v => v.name === newVendor)) {
+    if (vendorsList.some(v => (typeof v === 'string' ? v : v.name) === newVendor)) {
       showToast('Ky furnitor ekziston tashmë', 'warning')
       return
     }
     const vendor = { id: `V-${Date.now()}`, name: newVendor }
-    setVendors(prev => [...prev, vendor])
+    console.log('[Vendor] Adding new vendor:', vendor, 'Current vendors count:', vendors?.length)
+    setVendors(prev => {
+      const updated = [...prev, vendor]
+      console.log('[Vendor] Vendors updated:', updated.length)
+      return updated
+    })
     set('vendor', newVendor)
     setNewVendor('')
     setShowNewVendor(false)
