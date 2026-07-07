@@ -1283,7 +1283,7 @@ export default function Invoices() {
         </div>
 
         {/* Right: invoice side panel */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden lg:max-w-[600px]">
           <InvoiceSidePanel
             key={preview}
             invId={preview}
