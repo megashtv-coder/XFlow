@@ -682,38 +682,40 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         </div>
       </FormGroup>
 
-      {/* ── Referenti (Sales Person) ── */}
-      <FormGroup label="Referenti (Përfaqësuesi)">
-        <Combobox
-          options={[
-            // Get unique representatives from:
-            // 1. Persistent representatives list
-            // 2. Customers' "Referuar nga" field
-            ...Array.from(new Set([
-              ...representatives,
-              ...customers
-                .filter(cust => cust.referredBy && cust.referredBy.trim())
-                .map(cust => cust.referredBy.trim())
-            ])).map(ref => ({ id: ref, name: ref }))
-          ]}
-          value={form.referent}
-          onChange={ref => set('referent', typeof ref === 'string' ? ref : ref.name)}
-          placeholder="Zgjedh referentin..."
-          getKey={ref => ref.id}
-          getLabel={ref => ref.name}
-          renderOption={ref => (
-            <span className="text-sm text-gray-800">{ref.name}</span>
-          )}
-          onAddNew={name => {
-            // Add new representative to persistent list if not already there
-            if (!representatives.includes(name)) {
-              setRepresentatives(prev => [...prev, name])
-            }
-            set('referent', name)
-          }}
-          addNewLabel="Shto referent të ri"
-        />
-      </FormGroup>
+      {/* ── Referenti (Sales Person) - Highlighted ── */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
+        <FormGroup label="👤 Referenti (Përfaqësuesi)">
+          <Combobox
+            options={[
+              // Get unique representatives from:
+              // 1. Persistent representatives list
+              // 2. Customers' "Referuar nga" field
+              ...Array.from(new Set([
+                ...representatives,
+                ...customers
+                  .filter(cust => cust.referredBy && cust.referredBy.trim())
+                  .map(cust => cust.referredBy.trim())
+              ])).map(ref => ({ id: ref, name: ref }))
+            ]}
+            value={form.referent}
+            onChange={ref => set('referent', typeof ref === 'string' ? ref : ref.name)}
+            placeholder="Zgjedh referentin..."
+            getKey={ref => ref.id}
+            getLabel={ref => ref.name}
+            renderOption={ref => (
+              <span className="text-sm text-gray-800">{ref.name}</span>
+            )}
+            onAddNew={name => {
+              // Add new representative to persistent list if not already there
+              if (!representatives.includes(name)) {
+                setRepresentatives(prev => [...prev, name])
+              }
+              set('referent', name)
+            }}
+            addNewLabel="Shto referent të ri"
+          />
+        </FormGroup>
+      </div>
 
       {/* Quick add customer form */}
       {addingCustomer && (
