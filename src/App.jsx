@@ -70,9 +70,9 @@ function OrgAppLayout() {
     }
   }, [invoices, customers, showToast])
 
-  // Auto-backup every 3 hours (fixed schedule, not on every refresh)
+  // Auto-backup every 48 hours (fixed schedule, not on every refresh)
   useEffect(() => {
-    const BACKUP_INTERVAL_MS = 3 * 60 * 60 * 1000 // 3 hours
+    const BACKUP_INTERVAL_MS = 48 * 60 * 60 * 1000 // 48 hours
     const LAST_BACKUP_KEY = 'xflow_last_backup_time'
     const CHECK_INTERVAL_MS = 5 * 60 * 1000 // Check every 5 minutes
 
@@ -81,7 +81,7 @@ function OrgAppLayout() {
       const lastBackupTime = localStorage.getItem(LAST_BACKUP_KEY)
       const now = Date.now()
 
-      // If no backup exists or 3 hours have passed, create a backup
+      // If no backup exists or 48 hours have passed, create a backup
       if (!lastBackupTime || (now - parseInt(lastBackupTime)) >= BACKUP_INTERVAL_MS) {
         const appState = { invoices, customers, items, payments, expenses, users }
         const result = BackupService.createAutoBackup(appState)

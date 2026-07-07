@@ -405,13 +405,13 @@ export default function Settings() {
         <div>
           <div className="flex items-center gap-2 mb-2 px-1">
             <Clock size={14} className="text-gray-400"/>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Auto-backup-et (çdo 3 ore)</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Auto-backup-et (çdo 48 orë)</p>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             {autoBackups.length === 0 ? (
               <div className="px-5 py-8 text-center">
                 <p className="text-sm text-gray-500">Nuk ka auto-backup-e ende</p>
-                <p className="text-xs text-gray-400 mt-1">Auto-backup-et do të krijohen automatikisht çdo 3 ore</p>
+                <p className="text-xs text-gray-400 mt-1">Auto-backup-et do të krijohen automatikisht çdo 48 orë</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
