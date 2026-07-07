@@ -1508,8 +1508,9 @@ export default function Invoices() {
             const rawPhone = cleanPhone(getPhone(inv.customer))
             const canContact = (inv.status === 'pending' || inv.status === 'overdue') && rawPhone
             const isOverdue = inv.status === 'overdue' || (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
-            const msgEncoded = canContact ? encodeURIComponent(buildReminderMsg(inv)) : ''
+            // Pre-compute reminder message once to avoid double calculation
             const reminderMsg = canContact ? buildReminderMsg(inv) : ''
+            const msgEncoded = reminderMsg ? encodeURIComponent(reminderMsg) : ''
 
             return (
               <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3">
@@ -1674,7 +1675,8 @@ export default function Invoices() {
                     const canContact = (inv.status === 'pending' || inv.status === 'overdue' || inv.status === 'paid') && rawPhone
                     const isOverdue  = inv.status === 'overdue' ||
                       (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
-                    const msg = canContact ? encodeURIComponent(buildReminderMsg(inv)) : ''
+                    // Only compute reminder message when needed (when dropdown is open)
+                    const msg = canContact && openDropdown === inv.id ? encodeURIComponent(buildReminderMsg(inv)) : ''
                     const isDropdownOpen = openDropdown === inv.id
 
                     return (
