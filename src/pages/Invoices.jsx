@@ -1726,13 +1726,8 @@ export default function Invoices() {
                 </thead>
                 <tbody>
                   {paged.map(inv => {
-                    const rawPhone = cleanPhone(getPhone(inv.customer))
-                    const canContact = (inv.status === 'pending' || inv.status === 'overdue' || inv.status === 'paid') && rawPhone
                     const isOverdue  = inv.status === 'overdue' ||
                       (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
-                    // Only compute reminder message when needed (when dropdown is open)
-                    const msg = canContact && openDropdown === inv.id ? encodeURIComponent(buildReminderMsg(inv)) : ''
-                    const isDropdownOpen = openDropdown === inv.id
 
                     return (
                       <tr
