@@ -467,7 +467,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
     <div className="flex flex-col h-full overflow-hidden">
 
       {/* ── Action toolbar ── */}
-      <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-gray-100 bg-white flex-wrap">
+      <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-gray-100 bg-white flex-wrap lg:flex-nowrap">
         {/* Mobile back button */}
         <button className="md:hidden icon-btn mr-1 text-red-500" onClick={onClose} title="Kthehu">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -1283,7 +1283,7 @@ export default function Invoices() {
         </div>
 
         {/* Right: invoice side panel */}
-        <div className="flex-1 flex flex-col overflow-hidden lg:max-w-[600px]">
+        <div className="flex-1 flex flex-col overflow-hidden lg:max-w-[900px]">
           <InvoiceSidePanel
             key={preview}
             invId={preview}
