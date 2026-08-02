@@ -10,6 +10,7 @@ import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
 import { extractCustomerMentions, extractProductMentions, getReferentCandidates } from '../services/ai/EntityExtractor'
 import { executeAction } from '../services/ai/ActionExecutor'
+import { askAI } from '../services/ai/AIQueryService'
 import { depositedToOptions } from '../data/mockData'
 
 export default function AIChatFloat() {
@@ -22,7 +23,7 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! 👋\n\nTips:\n\n1. Regjistro faturë, shkruaj:\n@Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\n2. Regjistro pagesë, shkruaj:\nPagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki\n\n3. Regjistro shpenzim, shkruaj:\nShpenzim lloji i shpenzimit, shuma, llogaria, Enndy/Samki',
+      content: 'Përshëndetje! 👋\n\nTips:\n\n1. Regjistro faturë, shkruaj:\n@Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\n2. Regjistro pagesë, shkruaj:\nPagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki\n\n3. Regjistro shpenzim, shkruaj:\nShpenzim lloji i shpenzimit, shuma, llogaria, Enndy/Samki\n\n4. Pyetmë çdo gjë tjetër, p.sh:\n"Cilët klientë skadojnë nesër?"\n"Sa fitim kam deri tash?"',
       timestamp: new Date(),
     },
   ])
@@ -289,6 +290,26 @@ export default function AIChatFloat() {
             previousResult: result,
             timestamp: new Date(),
           }
+        } else if (result.error?.code === 'NO_INTENT_DETECTED') {
+          // Not a structured command — fall back to free-form AI Q&A over
+          // the org's real data ("cilët klientë skadojnë nesër?", etc.)
+          console.log('❓ No command matched — asking AI')
+          try {
+            const answer = await askAI(userMessage, appContext)
+            responseMsg = {
+              id: `ai-${Date.now()}`,
+              type: 'answer',
+              content: answer,
+              timestamp: new Date(),
+            }
+          } catch (err) {
+            responseMsg = {
+              id: `ai-${Date.now()}`,
+              type: 'error',
+              content: 'Nuk munda të përgjigjem: ' + err.message,
+              timestamp: new Date(),
+            }
+          }
         } else {
           responseMsg = {
             id: `ai-${Date.now()}`,
@@ -430,6 +451,14 @@ export default function AIChatFloat() {
                     <div className="flex gap-2 items-start">
                       <AlertCircle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-gray-800 dark:text-gray-200">{msg.content}</p>
+                    </div>
+                  </div>
+                )}
+
+                {msg.type === 'answer' && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-lg max-w-[85%] whitespace-pre-line text-sm">
+                      {msg.content}
                     </div>
                   </div>
                 )}
