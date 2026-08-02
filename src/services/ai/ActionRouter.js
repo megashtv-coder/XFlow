@@ -257,9 +257,12 @@ function generateCreateCustomer(entities, context) {
     operation: 'CREATE',
     parameters: {
       name: entities.customer,
-      phone: entities.phone,
-      email: entities.email,
-      country: entities.country,
+      phone: entities.phone || '',
+      email: entities.email || '',
+      country: entities.country || '',
+      referent: entities.referent || '',
+      app: entities.app || '',
+      macAddress: entities.macAddress || '',
     },
   }
 }

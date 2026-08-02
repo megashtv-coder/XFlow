@@ -120,6 +120,60 @@ function executeCreateInvoice(params, appContext) {
   return { success: true, invoice, message: `✓ Fatura ${newId} u krijua me sukses!` }
 }
 
+// Same palette used by the manual "add customer" forms (Customers.jsx,
+// InvoiceModal.jsx's QuickAddCustomer) — kept in sync manually since neither
+// exports it as a shared constant.
+const CUST_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#be185d', '#0f766e']
+
+function splitName(fullName) {
+  const parts = fullName.trim().split(/\s+/)
+  return { firstName: parts[0] || '', lastName: parts.slice(1).join(' ') }
+}
+
+function executeCreateCustomer(params, appContext) {
+  const { customers = [], setCustomers, representatives = [], setRepresentatives, logActivity } = appContext
+
+  if (!params?.name) {
+    return { success: false, error: 'Mungon emri i klientit.' }
+  }
+  if (typeof setCustomers !== 'function') {
+    return { success: false, error: 'Nuk mund të krijohet klienti (sistemi nuk është gati).' }
+  }
+  if (customers.some(c => c.name.toLowerCase() === params.name.toLowerCase())) {
+    return { success: false, error: `Klienti "${params.name}" ekziston tashmë.` }
+  }
+
+  const { firstName, lastName } = splitName(params.name)
+  const customer = {
+    id: `CUS-AI-${Date.now()}`,
+    name: params.name,
+    firstName,
+    lastName,
+    phone: params.phone || '',
+    email: params.email || '',
+    country: params.country || '',
+    app: params.app || '',
+    macAddress: params.macAddress || '',
+    username: '',
+    panel: '',
+    referredBy: params.referent || '',
+    type: 'individual',
+    color: CUST_COLORS[customers.length % CUST_COLORS.length],
+    total: 0,
+    invoices: 0,
+  }
+
+  setCustomers(prev => [...prev, customer])
+
+  if (params.referent && typeof setRepresentatives === 'function' && !representatives.includes(params.referent)) {
+    setRepresentatives(prev => [...prev, params.referent])
+  }
+
+  logActivity?.(`Shtoi klientin ${params.name} (AI)`, 'Klientët')
+
+  return { success: true, customer, message: `✓ Klienti ${params.name} u shtua me sukses!` }
+}
+
 /**
  * Execute an action descriptor produced by ActionRouter.generateAction()
  * @param {Object} action - {action, type, operation, parameters}
@@ -134,6 +188,8 @@ export function executeAction(action, appContext) {
   switch (action.action) {
     case 'create_invoice':
       return executeCreateInvoice(action.parameters, appContext)
+    case 'create_customer':
+      return executeCreateCustomer(action.parameters, appContext)
     default:
       return {
         success: false,

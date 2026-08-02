@@ -110,7 +110,7 @@ function getRequirements(intent) {
     },
     CREATE_CUSTOMER: {
       required: ['customer'],
-      optional: ['phone', 'email', 'country'],
+      optional: ['phone', 'email', 'country', 'referent', 'app', 'macAddress'],
     },
     EDIT_CUSTOMER: {
       required: ['customer'],
@@ -296,6 +296,12 @@ function generateFollowUpQuestion(intent, entities, missingFields, context = {})
  */
 export function autoCorrect(text, context = {}) {
   if (!text || typeof text !== 'string') return text
+
+  // Skip: the quick "add customer" comma command carries literal free-text
+  // field values (name, phone, country, referent, app, MAC) that must never
+  // be rewritten — e.g. a name containing "Klienti" would otherwise get
+  // silently corrupted by the /\bklienti\b/gi -> 'klient' correction below.
+  if (/^\s*shto\b/i.test(text) && text.includes(',')) return text
 
   // Common replacements
   const corrections = [

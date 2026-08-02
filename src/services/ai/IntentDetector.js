@@ -54,6 +54,7 @@ const INTENT_PATTERNS = {
     /klient\s+i\s+ri/i,
     /shto\s+klient/i,
     /klient\s+për/i,
+    /^shto\s*,/i, // "Shto, Emri Mbiemri, telefoni, shteti, referenti, aplikacioni, mac"
   ],
   EDIT_CUSTOMER: [
     /ndrysho\s+klient/i,

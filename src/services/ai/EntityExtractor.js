@@ -14,6 +14,18 @@ export function extractEntities(text, context = {}) {
     return {}
   }
 
+  // Quick "add customer" comma command:
+  // "Shto, Emri Mbiemri, telefoni, shteti, referenti, aplikacioni, mac adresa"
+  // Positional fields after the leading "shto" keyword — handled entirely
+  // separately since a phone number/MAC address would otherwise confuse the
+  // amount/date/package extractors below.
+  const quickCustomer = extractQuickCustomerFields(text)
+  if (quickCustomer) {
+    return Object.fromEntries(
+      Object.entries(quickCustomer).filter(([_, v]) => v !== null && v !== undefined && v !== '')
+    )
+  }
+
   const entities = {}
 
   // Extract customer name
@@ -53,6 +65,28 @@ export function extractEntities(text, context = {}) {
   return Object.fromEntries(
     Object.entries(entities).filter(([_, v]) => v !== null && v !== undefined && v !== '')
   )
+}
+
+/**
+ * Parse the quick "add customer" comma command:
+ * "Shto, Emri Mbiemri, telefoni, shteti, referenti, aplikacioni, mac adresa"
+ * Fields after the leading "shto"/"shto klient" keyword are positional and
+ * all optional except the name. Returns null if the text isn't this format.
+ */
+function extractQuickCustomerFields(text) {
+  const trimmed = text.trim()
+  if (!/^shto\b/i.test(trimmed)) return null
+  if (!trimmed.includes(',')) return null
+
+  const parts = trimmed.split(',').map(p => p.trim())
+  // First segment is the "shto"/"shto klient" keyword itself, not a field
+  const fields = parts.slice(1).filter(p => p.length > 0)
+  if (fields.length === 0) return null
+
+  const [customer, phone, country, referent, app, macAddress] = fields
+  if (!customer) return null
+
+  return { customer, phone, country, referent, app, macAddress }
 }
 
 /**
