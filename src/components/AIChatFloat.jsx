@@ -134,11 +134,14 @@ export default function AIChatFloat() {
     setLoading(true)
 
     try {
+      console.log('🤖 Processing command:', userMessage)
       const result = await processorRef.current.processCommand(userMessage)
+      console.log('✓ Result:', result)
       setCurrentResult(result)
 
       // Auto-accept quick invoice commands
       if (result.autoAccept && result.action) {
+        console.log('⚡ Auto-accepting quick invoice')
         // Show success immediately
         const successMsg = {
           id: `ai-${Date.now()}`,
@@ -183,17 +186,19 @@ export default function AIChatFloat() {
         }
       }
 
+      console.log('📝 Adding response message:', responseMsg)
       setMessages(prev => [...prev, responseMsg])
     } catch (err) {
-      console.error('AIChat Float error:', err)
+      console.error('❌ AIChat Float error:', err)
       const errorMsg = {
         id: `ai-${Date.now()}`,
         type: 'error',
-        content: 'Gabim në procesim',
+        content: 'Gabim në procesim: ' + err.message,
         timestamp: new Date(),
       }
       setMessages(prev => [...prev, errorMsg])
     } finally {
+      console.log('✓ Resetting loading state')
       setLoading(false)
     }
   }
