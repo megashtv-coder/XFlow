@@ -5,10 +5,10 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users } from 'lucide-react'
+import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
-import { extractCustomerMentions } from '../services/ai/EntityExtractor'
+import { extractCustomerMentions, extractProductMentions } from '../services/ai/EntityExtractor'
 
 export default function AIChatFloat() {
   const appContext = useApp()
@@ -20,13 +20,14 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Kam shortcuts të reja: @Emri për faturë shpejt, ose "shto klient Emer..."',
+      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur',
       timestamp: new Date(),
     },
   ])
   const [loading, setLoading] = useState(false)
   const [currentResult, setCurrentResult] = useState(null)
   const [customerSuggestions, setCustomerSuggestions] = useState([])
+  const [productSuggestions, setProductSuggestions] = useState([])
   const messagesEndRef = useRef(null)
 
   // Initialize AI processor
@@ -41,22 +42,20 @@ export default function AIChatFloat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Handle customer mentions with @
+  // Handle @ mentions for customers and products
   const handleInputChange = (e) => {
     const value = e.target.value
     setInput(value)
 
-    // Check for @mention (allow spaces and letters)
-    const mentionMatch = value.match(/@([\w\s]*)$/)
-    if (mentionMatch && appContext?.customers) {
-      const mention = mentionMatch[1].toLowerCase().trim()
-      if (mention.length > 0) {
-        const matches = appContext.customers.filter(c => {
-          const fullName = c.name.toLowerCase()
-          const words = mention.split(' ')
-          // Match if all words are in the customer name
-          return words.every(word => fullName.includes(word))
-        })
+    const mentions = value.match(/@([\w\s]+)/g) || []
+
+    // First @ is for customer
+    if (mentions.length >= 1 && appContext?.customers) {
+      const customerMention = mentions[0].substring(1).toLowerCase().trim()
+      if (customerMention.length > 0) {
+        const matches = appContext.customers.filter(c =>
+          c.name.toLowerCase().includes(customerMention)
+        )
         setCustomerSuggestions(matches)
       } else {
         setCustomerSuggestions([])
@@ -64,12 +63,43 @@ export default function AIChatFloat() {
     } else {
       setCustomerSuggestions([])
     }
+
+    // Second @ is for product
+    if (mentions.length >= 2 && appContext?.items) {
+      const productMention = mentions[1].substring(1).toLowerCase().trim()
+      if (productMention.length > 0) {
+        const matches = appContext.items.filter(item =>
+          item.name.toLowerCase().includes(productMention)
+        )
+        setProductSuggestions(matches)
+      } else {
+        setProductSuggestions([])
+      }
+    } else {
+      setProductSuggestions([])
+    }
   }
 
   const selectCustomer = (customerName) => {
-    const newInput = input.replace(/@\w*$/, `@${customerName} `)
-    setInput(newInput)
+    const mentions = input.match(/@([\w\s]+)/g) || []
+    let newInput = input
+    if (mentions.length > 0) {
+      newInput = input.replace(mentions[0], `@${customerName}`)
+    }
+    setInput(newInput + ' ')
     setCustomerSuggestions([])
+  }
+
+  const selectProduct = (productName) => {
+    const mentions = input.match(/@([\w\s]+)/g) || []
+    let newInput = input
+    if (mentions.length >= 2) {
+      newInput = input.replace(mentions[1], `@${productName}`)
+    } else if (mentions.length === 1) {
+      newInput = input + ` @${productName}`
+    }
+    setInput(newInput + ' ')
+    setProductSuggestions([])
   }
 
   const handleSubmit = async (e) => {
@@ -269,7 +299,7 @@ export default function AIChatFloat() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Form with Customer Suggestions */}
+          {/* Input Form with Customer & Product Suggestions */}
           <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg space-y-2">
             {/* Customer Picker */}
             {customerSuggestions.length > 0 && (
@@ -283,6 +313,23 @@ export default function AIChatFloat() {
                   >
                     <Users size={14} className="text-red-500" />
                     {customer.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Product Picker */}
+            {productSuggestions.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+                {productSuggestions.map(product => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => selectProduct(product.name)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                  >
+                    <Package size={14} className="text-blue-500" />
+                    {product.name} - €{product.salePrice}
                   </button>
                 ))}
               </div>

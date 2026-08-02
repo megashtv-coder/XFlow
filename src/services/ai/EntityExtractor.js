@@ -52,19 +52,51 @@ export function extractEntities(text, context = {}) {
 }
 
 /**
+ * Extract mentions with @ prefix (customers or products)
+ * @param {string} text - User input
+ * @param {Array} items - List of items to match
+ * @returns {Array} - Matching items
+ */
+export function extractMentions(text, items = []) {
+  const mentionMatches = text.match(/@([\w\s]+)/g) || []
+  if (mentionMatches.length === 0) return []
+
+  const mentions = mentionMatches.map(m => m.substring(1).toLowerCase().trim())
+  return items.filter(item =>
+    mentions.some(mention => item.name.toLowerCase().includes(mention))
+  )
+}
+
+/**
  * Extract customers mentioned with @ prefix
  * @param {string} text - User input
  * @param {Array} customers - List of customers
  * @returns {Array} - Matching customers
  */
 export function extractCustomerMentions(text, customers = []) {
-  const mentionMatch = text.match(/@(\w+)/i)
-  if (!mentionMatch) return []
+  const mentionMatches = text.match(/@([\w\s]+)/g) || []
+  if (mentionMatches.length === 0) return []
 
-  const mention = mentionMatch[1].toLowerCase()
+  const firstMention = mentionMatches[0].substring(1).toLowerCase().trim()
   return customers.filter(c =>
-    c.name.toLowerCase().includes(mention) ||
-    c.name.split(' ')[0].toLowerCase() === mention
+    c.name.toLowerCase().includes(firstMention)
+  )
+}
+
+/**
+ * Extract products/items mentioned with @ prefix
+ * @param {string} text - User input
+ * @param {Array} items - List of products
+ * @returns {Array} - Matching products
+ */
+export function extractProductMentions(text, items = []) {
+  const mentionMatches = text.match(/@([\w\s]+)/g) || []
+  if (mentionMatches.length < 2) return []
+
+  // Get second mention (first is customer, second is product)
+  const productMention = mentionMatches[1].substring(1).toLowerCase().trim()
+  return items.filter(item =>
+    item.name.toLowerCase().includes(productMention)
   )
 }
 
