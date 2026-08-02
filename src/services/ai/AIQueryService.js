@@ -55,12 +55,79 @@ function trimPayment(p) {
   }
 }
 
+function monthKey(dateStr) {
+  return dateStr ? dateStr.slice(0, 7) : 'unknown' // "YYYY-MM"
+}
+
+// Collapse a large record list down to a per-month {count, total} series —
+// answers "profit so far" / "this month vs last month" style questions
+// without needing every raw record, so the payload stays small regardless
+// of how many years of history the org has.
+function aggregateByMonth(records, amountField) {
+  const byMonth = {}
+  for (const r of records) {
+    const key = monthKey(r.date)
+    if (!byMonth[key]) byMonth[key] = { month: key, count: 0, total: 0 }
+    byMonth[key].count += 1
+    byMonth[key].total += Number(r[amountField]) || 0
+  }
+  return Object.values(byMonth).sort((a, b) => a.month.localeCompare(b.month))
+}
+
+function daysFromToday(dateStr) {
+  if (!dateStr) return null
+  return (new Date(dateStr) - new Date()) / 86400000
+}
+
+// Sending every historical record (thousands of payments/expenses, years of
+// invoices) blew past Vercel's 4.5MB serverless request-body limit. Instead:
+// raw records only for what's actually actionable right now (unpaid
+// invoices, subscriptions expiring soon, the most recent transactions), and
+// month-by-month totals for everything else so full history stays queryable
+// for trend/profit questions without shipping every row.
 export function buildDataSnapshot(appContext) {
+  const invoices = appContext.invoices || []
+  const customers = appContext.customers || []
+  const expenses = appContext.expenses || []
+  const payments = appContext.payments || []
+
+  const unpaidInvoices = invoices
+    .filter(i => i.status !== 'paid' && i.status !== 'draft')
+    .slice(0, 1000)
+    .map(trimInvoice)
+
+  // Renewals that recently lapsed or are coming up soon — the actionable
+  // window for "which subscriptions expire tomorrow/this week" — regardless
+  // of whether that invoice happens to already be paid.
+  const subscriptionActivity = invoices
+    .filter(i => {
+      const d = daysFromToday(i.subscriptionExpiry)
+      return d !== null && d >= -30 && d <= 90
+    })
+    .slice(0, 1000)
+    .map(trimInvoice)
+
+  const recentExpenses = [...expenses]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 200)
+    .map(trimExpense)
+
+  const recentPayments = [...payments]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 200)
+    .map(trimPayment)
+
   return {
-    invoices: (appContext.invoices || []).map(trimInvoice),
-    customers: (appContext.customers || []).map(trimCustomer),
-    expenses: (appContext.expenses || []).map(trimExpense),
-    payments: (appContext.payments || []).map(trimPayment),
+    note: 'unpaidInvoices = faturat aktuale të papaguara/pjesore. subscriptionActivity = abonime që kanë skaduar 30 ditët e fundit ose skadojnë brenda 90 ditëve. invoicesMonthlySummary/expensesMonthlySummary/paymentsMonthlySummary = totale mujore për të gjithë historikun (për pyetje rreth fitimit/trendit). recentExpenses/recentPayments = 200 transaksionet më të fundit.',
+    unpaidInvoices,
+    subscriptionActivity,
+    invoicesMonthlySummary: aggregateByMonth(invoices.filter(i => i.status === 'paid'), 'amount'),
+    customers: customers.slice(0, 3000).map(trimCustomer),
+    customersTotal: customers.length,
+    recentExpenses,
+    expensesMonthlySummary: aggregateByMonth(expenses, 'amount'),
+    recentPayments,
+    paymentsMonthlySummary: aggregateByMonth(payments, 'net'),
   }
 }
 
