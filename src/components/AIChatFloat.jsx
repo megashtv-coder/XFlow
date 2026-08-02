@@ -13,6 +13,12 @@ import { executeAction } from '../services/ai/ActionExecutor'
 import { askAI } from '../services/ai/AIQueryService'
 import { depositedToOptions } from '../data/mockData'
 
+// Action types ActionExecutor actually knows how to run. A rule-based intent
+// can match (e.g. "sa fitim kam" -> PROFIT_REPORT) without ever being wired
+// up to a real executor — those should fall back to the AI Q&A instead of
+// showing a confirm card that can only ever end in "not supported yet".
+const SUPPORTED_ACTIONS = ['create_invoice', 'create_customer', 'register_payment', 'register_expense']
+
 export default function AIChatFloat() {
   const appContext = useApp()
   const processorRef = useRef(null)
@@ -280,6 +286,15 @@ export default function AIChatFloat() {
 
       let responseMsg
 
+      const askAIFallback = async () => {
+        try {
+          const answer = await askAI(userMessage, appContext)
+          return { id: `ai-${Date.now()}`, type: 'answer', content: answer, timestamp: new Date() }
+        } catch (err) {
+          return { id: `ai-${Date.now()}`, type: 'error', content: 'Nuk munda të përgjigjem: ' + err.message, timestamp: new Date() }
+        }
+      }
+
       if (!result.success) {
         if (result.error?.code === 'MISSING_FIELDS' && result.error?.followUpQuestion) {
           responseMsg = {
@@ -294,22 +309,7 @@ export default function AIChatFloat() {
           // Not a structured command — fall back to free-form AI Q&A over
           // the org's real data ("cilët klientë skadojnë nesër?", etc.)
           console.log('❓ No command matched — asking AI')
-          try {
-            const answer = await askAI(userMessage, appContext)
-            responseMsg = {
-              id: `ai-${Date.now()}`,
-              type: 'answer',
-              content: answer,
-              timestamp: new Date(),
-            }
-          } catch (err) {
-            responseMsg = {
-              id: `ai-${Date.now()}`,
-              type: 'error',
-              content: 'Nuk munda të përgjigjem: ' + err.message,
-              timestamp: new Date(),
-            }
-          }
+          responseMsg = await askAIFallback()
         } else {
           responseMsg = {
             id: `ai-${Date.now()}`,
@@ -319,7 +319,7 @@ export default function AIChatFloat() {
             timestamp: new Date(),
           }
         }
-      } else {
+      } else if (result.action && SUPPORTED_ACTIONS.includes(result.action.action)) {
         responseMsg = {
           id: `ai-${Date.now()}`,
           type: 'action',
@@ -327,6 +327,12 @@ export default function AIChatFloat() {
           action: result.action,
           timestamp: new Date(),
         }
+      } else {
+        // A rule-based intent matched (e.g. a report/list command) but isn't
+        // actually wired up to a real executor — ask the AI instead of
+        // showing a confirm card that can only ever fail.
+        console.log('❓ Intent matched but not executable — asking AI')
+        responseMsg = await askAIFallback()
       }
 
       console.log('📝 Adding response message:', responseMsg)
