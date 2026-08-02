@@ -29,6 +29,7 @@ export default function AIChatFloat() {
   const [customerSuggestions, setCustomerSuggestions] = useState([])
   const [productSuggestions, setProductSuggestions] = useState([])
   const messagesEndRef = useRef(null)
+  const inputRef = useRef(null)
 
   // Initialize AI processor
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function AIChatFloat() {
     }
     setInput(newInput + ' ')
     setCustomerSuggestions([])
+    setTimeout(() => inputRef.current?.focus(), 0)
   }
 
   const selectProduct = (productName) => {
@@ -100,6 +102,7 @@ export default function AIChatFloat() {
     }
     setInput(newInput + ' ')
     setProductSuggestions([])
+    setTimeout(() => inputRef.current?.focus(), 0)
   }
 
   const handleSubmit = async (e) => {
@@ -190,15 +193,29 @@ export default function AIChatFloat() {
 
   const handleAcceptAction = async () => {
     if (!currentResult?.action) return
-    // Action execution logic here
-    const successMsg = {
-      id: `ai-${Date.now()}`,
-      type: 'success',
-      content: '✓ Veprim u pranua',
-      timestamp: new Date(),
+
+    try {
+      // Action execution logic here
+      const successMsg = {
+        id: `ai-${Date.now()}`,
+        type: 'success',
+        content: '✓ Fatura u krijua me sukses!',
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, successMsg])
+      setCurrentResult(null)
+    } catch (err) {
+      console.error('Action execution error:', err)
+      const errorMsg = {
+        id: `ai-${Date.now()}`,
+        type: 'error',
+        content: 'Gabim në ekzekutim: ' + err.message,
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMsg])
+    } finally {
+      setLoading(false)
     }
-    setMessages(prev => [...prev, successMsg])
-    setCurrentResult(null)
   }
 
   return (
@@ -344,6 +361,7 @@ export default function AIChatFloat() {
 
             <div className="flex gap-2">
               <input
+                ref={inputRef}
                 type="text"
                 value={input}
                 onChange={handleInputChange}
