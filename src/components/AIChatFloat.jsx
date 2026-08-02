@@ -46,15 +46,21 @@ export default function AIChatFloat() {
     const value = e.target.value
     setInput(value)
 
-    // Check for @mention
-    const mentionMatch = value.match(/@(\w*)$/)
+    // Check for @mention (allow spaces and letters)
+    const mentionMatch = value.match(/@([\w\s]*)$/)
     if (mentionMatch && appContext?.customers) {
-      const mention = mentionMatch[1].toLowerCase()
-      const matches = appContext.customers.filter(c =>
-        c.name.toLowerCase().includes(mention) ||
-        c.name.split(' ')[0].toLowerCase().includes(mention)
-      )
-      setCustomerSuggestions(matches)
+      const mention = mentionMatch[1].toLowerCase().trim()
+      if (mention.length > 0) {
+        const matches = appContext.customers.filter(c => {
+          const fullName = c.name.toLowerCase()
+          const words = mention.split(' ')
+          // Match if all words are in the customer name
+          return words.every(word => fullName.includes(word))
+        })
+        setCustomerSuggestions(matches)
+      } else {
+        setCustomerSuggestions([])
+      }
     } else {
       setCustomerSuggestions([])
     }
