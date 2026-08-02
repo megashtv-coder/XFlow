@@ -5,11 +5,12 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package, HelpCircle } from 'lucide-react'
+import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package, HelpCircle, CreditCard, Wallet } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
 import { extractCustomerMentions, extractProductMentions, getReferentCandidates } from '../services/ai/EntityExtractor'
 import { executeAction } from '../services/ai/ActionExecutor'
+import { depositedToOptions } from '../data/mockData'
 
 export default function AIChatFloat() {
   const appContext = useApp()
@@ -21,7 +22,7 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)',
+      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\nPagesë: Pagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki',
       timestamp: new Date(),
     },
   ])
@@ -30,6 +31,8 @@ export default function AIChatFloat() {
   const [customerSuggestions, setCustomerSuggestions] = useState([])
   const [referentSuggestions, setReferentSuggestions] = useState([])
   const [productSuggestions, setProductSuggestions] = useState([])
+  const [paymentModeSuggestions, setPaymentModeSuggestions] = useState([])
+  const [depositedToSuggestions, setDepositedToSuggestions] = useState([])
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -74,13 +77,36 @@ export default function AIChatFloat() {
       setCustomerSuggestions([])
     }
 
+    setReferentSuggestions([])
+    setProductSuggestions([])
+    setPaymentModeSuggestions([])
+    setDepositedToSuggestions([])
+
+    // "Pagese @Klienti @FormaPageses Shuma Fee @Enndy" — 2nd @ is the payment
+    // mode, 3rd @ is who received it (Enndy/Samki), both from fixed lists.
+    if (/^pagese\b/i.test(value.trim())) {
+      if (mentions.length === 2) {
+        const modeMention = mentions[1].substring(1).toLowerCase().trim()
+        if (modeMention.length > 0 && appContext?.paymentModes) {
+          setPaymentModeSuggestions(
+            appContext.paymentModes.filter(m => m.toLowerCase().includes(modeMention))
+          )
+        }
+      } else if (mentions.length >= 3) {
+        const lastMention = mentions[mentions.length - 1].substring(1).toLowerCase().trim()
+        if (lastMention.length > 0) {
+          setDepositedToSuggestions(
+            depositedToOptions.filter(d => d.toLowerCase().includes(lastMention))
+          )
+        }
+      }
+      return
+    }
+
     // Second @ can be a referent (only if it matches a known referent — the
     // persistent representatives list plus every customer's "Referuar nga")
     // or, when no referent is intended, the product. Third @ (once a
     // referent is present) is always the product.
-    setReferentSuggestions([])
-    setProductSuggestions([])
-
     if (mentions.length === 2) {
       const secondMention = mentions[1].substring(1).toLowerCase().trim()
       if (secondMention.length > 0) {
@@ -139,6 +165,40 @@ export default function AIChatFloat() {
     const finalInput = newInput + ' '
     setInput(finalInput)
     setReferentSuggestions([])
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        inputRef.current.setSelectionRange(finalInput.length, finalInput.length)
+      }
+    }, 0)
+  }
+
+  const selectPaymentMode = (mode) => {
+    const mentions = input.match(/@([\w\s]+)/g) || []
+    let newInput = input
+    if (mentions.length > 0) {
+      newInput = input.replace(mentions[mentions.length - 1], `@${mode}`)
+    }
+    const finalInput = newInput + ' '
+    setInput(finalInput)
+    setPaymentModeSuggestions([])
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        inputRef.current.setSelectionRange(finalInput.length, finalInput.length)
+      }
+    }, 0)
+  }
+
+  const selectDepositedTo = (name) => {
+    const mentions = input.match(/@([\w\s]+)/g) || []
+    let newInput = input
+    if (mentions.length > 0) {
+      newInput = input.replace(mentions[mentions.length - 1], `@${name}`)
+    }
+    const finalInput = newInput + ' '
+    setInput(finalInput)
+    setDepositedToSuggestions([])
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus()
@@ -460,6 +520,40 @@ export default function AIChatFloat() {
                   >
                     <Package size={14} className="text-blue-500" />
                     {product.name} - €{product.salePrice}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Payment Mode Picker */}
+            {paymentModeSuggestions.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+                {paymentModeSuggestions.map(mode => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => selectPaymentMode(mode)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                  >
+                    <CreditCard size={14} className="text-purple-500" />
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Deposited To Picker */}
+            {depositedToSuggestions.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+                {depositedToSuggestions.map(name => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => selectDepositedTo(name)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                  >
+                    <Wallet size={14} className="text-green-500" />
+                    {name}
                   </button>
                 ))}
               </div>
