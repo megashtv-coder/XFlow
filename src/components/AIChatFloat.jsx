@@ -34,6 +34,13 @@ export default function AIChatFloat() {
   // Initialize AI processor
   useEffect(() => {
     if (!processorRef.current && appContext) {
+      console.log('🚀 Initializing AI processor with appContext:', {
+        hasCustomers: !!appContext.customers,
+        customersCount: appContext.customers?.length || 0,
+        customersNames: appContext.customers?.map(c => c.name) || [],
+        hasItems: !!appContext.items,
+        itemsCount: appContext.items?.length || 0,
+      })
       processorRef.current = createAICommandProcessor(appContext)
     }
   }, [appContext])
