@@ -184,6 +184,16 @@ function extractAmount(text) {
     }
   }
 
+  // Fallback for @mention quick-invoice commands ("@Klienti @Paketa Shuma"):
+  // a bare number at the end of the text is the price, e.g. "@Viktor @12 muaj 100"
+  if (text.includes('@')) {
+    const trailing = text.trim().match(/(\d+(?:[.,]\d{2})?)\s*$/)
+    if (trailing) {
+      const amount = parseFloat(trailing[1].replace(',', '.'))
+      return isNaN(amount) ? null : amount
+    }
+  }
+
   return null
 }
 
@@ -448,17 +458,27 @@ function extractPeriod(text) {
 export function getPriceFromPackage(pkg, items = []) {
   if (!pkg) return null
 
-  // If item is referenced
+  // If a specific product/item was referenced by name
   if (pkg.item) {
     const item = items.find(i => i.name === pkg.item)
-    return item ? item.salePrice : null
+    return item ? item.salePrice : (pkg.price ?? null)
   }
 
-  // Default prices by duration
+  // Otherwise resolve the package's own price from the real product catalogue
+  // (e.g. "12 months" → the "12 muaj abonim" item's actual salePrice)
+  if (pkg.months) {
+    const match = items.find(i => {
+      const m = i.name.match(/(\d+)\s*muaj/i)
+      return m && parseInt(m[1], 10) === pkg.months
+    })
+    if (match) return match.salePrice
+  }
+
+  // Last-resort defaults if no catalogue price is available
   const priceMap = {
     '1 month': 10,
-    '3 months': 30,
-    '6 months': 50,
+    '3 months': 40,
+    '6 months': 60,
     '12 months': 100,
   }
 

@@ -8,6 +8,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Send, Loader, AlertCircle, CheckCircle, HelpCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
+import { executeAction } from '../services/ai/ActionExecutor'
 
 export default function AIChat() {
   const appContext = useApp()
@@ -209,13 +210,14 @@ export default function AIChat() {
   const handleAcceptAction = () => {
     if (!currentResult?.action) return
 
-    // TODO: Call actual action handler
-    console.log('Execute action:', currentResult.action)
+    const execResult = executeAction(currentResult.action, appContext)
 
     setMessages(prev => [...prev, {
       id: `ai-executed-${Date.now()}`,
-      type: 'executed',
-      content: '✓ Veprim u ekzekutua me sukses',
+      type: execResult.success ? 'executed' : 'error',
+      content: execResult.success
+        ? (execResult.message || '✓ Veprimi u ekzekutua me sukses')
+        : (execResult.error || 'Veprimi dështoi.'),
       action: currentResult.action,
       timestamp: new Date(),
     }])

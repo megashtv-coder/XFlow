@@ -9,6 +9,7 @@ import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Us
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
 import { extractCustomerMentions, extractProductMentions } from '../services/ai/EntityExtractor'
+import { executeAction } from '../services/ai/ActionExecutor'
 
 export default function AIChatFloat() {
   const appContext = useApp()
@@ -164,11 +165,13 @@ export default function AIChatFloat() {
       // Auto-accept quick invoice commands
       if (result.autoAccept && result.action) {
         console.log('⚡ Auto-accepting quick invoice')
-        // Show success immediately
+        const execResult = executeAction(result.action, appContext)
         const successMsg = {
           id: `ai-${Date.now()}`,
-          type: 'success',
-          content: '✓ Fatura u krijua me sukses!',
+          type: execResult.success ? 'success' : 'error',
+          content: execResult.success
+            ? (execResult.message || '✓ Veprimi u krye me sukses!')
+            : (execResult.error || 'Veprimi dështoi.'),
           timestamp: new Date(),
         }
         setMessages(prev => [...prev, successMsg])
@@ -242,14 +245,16 @@ export default function AIChatFloat() {
     if (!currentResult?.action) return
 
     try {
-      // Action execution logic here
-      const successMsg = {
+      const execResult = executeAction(currentResult.action, appContext)
+      const resultMsg = {
         id: `ai-${Date.now()}`,
-        type: 'success',
-        content: '✓ Fatura u krijua me sukses!',
+        type: execResult.success ? 'success' : 'error',
+        content: execResult.success
+          ? (execResult.message || '✓ Veprimi u krye me sukses!')
+          : (execResult.error || 'Veprimi dështoi.'),
         timestamp: new Date(),
       }
-      setMessages(prev => [...prev, successMsg])
+      setMessages(prev => [...prev, resultMsg])
       setCurrentResult(null)
     } catch (err) {
       console.error('Action execution error:', err)

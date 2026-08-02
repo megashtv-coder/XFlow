@@ -3,6 +3,8 @@
  * Validates extracted entities and determines if all required data is present
  */
 
+import { getPriceFromPackage } from './EntityExtractor'
+
 export class ValidationError extends Error {
   constructor(code, message, field = null, suggestion = null) {
     super(message)
@@ -22,6 +24,15 @@ export class ValidationError extends Error {
 export function validateAction(intent, entities, context = {}) {
   const errors = []
   const missingFields = []
+
+  // If a package/product was selected but no explicit price was given,
+  // default the amount to that package's own configured price.
+  if (!entities.amount && entities.package) {
+    const packagePrice = getPriceFromPackage(entities.package, context.items || [])
+    if (packagePrice) {
+      entities.amount = packagePrice
+    }
+  }
 
   // Get required fields for this intent
   const requirements = getRequirements(intent)
