@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, memo, useMemo } from 'react'
-import { Bell, MessageCircle, Send, Calendar, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react'
+import { useState, memo, useMemo } from 'react'
+import { Bell, MessageCircle, Send, Calendar, CheckCircle2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 
@@ -29,24 +29,6 @@ function markSent(invId, date) {
   const m = getSentMap(); m[invId] = date
   localStorage.setItem(LS_KEY, JSON.stringify(m))
 }
-function wasSentToday(invId, today) {
-  return getSentMap()[invId] === today
-}
-
-/* Dërgo mesazh WhatsApp via API endpoint */
-async function sendWA(phone, message) {
-  const res = await fetch('/api/send-whatsapp', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone, message }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.error || `HTTP ${res.status}`)
-  }
-  return res.json()
-}
-
 /* ── Single row card ── */
 const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
   const { fmt } = useApp()
@@ -323,7 +305,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, ite
    Main page
 ══════════════════════════════════════════════════════════ */
 export default function Subscriptions() {
-  const { invoices, customers, showToast } = useApp()
+  const { invoices, customers } = useApp()
 
   const today  = new Date().toISOString().slice(0, 10)
   const week7  = addDays(today, 7)
@@ -336,80 +318,20 @@ export default function Subscriptions() {
   const thisWeek = withNotify.filter(i => i.notifyDate > today && i.notifyDate <= week7)
   const future   = withNotify.filter(i => i.notifyDate > week7)
 
-  /* Gjurmim — cilët janë dërguar sot */
-  const [sentIds, setSentIds] = useState(() => {
+  /* Gjurmim — cilët janë dërguar sot (vetëm për dërgime manuale nga kjo faqe;
+     dërgimet automatike ndodhin server-side tani, jo këtu) */
+  const [sentIds] = useState(() => {
     const m = getSentMap()
     return new Set(Object.keys(m).filter(id => m[id] === today))
   })
 
-  /* Statusi i auto-dërgimit */
-  const [autoStatus, setAutoStatus] = useState(null) // null | 'sending' | 'done' | 'error' | 'no-api'
-  const [autoCount,  setAutoCount]  = useState(0)
-  const hasFiredRef = useRef(false)
-
   const getPhone = name => cleanPhone(customers.find(c => c.name === name)?.phone || '')
 
-  /* ── Auto-dërgim kur faqja hapet ── */
-  useEffect(() => {
-    if (hasFiredRef.current) return
-    hasFiredRef.current = true
-
-    /* Gjej abonimi që duhen njoftuar sot dhe nuk janë dërguar ende */
-    const toSend = urgent.filter(inv => {
-      const phone = getPhone(inv.customer)
-      return phone && !wasSentToday(inv.id, today)
-    })
-
-    if (toSend.length === 0) return
-
-    setAutoStatus('sending')
-    let sent = 0
-    let failed = 0
-    const newSent = new Set(sentIds)
-
-    const sendNext = async (idx) => {
-      if (idx >= toSend.length) {
-        setSentIds(newSent)
-        if (failed > 0 && sent === 0) {
-          setAutoStatus('no-api')
-        } else if (failed > 0) {
-          setAutoStatus('error')
-          showToast(`${sent} dërguar, ${failed} dështuan`, 'error')
-        } else {
-          setAutoStatus('done')
-          setAutoCount(sent)
-          showToast(`✅ ${sent} njoftime WhatsApp u dërguan automatikisht!`, 'success')
-        }
-        return
-      }
-
-      const inv   = toSend[idx]
-      const phone = getPhone(inv.customer)
-      const msg   = buildRenewalMsg(inv)
-
-      try {
-        await sendWA(phone, msg)
-        markSent(inv.id, today)
-        newSent.add(inv.id)
-        sent++
-      } catch (err) {
-        /* Nëse API nuk është konfiguruar, ndalo dhe trego udhëzime */
-        if (err.message.includes('nuk është konfiguruar') || err.message.includes('503')) {
-          setAutoStatus('no-api')
-          return
-        }
-        failed++
-        console.error('WA error for', inv.customer, err.message)
-      }
-
-      /* Prit 1.5s mes mesazheve (anti-spam) */
-      await new Promise(r => setTimeout(r, 1500))
-      sendNext(idx + 1)
-    }
-
-    sendNext(0)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  /* Njoftimet dërgohen automatikisht një herë në ditë nga një cron job
+     server-side (api/cron/send-renewal-reminders.js), vetëm për abonimet
+     me datë njoftimi pikërisht sot — jo për backlog-un e vjetër. Kjo faqe
+     nuk dërgon më vetë në hapje (ishte rrezik: do të kishte dërguar tërë
+     "urgent" backlog-un e vjetër menjëherë sapo dikush ta hapte faqen). */
 
   const totalPending = urgent.length
   const unsent       = urgent.filter(i => !sentIds.has(i.id) && getPhone(i.customer)).length
@@ -432,27 +354,6 @@ export default function Subscriptions() {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Statusi i auto-dërgimit */}
-          {autoStatus === 'sending' && (
-            <span className="flex items-center gap-1.5 text-xs text-red-500 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full font-semibold">
-              <Loader2 size={13} className="animate-spin" /> Duke dërguar njoftime WA...
-            </span>
-          )}
-          {autoStatus === 'done' && (
-            <span className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-full font-semibold">
-              <CheckCircle2 size={13} /> {autoCount} njoftime dërguar ✓
-            </span>
-          )}
-          {autoStatus === 'no-api' && (
-            <span className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1.5 rounded-full font-semibold">
-              <AlertTriangle size={13} /> WhatsApp API nuk është konfiguruar
-            </span>
-          )}
-          {autoStatus === 'error' && (
-            <span className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50 border border-red-100 px-3 py-1.5 rounded-full font-semibold">
-              <AlertTriangle size={13} /> Disa njoftime dështuan
-            </span>
-          )}
           <div className="text-xs text-gray-400 flex items-center gap-1.5">
             <Calendar size={13} />
             Sot: <span className="font-semibold text-gray-600">{today}</span>
@@ -460,30 +361,27 @@ export default function Subscriptions() {
         </div>
       </div>
 
-      {/* API setup banner */}
-      {autoStatus === 'no-api' && (
-        <div className="mb-5 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <p className="text-sm font-bold text-amber-800 mb-2">⚙️ Konfiguro WhatsApp API për dërgim automatik</p>
-          <ol className="text-xs text-amber-700 space-y-1 list-decimal list-inside">
-            <li>Shko te <a href="https://green-api.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">green-api.com</a> dhe krijo llogari falas</li>
-            <li>Krijo një instancë (Instance) dhe lidhe numrin <strong>+355695330404</strong> duke skanuar QR kodin</li>
-            <li>Kopjo <strong>idInstance</strong> dhe <strong>apiTokenInstance</strong></li>
-            <li>Shko te <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Vercel Dashboard</a> → Settings → Environment Variables dhe shto:</li>
+      {/* Info: automation runs server-side now, not from this page */}
+      <div className="mb-5 bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-sm font-bold text-blue-800 mb-1">🔔 Njoftimet dërgohen automatikisht çdo ditë</p>
+        <p className="text-xs text-blue-700">
+          Një herë në ditë sistemi dërgon vetë një mesazh WhatsApp për abonimet që skadojnë pas 7 ditësh (vetëm ditën kur bie data e njoftimit — jo për faturat e vjetra në listën më poshtë). Nga kjo faqe mund të dërgosh edhe manualisht me butonat WA/TG te çdo rresht.
+        </p>
+        <div className="mt-2 bg-blue-100 rounded-lg p-2.5 text-xs text-blue-900">
+          <p className="font-semibold mb-1">Konfigurimi (nëse s'është bërë ende):</p>
+          <ol className="space-y-0.5 list-decimal list-inside">
+            <li>Shko te <a href="https://green-api.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">green-api.com</a>, krijo llogari falas dhe një instancë, lidh numrin duke skanuar QR kodin</li>
+            <li>Kopjo <strong>idInstance</strong>/<strong>apiTokenInstance</strong> dhe shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>GREENAPI_INSTANCE_ID</strong>/<strong>GREENAPI_TOKEN</strong>, pastaj redeploy</li>
           </ol>
-          <div className="mt-2 bg-amber-100 rounded-lg p-2.5 font-mono text-xs text-amber-900 space-y-1">
-            <div>GREENAPI_INSTANCE_ID = <em>idInstance nga Green API</em></div>
-            <div>GREENAPI_TOKEN = <em>apiTokenInstance nga Green API</em></div>
-          </div>
-          <p className="text-xs text-amber-600 mt-2">Pas shtimit të variablave, redeploy projektin nga Vercel dashboard.</p>
         </div>
-      )}
+      </div>
 
       {/* Summary stat cards */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="stat-card !border-l-4 !border-l-red-400">
           <p className="text-3xl font-bold text-red-600">{urgent.length}</p>
           <p className="text-xs text-gray-400 mt-1 font-medium">Duhen kontaktuar sot</p>
-          {unsent > 0 && autoStatus !== 'no-api' && (
+          {unsent > 0 && (
             <p className="text-[11px] text-amber-500 mt-1">{unsent} ende pa dërguar</p>
           )}
         </div>
