@@ -89,7 +89,8 @@
       "Bash(git commit -m 'FIX: Remove undefined openDropdown references from table map function *)",
       "Bash(git commit -m 'FIX: Limit invoice panel width on large screens *)",
       "Bash(git commit -m 'FEAT: Expand invoice panel width and reorganize actions for desktop *)",
-      "Bash(git commit -m 'FEAT: Change auto-backup interval from 3 hours to 48 hours *)"
+      "Bash(git commit -m 'FEAT: Change auto-backup interval from 3 hours to 48 hours *)",
+      "Bash(git commit -m 'FEAT: Integrate AI Chat into sidebar and routing *)"
     ]
   }
 }

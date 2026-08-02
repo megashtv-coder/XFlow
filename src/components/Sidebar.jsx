@@ -3,6 +3,7 @@ import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, ChevronRight, X, Bell,
   Truck, TrendingUp, ChevronLeft, UserCog, LogOut, MessageSquare, CheckSquare,
+  Zap,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
@@ -69,6 +70,7 @@ export default function Sidebar() {
     ...(canAccessSuppliers ? [{ id: 'suppliers', icon: Truck, label: 'Furnitorët' }] : []),
     { id: 'reports',       icon: BarChart2,       label: 'Raportet' },
     { id: 'communicationHistory', icon: MessageSquare, label: 'Komunikimet' },
+    { id: 'ai-chat',       icon: Zap,             label: '🤖 AI Asistenti', separator: true },
   ]
 
   const initials = currentUser
@@ -127,23 +129,30 @@ export default function Sidebar() {
           {!sidebarCollapsed && (
             <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mb-2">Kryesore</p>
           )}
-          {NAV.map(({ id, icon: Icon, label, badge, badgeColor }) => (
-            <div
-              key={id}
-              title={sidebarCollapsed ? label : undefined}
-              className={`sidebar-item ${page === id ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
-              onClick={() => navigate(id)}
-            >
-              <Icon size={18} className="flex-shrink-0" />
-              {!sidebarCollapsed && <span className="flex-1 truncate">{label}</span>}
-              {!sidebarCollapsed && badge ? (
-                <span className={`${badgeColor || 'bg-red-500'} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center`}>
-                  {badge}
-                </span>
-              ) : null}
-              {sidebarCollapsed && badge ? (
-                <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${badgeColor || 'bg-red-500'}`} />
-              ) : null}
+          {NAV.map(({ id, icon: Icon, label, badge, badgeColor, separator }) => (
+            <div key={id}>
+              {separator && !sidebarCollapsed && (
+                <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mt-4 mb-2">AI</p>
+              )}
+              {separator && sidebarCollapsed && (
+                <div className="my-2 border-t border-gray-100" />
+              )}
+              <div
+                title={sidebarCollapsed ? label : undefined}
+                className={`sidebar-item ${page === id ? 'active' : ''} ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+                onClick={() => navigate(id)}
+              >
+                <Icon size={18} className="flex-shrink-0" />
+                {!sidebarCollapsed && <span className="flex-1 truncate">{label}</span>}
+                {!sidebarCollapsed && badge ? (
+                  <span className={`${badgeColor || 'bg-red-500'} text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center`}>
+                    {badge}
+                  </span>
+                ) : null}
+                {sidebarCollapsed && badge ? (
+                  <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${badgeColor || 'bg-red-500'}`} />
+                ) : null}
+              </div>
             </div>
           ))}
 
