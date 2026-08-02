@@ -37,7 +37,11 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
-        max_tokens: 1024,
+        // claude-sonnet-5 uses extended thinking by default, which counts
+        // against max_tokens — 1024 was entirely consumed by thinking with
+        // nothing left to write the actual answer (stop_reason: max_tokens,
+        // empty text). Budget enough for thinking + a real response.
+        max_tokens: 4096,
         system: [
           { type: 'text', text: systemPrompt },
           {
@@ -56,14 +60,7 @@ export default async function handler(req, res) {
     }
 
     const result = await resp.json()
-    const answer = result.content?.find(b => b.type === 'text')?.text
-    if (!answer) {
-      // TEMP DEBUG: expose why extraction failed instead of a silent fallback
-      return res.status(200).json({
-        answer: 'Nuk munda të gjeja përgjigje.',
-        debug: { stop_reason: result.stop_reason, usage: result.usage, content: result.content },
-      })
-    }
+    const answer = result.content?.find(b => b.type === 'text')?.text || 'Nuk munda të gjeja përgjigje.'
     return res.status(200).json({ answer })
   } catch (err) {
     return res.status(500).json({ error: err.message })
