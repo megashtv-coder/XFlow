@@ -1,18 +1,21 @@
 /**
- * Vercel Cron Job — dërgon një njoftim WhatsApp për abonimet që skadojnë
- * pas 7 ditësh (invoice.notifyDate === sot), NJË herë për faturë (shënon
- * data/renewalReminderSentAt në Supabase pas dërgimit, që të mos përsëritet).
+ * Vercel Cron Job — dërgon një njoftim WhatsApp (via Cloud API, Meta) për
+ * abonimet që skadojnë pas 7 ditësh (invoice.notifyDate === sot), NJË herë
+ * për faturë (shënon data/renewalReminderSentAt në Supabase pas dërgimit,
+ * që të mos përsëritet).
  *
  * Konfiguro në Vercel dashboard:
- *   GREENAPI_INSTANCE_ID / GREENAPI_TOKEN  →  si te api/send-whatsapp.js
- *   CRON_SECRET                            →  një varg random që e zgjedh vet;
- *     Vercel e shton automatikisht si header "Authorization: Bearer <CRON_SECRET>"
- *     kur e thërret këtë funksion sipas orarit — kjo e mbron endpoint-in nga
- *     thirrje publike aksidentale/qëllimkeqe (URL-ja është publike përndryshe).
+ *   WHATSAPP_PHONE_NUMBER_ID / WHATSAPP_ACCESS_TOKEN / WHATSAPP_TEMPLATE_NAME
+ *     →  si te api/_lib/whatsapp.js — kërkon një template të miratuar nga Meta,
+ *        me 2 parametra: {{1}} emri, {{2}} data e skadimit.
+ *   CRON_SECRET  →  një varg random që e zgjedh vet; Vercel e shton automatikisht
+ *     si header "Authorization: Bearer <CRON_SECRET>" kur e thërret këtë
+ *     funksion sipas orarit — mbron endpoint-in nga thirrje publike aksidentale.
  *
  * Orari: vercel.json → crons (parazgjedhje: 08:00 UTC çdo ditë).
  */
 import { createClient } from '@supabase/supabase-js'
+import { isWhatsAppConfigured, sendWhatsAppTemplate } from '../_lib/whatsapp.js'
 
 const supabase = createClient(
   'https://zssasbllfjeaailfteep.supabase.co',
@@ -23,25 +26,8 @@ function cleanPhone(p) {
   return (p || '').replace(/[\s+\-()]/g, '')
 }
 
-function buildRenewalMsg(customerName, subscriptionExpiry) {
-  const firstName = (customerName || '').split(' ')[0]
-  const dateStr = subscriptionExpiry?.split('-').reverse().join('/') || subscriptionExpiry
-  return `Përshëndetje ${firstName}!\nAbonimi juaj për TV skadon më ${dateStr}.\nA dëshironi të vazhdoni abonimin? Na përgjigjuni për rinovim.\nFaleminderit!\nMe respekt, PREDATOR - MEGA SH TV`
-}
-
-async function sendGreenApiMessage(phone, message, instanceId, apiToken) {
-  const chatId = phone.replace(/\D/g, '') + '@c.us'
-  const url = `https://api.green-api.com/waInstance${instanceId}/sendMessage/${apiToken}`
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chatId, message, quotedMessageId: '' }),
-  })
-  if (!resp.ok) {
-    const errText = await resp.text()
-    throw new Error(`Green API ${resp.status}: ${errText}`)
-  }
-  return resp.json()
+function formatDate(dateStr) {
+  return dateStr?.split('-').reverse().join('/') || dateStr
 }
 
 export default async function handler(req, res) {
@@ -51,10 +37,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const instanceId = process.env.GREENAPI_INSTANCE_ID
-  const apiToken = process.env.GREENAPI_TOKEN
-  if (!instanceId || !apiToken) {
-    return res.status(503).json({ error: 'WhatsApp API nuk është konfiguruar (GREENAPI_INSTANCE_ID/GREENAPI_TOKEN)' })
+  if (!isWhatsAppConfigured()) {
+    return res.status(503).json({ error: 'WhatsApp API nuk është konfiguruar (WHATSAPP_PHONE_NUMBER_ID/WHATSAPP_ACCESS_TOKEN)' })
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -96,7 +80,11 @@ export default async function handler(req, res) {
       }
 
       try {
-        await sendGreenApiMessage(phone, buildRenewalMsg(inv.customer, inv.subscriptionExpiry), instanceId, apiToken)
+        const firstName = (inv.customer || '').split(' ')[0]
+        await sendWhatsAppTemplate({
+          phone,
+          bodyParams: [firstName, formatDate(inv.subscriptionExpiry)],
+        })
 
         await supabase
           .from('invoices')
@@ -104,7 +92,7 @@ export default async function handler(req, res) {
           .eq('id', row.id)
 
         sent++
-        // Anti-spam pacing between sends, mirroring api/send-whatsapp.js's manual flow
+        // Anti-spam pacing between sends
         await new Promise(r => setTimeout(r, 1500))
       } catch (err) {
         errors.push({ invoiceId: row.id, customer: inv.customer, error: err.message })

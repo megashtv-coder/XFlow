@@ -1,9 +1,13 @@
 /**
- * Vercel Serverless Function — dërgon mesazh WhatsApp via Green API
- * Konfiguro këto env vars në Vercel dashboard:
- *   GREENAPI_INSTANCE_ID  →  instanceId nga green-api.com
- *   GREENAPI_TOKEN        →  apiToken  nga green-api.com
+ * Vercel Serverless Function — dërgon mesazh WhatsApp via WhatsApp Cloud API
+ * (Meta), duke përdorur një template të miratuar paraprakisht.
+ * Konfiguro në Vercel dashboard:
+ *   WHATSAPP_PHONE_NUMBER_ID  →  nga Meta App Dashboard → WhatsApp → API Setup
+ *   WHATSAPP_ACCESS_TOKEN     →  token i përhershëm (System User)
+ *   WHATSAPP_TEMPLATE_NAME    →  emri i template-it të miratuar (parazgjedhje: renewal_reminder)
  */
+import { isWhatsAppConfigured, sendWhatsAppTemplate } from './_lib/whatsapp.js'
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -12,35 +16,19 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { phone, message } = req.body || {}
-  if (!phone || !message) return res.status(400).json({ error: 'phone dhe message janë të detyrueshme' })
+  const { phone, templateName, languageCode, bodyParams } = req.body || {}
+  if (!phone || !Array.isArray(bodyParams)) {
+    return res.status(400).json({ error: 'phone dhe bodyParams (array) janë të detyrueshme' })
+  }
 
-  const instanceId = process.env.GREENAPI_INSTANCE_ID
-  const apiToken   = process.env.GREENAPI_TOKEN
-
-  if (!instanceId || !apiToken) {
+  if (!isWhatsAppConfigured()) {
     return res.status(503).json({ error: 'WhatsApp API nuk është konfiguruar në Vercel env vars' })
   }
 
   try {
-    // Green API — formatim numri: hiq +, shtoni @c.us
-    const chatId = phone.replace(/\D/g, '') + '@c.us'
-    const url = `https://api.green-api.com/waInstance${instanceId}/sendMessage/${apiToken}`
-
-    const resp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId, message, quotedMessageId: '' }),
-    })
-
-    if (!resp.ok) {
-      const errText = await resp.text()
-      return res.status(resp.status).json({ error: 'Green API error', details: errText })
-    }
-
-    const data = await resp.json()
-    return res.status(200).json({ ok: true, idMessage: data.idMessage })
+    const data = await sendWhatsAppTemplate({ phone, templateName, languageCode, bodyParams })
+    return res.status(200).json({ ok: true, messageId: data.messages?.[0]?.id })
   } catch (err) {
-    return res.status(500).json({ error: err.message })
+    return res.status(502).json({ error: err.message })
   }
 }

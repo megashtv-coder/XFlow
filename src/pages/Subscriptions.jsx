@@ -368,10 +368,12 @@ export default function Subscriptions() {
           Një herë në ditë sistemi dërgon vetë një mesazh WhatsApp për abonimet që skadojnë pas 7 ditësh (vetëm ditën kur bie data e njoftimit — jo për faturat e vjetra në listën më poshtë). Nga kjo faqe mund të dërgosh edhe manualisht me butonat WA/TG te çdo rresht.
         </p>
         <div className="mt-2 bg-blue-100 rounded-lg p-2.5 text-xs text-blue-900">
-          <p className="font-semibold mb-1">Konfigurimi (nëse s'është bërë ende):</p>
+          <p className="font-semibold mb-1">Konfigurimi (WhatsApp Cloud API, nëse s'është bërë ende):</p>
           <ol className="space-y-0.5 list-decimal list-inside">
-            <li>Shko te <a href="https://green-api.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">green-api.com</a>, krijo llogari falas dhe një instancë, lidh numrin duke skanuar QR kodin</li>
-            <li>Kopjo <strong>idInstance</strong>/<strong>apiTokenInstance</strong> dhe shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>GREENAPI_INSTANCE_ID</strong>/<strong>GREENAPI_TOKEN</strong>, pastaj redeploy</li>
+            <li>Shko te <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">developers.facebook.com</a>, krijo një Business App, shto produktin "WhatsApp" dhe lidh numrin</li>
+            <li>Krijo një template mesazhi (kategoria "Utility", 2 parametra: emri dhe data e skadimit) dhe prit miratimin nga Meta</li>
+            <li>Merr <strong>Phone Number ID</strong> dhe një <strong>access token të përhershëm</strong> (Business Settings → System Users)</li>
+            <li>Shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>WHATSAPP_PHONE_NUMBER_ID</strong>, <strong>WHATSAPP_ACCESS_TOKEN</strong>, <strong>WHATSAPP_TEMPLATE_NAME</strong>, pastaj redeploy</li>
           </ol>
         </div>
       </div>
