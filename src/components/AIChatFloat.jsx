@@ -22,7 +22,7 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\nPagesë: Pagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki\n\nShpenzim: Shpenzim lloji i shpenzimit, shuma, llogaria, Enndy/Samki',
+      content: 'Përshëndetje! 👋\n\nTips:\n\n1. Regjistro faturë, shkruaj:\n@Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\n2. Regjistro pagesë, shkruaj:\nPagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki\n\n3. Regjistro shpenzim, shkruaj:\nShpenzim lloji i shpenzimit, shuma, llogaria, Enndy/Samki',
       timestamp: new Date(),
     },
   ])
@@ -411,7 +411,7 @@ export default function AIChatFloat() {
                 )}
 
                 {msg.type === 'system' && (
-                  <div className="text-center text-sm text-gray-600 dark:text-gray-400 py-2">
+                  <div className="text-left text-sm text-gray-600 dark:text-gray-400 py-2 whitespace-pre-line">
                     {msg.content}
                   </div>
                 )}
