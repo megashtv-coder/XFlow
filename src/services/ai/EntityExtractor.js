@@ -83,6 +83,15 @@ export function extractCustomerMentions(text, customers = []) {
   const firstMention = mentionMatches[0].substring(1).toLowerCase().trim()
   console.log('🔍 first mention (customer):', firstMention)
 
+  // Prefer an exact name match so a fully-typed name isn't treated as
+  // ambiguous just because it's also a substring of another customer's name
+  // (e.g. "Bekim Krasniqi" vs "Bekim Krasniqi SW").
+  const exactMatch = customers.find(c => c.name.toLowerCase().trim() === firstMention)
+  if (exactMatch) {
+    console.log('🔍 exact customer match:', exactMatch.name)
+    return [exactMatch]
+  }
+
   // Match customer name case-insensitively and return exact customer object
   console.log('🔍 available customers:', customers.map(c => `"${c.name}"`))
   const matches = customers.filter(c => {

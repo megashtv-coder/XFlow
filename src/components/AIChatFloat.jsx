@@ -151,9 +151,9 @@ export default function AIChatFloat() {
       let result
 
       // Check if this is a response to a follow-up question
-      if (currentResult?.error?.code === 'MISSING_FIELDS' && currentResult?.error?.previousResult) {
+      if (currentResult?.error?.code === 'MISSING_FIELDS') {
         console.log('📞 Continuing conversation with follow-up answer')
-        result = await processorRef.current.continueConversation(userMessage, currentResult.error.previousResult)
+        result = await processorRef.current.continueConversation(userMessage, currentResult)
       } else {
         result = await processorRef.current.processCommand(userMessage)
       }
