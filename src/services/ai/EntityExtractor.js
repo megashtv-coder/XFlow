@@ -185,9 +185,11 @@ function extractAmount(text) {
   }
 
   // Fallback for @mention quick-invoice commands ("@Klienti @Paketa Shuma"):
-  // a bare number at the end of the text is the price, e.g. "@Viktor @12 muaj 100"
+  // a bare number at the end of the text is the price, e.g. "@Viktor @12 muaj 100".
+  // Must be its own whitespace-separated token, so a product code suffix like
+  // "X2" or "8K" isn't mistaken for a trailing price.
   if (text.includes('@')) {
-    const trailing = text.trim().match(/(\d+(?:[.,]\d{2})?)\s*$/)
+    const trailing = text.trim().match(/(?:^|\s)(\d+(?:[.,]\d{2})?)$/)
     if (trailing) {
       const amount = parseFloat(trailing[1].replace(',', '.'))
       return isNaN(amount) ? null : amount
@@ -201,6 +203,23 @@ function extractAmount(text) {
  * Extract package/duration from text
  */
 function extractPackage(text, items = []) {
+  // Prefer an exact match against the real product catalogue first, so the
+  // invoice shows exactly the product that was mentioned/selected (e.g.
+  // "12 Muaj Abonim X2") instead of a generic duration guess. When more than
+  // one item name appears in the text, prefer the longest (most specific) one.
+  const matchedItems = items
+    .filter(item => item.name && text.toLowerCase().includes(item.name.toLowerCase()))
+    .sort((a, b) => b.name.length - a.name.length)
+
+  if (matchedItems.length > 0) {
+    const item = matchedItems[0]
+    return {
+      item: item.name,
+      price: item.salePrice,
+      display: item.name,
+    }
+  }
+
   const durations = [
     { text: /(\d+)\s*muaj/i, value: (n) => `${n} months`, display: (n) => `${n} muaj` },
     { text: /(\d+)\s*vit/i, value: (n) => `${n * 12} months`, display: (n) => `${n} vit` },
@@ -218,16 +237,6 @@ function extractPackage(text, items = []) {
         duration: num ? duration.value(num) : duration.value(),
         display: num ? duration.display(num) : duration.display(),
         months: num ? (duration.text.toString().includes('vit') ? num * 12 : num) : null,
-      }
-    }
-  }
-
-  // Check against item descriptions
-  for (const item of items) {
-    if (text.toLowerCase().includes(item.name.toLowerCase())) {
-      return {
-        item: item.name,
-        price: item.salePrice,
       }
     }
   }
