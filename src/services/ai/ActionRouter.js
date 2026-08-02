@@ -332,11 +332,13 @@ function generateRegisterPayment(entities, context) {
     type: 'PAYMENT',
     operation: 'CREATE',
     parameters: {
-      invoiceId: entities.invoiceId,
+      invoiceId: entities.invoiceId || null,
+      customer: entities.customer || null,
       amount: entities.amount,
+      fee: entities.fee || 0,
       mode: entities.paymentMode || 'Unknown',
       date: entities.date || new Date().toISOString().slice(0, 10),
-      account: entities.account,
+      depositedTo: entities.depositedTo || '',
     },
   }
 }

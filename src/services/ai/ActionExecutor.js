@@ -174,6 +174,101 @@ function executeCreateCustomer(params, appContext) {
   return { success: true, customer, message: `✓ Klienti ${params.name} u shtua me sukses!` }
 }
 
+// Find the invoice a payment should apply against: the explicit invoiceId if
+// given, otherwise the customer's oldest unpaid (not draft/paid) invoice.
+function findTargetInvoice(params, invoices) {
+  if (params.invoiceId) {
+    return invoices.find(i => i.id === params.invoiceId) || null
+  }
+  if (params.customer) {
+    const unpaid = invoices
+      .filter(i => i.customer === params.customer && i.status !== 'paid' && i.status !== 'draft')
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+    return unpaid[0] || null
+  }
+  return null
+}
+
+function executeRegisterPayment(params, appContext) {
+  const { invoices = [], setInvoices, setPayments, setExpenses, logActivity, currentOrgId } = appContext
+
+  if (!params?.amount) {
+    return { success: false, error: 'Mungon shuma e pagesës.' }
+  }
+  if (typeof setInvoices !== 'function' || typeof setPayments !== 'function') {
+    return { success: false, error: 'Nuk mund të regjistrohet pagesa (sistemi nuk është gati).' }
+  }
+
+  const targetInvoice = findTargetInvoice(params, invoices)
+  if (!targetInvoice) {
+    return {
+      success: false,
+      error: params.customer
+        ? `${params.customer} nuk ka fatura të papaguara.`
+        : 'Nuk u gjet fatura për këtë pagesë.',
+    }
+  }
+
+  const fee = params.fee || 0
+  const net = params.amount - fee
+  const newId = `PAY-${Date.now()}`
+
+  const payment = {
+    id: newId,
+    invoiceId: targetInvoice.id,
+    customer: targetInvoice.customer,
+    amount: params.amount,
+    fee,
+    net,
+    date: params.date,
+    paidDate: params.date,
+    method: params.mode || 'Unknown',
+    depositAccount: '',
+    reference: '',
+    depositedTo: params.depositedTo || '',
+    notes: '',
+    orgId: currentOrgId,
+  }
+
+  setPayments(prev => [payment, ...prev])
+
+  setInvoices(prev => prev.map(i => {
+    if (i.id !== targetInvoice.id) return i
+    const newPaidAmount = (i.paidAmount || 0) + params.amount
+    let status = 'pending'
+    if (newPaidAmount >= i.amount) status = 'paid'
+    else if (newPaidAmount > 0) status = 'partial'
+    const updates = { ...i, paidAmount: newPaidAmount, status }
+    if (status === 'paid' && !i.paidDate) updates.paidDate = params.date
+    return updates
+  }))
+
+  // Mirrors PaymentModal.jsx: a transaction fee is also booked as an expense
+  if (fee > 0 && typeof setExpenses === 'function') {
+    setExpenses(prev => [{
+      id: `EXP-${Date.now() + 1}`,
+      date: params.date,
+      type: 'Pagesa tjera',
+      vendor: params.mode || 'Unknown',
+      paidFrom: '',
+      reference: `Fee transaksioni — ${params.mode || 'Unknown'} (${targetInvoice.id})`,
+      paidBy: params.depositedTo || '',
+      recurring: false,
+      recurringFreq: '',
+      amount: fee,
+    }, ...prev])
+  }
+
+  logActivity?.(`Regjistroi pagesën ${newId} — ${targetInvoice.customer} €${params.amount} (AI)`, 'Pagesat')
+
+  return {
+    success: true,
+    payment,
+    invoice: targetInvoice,
+    message: `✓ Pagesa u regjistrua! Neto: €${net} — Fatura ${targetInvoice.id} (${targetInvoice.customer})`,
+  }
+}
+
 /**
  * Execute an action descriptor produced by ActionRouter.generateAction()
  * @param {Object} action - {action, type, operation, parameters}
@@ -190,6 +285,8 @@ export function executeAction(action, appContext) {
       return executeCreateInvoice(action.parameters, appContext)
     case 'create_customer':
       return executeCreateCustomer(action.parameters, appContext)
+    case 'register_payment':
+      return executeRegisterPayment(action.parameters, appContext)
     default:
       return {
         success: false,

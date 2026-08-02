@@ -44,6 +44,14 @@ export function validateAction(intent, entities, context = {}) {
     }
   }
 
+  // REGISTER_PAYMENT needs a way to identify the target invoice — either an
+  // explicit invoiceId, or a customer name (whose oldest unpaid invoice is
+  // used instead), so neither is individually required but at least one must
+  // be present.
+  if (intent === 'REGISTER_PAYMENT' && !entities.invoiceId && !entities.customer) {
+    missingFields.push('customer')
+  }
+
   // Validate specific fields
   try {
     validateEntities(intent, entities, context)
@@ -129,8 +137,8 @@ function getRequirements(intent) {
       optional: ['package', 'amount'],
     },
     REGISTER_PAYMENT: {
-      required: ['invoiceId', 'amount'],
-      optional: ['paymentMode', 'date', 'account'],
+      required: ['amount'],
+      optional: ['invoiceId', 'customer', 'paymentMode', 'date', 'fee', 'depositedTo'],
     },
     DELETE_PAYMENT: {
       required: ['invoiceId'],

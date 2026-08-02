@@ -80,6 +80,10 @@ const INTENT_PATTERNS = {
     /pagesa\s+për/i,
     /pagoi\s+/i,
     /marke.*paguar/i,
+    // "Pagese @Klienti @FormaPageses Shuma Fee @Enndy" — two patterns so this
+    // reliably outscores QUICK_INVOICE_CUSTOMER's generic @+@ mention pattern
+    /^pagese\b/i,
+    /^pagese\s+@/i,
   ],
   DELETE_PAYMENT: [
     /fshi\s+pagesë/i,

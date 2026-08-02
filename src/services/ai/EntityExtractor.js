@@ -3,6 +3,8 @@
  * Extracts entities (customer name, amount, date, etc.) from user input
  */
 
+import { depositedToOptions } from '../../data/mockData'
+
 /**
  * Extract entities from user text
  * @param {string} text - User input
@@ -23,6 +25,14 @@ export function extractEntities(text, context = {}) {
   if (quickCustomer) {
     return Object.fromEntries(
       Object.entries(quickCustomer).filter(([_, v]) => v !== null && v !== undefined && v !== '')
+    )
+  }
+
+  // "Pagese @Klienti @FormaPageses Shuma Fee @Enndy" (register payment)
+  const paymentCommand = extractPaymentCommand(text, context)
+  if (paymentCommand) {
+    return Object.fromEntries(
+      Object.entries(paymentCommand).filter(([_, v]) => v !== null && v !== undefined && v !== '')
     )
   }
 
@@ -87,6 +97,60 @@ function extractQuickCustomerFields(text) {
   if (!customer) return null
 
   return { customer, phone, country, referent, app, macAddress }
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * Parse the "register payment" command:
+ * "Pagese @Klienti @FormaPageses ShumaEPranuar Fee @Enndy" (fee and the
+ * @Enndy/@Samki "who received it" mention are optional).
+ * Matches customer/mode/depositedTo by known-value substring (like
+ * extractCustomerMentions/extractPackage), not by @mention position, since a
+ * greedy @mention capture would otherwise swallow the trailing amount/fee
+ * digits into the payment-mode text.
+ */
+function extractPaymentCommand(text, context = {}) {
+  const trimmed = text.trim()
+  if (!/^pagese\b/i.test(trimmed)) return null
+
+  const customers = context.customers || []
+  const customerMatch = customers
+    .filter(c => trimmed.toLowerCase().includes(c.name.toLowerCase()))
+    .sort((a, b) => b.name.length - a.name.length)[0]
+  if (!customerMatch) return null
+
+  const paymentMode = extractPaymentMode(trimmed, context.paymentModes || [])
+  const depositedTo = depositedToOptions.find(d => new RegExp(`\\b${escapeRegex(d)}\\b`, 'i').test(trimmed)) || null
+
+  // Strip the known matched substrings so only the amount/fee digits remain
+  let cleaned = trimmed.replace(/^pagese\b/i, ' ').replace(/@/g, ' ')
+  cleaned = cleaned.replace(new RegExp(escapeRegex(customerMatch.name), 'i'), ' ')
+  if (paymentMode) {
+    const knownModes = [...(context.paymentModes || []), 'PayPal', 'Transfer Bankar', 'Kesh', 'Cash',
+      'Western Union', 'Ria', 'Money Gram', 'Crypto', 'Stripe', 'Wire', 'Bank']
+    const literal = knownModes
+      .filter(m => cleaned.toLowerCase().includes(m.toLowerCase()))
+      .sort((a, b) => b.length - a.length)[0]
+    if (literal) cleaned = cleaned.replace(new RegExp(escapeRegex(literal), 'i'), ' ')
+  }
+  if (depositedTo) {
+    cleaned = cleaned.replace(new RegExp(`\\b${escapeRegex(depositedTo)}\\b`, 'i'), ' ')
+  }
+
+  const numbers = (cleaned.match(/\d+(?:[.,]\d+)?/g) || []).map(n => parseFloat(n.replace(',', '.')))
+  const amount = numbers.length > 0 ? numbers[0] : null
+  const fee = numbers.length > 1 ? numbers[1] : 0
+
+  return {
+    customer: customerMatch.name,
+    paymentMode: paymentMode || null,
+    depositedTo,
+    amount,
+    fee,
+  }
 }
 
 /**
