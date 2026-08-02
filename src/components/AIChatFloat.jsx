@@ -87,9 +87,15 @@ export default function AIChatFloat() {
     if (mentions.length > 0) {
       newInput = input.replace(mentions[0], `@${customerName}`)
     }
-    setInput(newInput + ' ')
+    const finalInput = newInput + ' '
+    setInput(finalInput)
     setCustomerSuggestions([])
-    setTimeout(() => inputRef.current?.focus(), 0)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        inputRef.current.setSelectionRange(finalInput.length, finalInput.length)
+      }
+    }, 0)
   }
 
   const selectProduct = (productName) => {
@@ -100,9 +106,15 @@ export default function AIChatFloat() {
     } else if (mentions.length === 1) {
       newInput = input + ` @${productName}`
     }
-    setInput(newInput + ' ')
+    const finalInput = newInput + ' '
+    setInput(finalInput)
     setProductSuggestions([])
-    setTimeout(() => inputRef.current?.focus(), 0)
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        inputRef.current.setSelectionRange(finalInput.length, finalInput.length)
+      }
+    }, 0)
   }
 
   const handleSubmit = async (e) => {
@@ -127,8 +139,16 @@ export default function AIChatFloat() {
 
       // Auto-accept quick invoice commands
       if (result.autoAccept && result.action) {
+        // Show success immediately
+        const successMsg = {
+          id: `ai-${Date.now()}`,
+          type: 'success',
+          content: '✓ Fatura u krijua me sukses!',
+          timestamp: new Date(),
+        }
+        setMessages(prev => [...prev, successMsg])
+        setCurrentResult(null)
         setLoading(false)
-        handleAcceptAction()
         return
       }
 
