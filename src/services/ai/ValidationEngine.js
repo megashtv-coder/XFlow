@@ -78,11 +78,11 @@ function getRequirements(intent) {
   const requirements = {
     CREATE_INVOICE: {
       required: ['customer', 'amount'],
-      optional: ['date', 'package', 'category'],
+      optional: ['date', 'package', 'category', 'referent', 'subscriptionExpiry'],
     },
     QUICK_INVOICE_CUSTOMER: {
       required: ['customer', 'amount'],
-      optional: ['date', 'package'],
+      optional: ['date', 'package', 'referent', 'subscriptionExpiry'],
     },
     EDIT_INVOICE: {
       required: ['invoiceId'],

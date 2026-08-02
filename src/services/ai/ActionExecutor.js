@@ -25,8 +25,25 @@ function extractMonths(desc) {
   return m ? parseInt(m[1], 10) : null
 }
 
-function calculateSubscriptionExpiry(baseDate, months) {
-  const date = new Date(baseDate)
+// Parse a "YYYY-MM-DD" string as a local calendar date (not UTC midnight,
+// which `new Date(str)` would give and which shifts by a day once formatted
+// back through toISOString() in timezones ahead of UTC).
+function parseISODate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+// Format a local Date as "YYYY-MM-DD" using local getters, not toISOString()
+// (which converts to UTC and can roll the date back/forward by one day).
+function toISODate(date) {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+function calculateSubscriptionExpiry(baseDateStr, months) {
+  const date = parseISODate(baseDateStr)
   const year = date.getFullYear()
   const month = date.getMonth()
   const day = date.getDate()
@@ -61,22 +78,30 @@ function executeCreateInvoice(params, appContext) {
   const custObj = customers.find(c => c.name === params.customer)
   const newId = generateNextInvoiceId(invoices)
 
-  const months = extractMonths(params.items?.[0]?.desc)
-  let subscriptionExpiry = ''
+  // An explicit expiry date always wins; otherwise derive it from the
+  // package's duration (e.g. "12 muaj" -> +12 months from the invoice date).
+  let subscriptionExpiry = params.subscriptionExpiry || ''
   let notifyDate = ''
-  if (months) {
-    const exp = calculateSubscriptionExpiry(params.date, months)
-    subscriptionExpiry = exp.toISOString().slice(0, 10)
-    const notifyD = new Date(exp)
+  if (subscriptionExpiry) {
+    const notifyD = parseISODate(subscriptionExpiry)
     notifyD.setDate(notifyD.getDate() - 7)
-    notifyDate = notifyD.toISOString().slice(0, 10)
+    notifyDate = toISODate(notifyD)
+  } else {
+    const months = extractMonths(params.items?.[0]?.desc)
+    if (months) {
+      const exp = calculateSubscriptionExpiry(params.date, months)
+      subscriptionExpiry = toISODate(exp)
+      const notifyD = new Date(exp)
+      notifyD.setDate(notifyD.getDate() - 7)
+      notifyDate = toISODate(notifyD)
+    }
   }
 
   const invoice = {
     id: newId,
     date: params.date,
     customer: params.customer,
-    referent: '',
+    referent: params.referent || '',
     country: custObj?.country || '',
     email: custObj?.email || '',
     amount: params.amount,

@@ -146,9 +146,11 @@ function generateCreateInvoice(entities, context) {
     operation: 'CREATE',
     parameters: {
       customer: entities.customer,
+      referent: entities.referent || '',
       amount: price,
       date: entities.date || today,
       due: entities.dueDate || dueDate,
+      subscriptionExpiry: entities.subscriptionExpiry || null,
       status: 'pending',
       items: entities.package ? [
         {

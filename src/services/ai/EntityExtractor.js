@@ -19,6 +19,9 @@ export function extractEntities(text, context = {}) {
   // Extract customer name
   entities.customer = extractCustomerName(text, context.customers || [])
 
+  // Extract referent/representative (only when explicitly @mentioned)
+  entities.referent = extractReferent(text, context.representatives || [])
+
   // Extract amount/price
   entities.amount = extractAmount(text)
 
@@ -28,6 +31,7 @@ export function extractEntities(text, context = {}) {
   // Extract dates
   entities.date = extractDate(text, 'date')
   entities.dueDate = extractDate(text, 'due')
+  entities.subscriptionExpiry = extractExpiryDate(text)
 
   // Extract category/vendor
   entities.category = extractCategory(text, context.expenseCategories || [])
@@ -189,7 +193,10 @@ function extractAmount(text) {
   // Must be its own whitespace-separated token, so a product code suffix like
   // "X2" or "8K" isn't mistaken for a trailing price.
   if (text.includes('@')) {
-    const trailing = text.trim().match(/(?:^|\s)(\d+(?:[.,]\d{2})?)$/)
+    // Strip a trailing ddmmyyyy expiry-date token first, so it isn't
+    // mistaken for the price when both are present, e.g. "...100 25122026".
+    const withoutExpiry = text.replace(/(?:^|\s)\d{8}\s*$/, '')
+    const trailing = withoutExpiry.trim().match(/(?:^|\s)(\d+(?:[.,]\d{2})?)$/)
     if (trailing) {
       const amount = parseFloat(trailing[1].replace(',', '.'))
       return isNaN(amount) ? null : amount
@@ -197,6 +204,44 @@ function extractAmount(text) {
   }
 
   return null
+}
+
+/**
+ * Extract a representative/referent, only when it was explicitly @mentioned
+ * as the second mention in a 3+-mention command ("@Klienti @Referenti @Paketa")
+ * and matches a known representative name exactly.
+ */
+function extractReferent(text, representatives = []) {
+  const mentionMatches = text.match(/@([\w\s]+)/g) || []
+  if (mentionMatches.length < 3) return null
+
+  const secondMention = mentionMatches[1].substring(1).toLowerCase().trim()
+  const match = representatives.find(rep => rep.toLowerCase().trim() === secondMention)
+  return match || null
+}
+
+/**
+ * Extract an explicit subscription expiry date in bare ddmmyyyy form
+ * (e.g. "25122026" -> 2026-12-25), only as a standalone trailing token.
+ */
+function extractExpiryDate(text) {
+  if (!text.includes('@')) return null
+
+  const match = text.trim().match(/(?:^|\s)(\d{2})(\d{2})(\d{4})\s*$/)
+  if (!match) return null
+
+  const day = parseInt(match[1], 10)
+  const month = parseInt(match[2], 10)
+  const year = parseInt(match[3], 10)
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null
+
+  // Validate it's a real calendar date (e.g. rejects 31/02/2026) without
+  // going through toISOString(), which would shift the date by the local
+  // UTC offset instead of preserving the literal day that was typed.
+  const date = new Date(year, month - 1, day)
+  if (date.getMonth() !== month - 1 || date.getDate() !== day) return null
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
 /**

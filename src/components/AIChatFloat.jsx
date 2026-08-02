@@ -21,13 +21,14 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur',
+      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)',
       timestamp: new Date(),
     },
   ])
   const [loading, setLoading] = useState(false)
   const [currentResult, setCurrentResult] = useState(null)
   const [customerSuggestions, setCustomerSuggestions] = useState([])
+  const [referentSuggestions, setReferentSuggestions] = useState([])
   const [productSuggestions, setProductSuggestions] = useState([])
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
@@ -73,19 +74,35 @@ export default function AIChatFloat() {
       setCustomerSuggestions([])
     }
 
-    // Second @ is for product
-    if (mentions.length >= 2 && appContext?.items) {
-      const productMention = mentions[1].substring(1).toLowerCase().trim()
-      if (productMention.length > 0) {
+    // Second @ can be a referent (only if it matches a known representative)
+    // or, when no referent is intended, the product. Third @ (once a
+    // referent is present) is always the product.
+    setReferentSuggestions([])
+    setProductSuggestions([])
+
+    if (mentions.length === 2) {
+      const secondMention = mentions[1].substring(1).toLowerCase().trim()
+      if (secondMention.length > 0) {
+        const repMatches = (appContext?.representatives || []).filter(rep =>
+          rep.toLowerCase().includes(secondMention)
+        )
+        if (repMatches.length > 0) {
+          setReferentSuggestions(repMatches)
+        } else if (appContext?.items) {
+          const matches = appContext.items.filter(item =>
+            item.name.toLowerCase().includes(secondMention)
+          )
+          setProductSuggestions(matches)
+        }
+      }
+    } else if (mentions.length >= 3 && appContext?.items) {
+      const lastMention = mentions[mentions.length - 1].substring(1).toLowerCase().trim()
+      if (lastMention.length > 0) {
         const matches = appContext.items.filter(item =>
-          item.name.toLowerCase().includes(productMention)
+          item.name.toLowerCase().includes(lastMention)
         )
         setProductSuggestions(matches)
-      } else {
-        setProductSuggestions([])
       }
-    } else {
-      setProductSuggestions([])
     }
   }
 
@@ -112,11 +129,30 @@ export default function AIChatFloat() {
     }, 0)
   }
 
+  const selectReferent = (name) => {
+    const mentions = input.match(/@([\w\s]+)/g) || []
+    let newInput = input
+    if (mentions.length > 0) {
+      newInput = input.replace(mentions[mentions.length - 1], `@${name}`)
+    }
+    const finalInput = newInput + ' '
+    setInput(finalInput)
+    setReferentSuggestions([])
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+        inputRef.current.setSelectionRange(finalInput.length, finalInput.length)
+      }
+    }, 0)
+  }
+
   const selectProduct = (productName) => {
     const mentions = input.match(/@([\w\s]+)/g) || []
     let newInput = input
     if (mentions.length >= 2) {
-      newInput = input.replace(mentions[1], `@${productName}`)
+      // Replace whichever @mention is currently being typed (product is
+      // always the last one — 2nd with no referent, 3rd with a referent)
+      newInput = input.replace(mentions[mentions.length - 1], `@${productName}`)
     } else if (mentions.length === 1) {
       newInput = input + ` @${productName}`
     }
@@ -389,6 +425,23 @@ export default function AIChatFloat() {
                   >
                     <Users size={14} className="text-red-500" />
                     {customer.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Referent Picker */}
+            {referentSuggestions.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+                {referentSuggestions.map(rep => (
+                  <button
+                    key={rep}
+                    type="button"
+                    onClick={() => selectReferent(rep)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                  >
+                    <Users size={14} className="text-yellow-500" />
+                    {rep}
                   </button>
                 ))}
               </div>
