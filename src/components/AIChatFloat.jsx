@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package } from 'lucide-react'
+import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package, HelpCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
 import { extractCustomerMentions, extractProductMentions } from '../services/ai/EntityExtractor'
