@@ -122,6 +122,13 @@ export default function AIChatFloat() {
       const result = await processorRef.current.processCommand(userMessage)
       setCurrentResult(result)
 
+      // Auto-accept quick invoice commands
+      if (result.autoAccept && result.action) {
+        setLoading(false)
+        handleAcceptAction()
+        return
+      }
+
       let responseMsg
 
       if (!result.success) {

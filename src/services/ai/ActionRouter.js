@@ -104,6 +104,14 @@ export function generateAction(intent, entities, context = {}) {
         action = generateUndoAction(entities, context)
         break
 
+      // Quick Commands
+      case 'QUICK_INVOICE_CUSTOMER':
+        action = generateCreateInvoice(entities, context)
+        break
+      case 'ADD_CUSTOMER_QUICK':
+        action = generateCreateCustomer(entities, context)
+        break
+
       default:
         throw new Error(`Unknown intent: ${intent}`)
     }

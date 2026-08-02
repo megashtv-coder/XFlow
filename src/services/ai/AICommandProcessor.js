@@ -114,6 +114,9 @@ export class AICommandProcessor {
         entities,
       })
 
+      // Auto-accept quick invoice commands
+      const autoAccept = intentResult.intent === 'QUICK_INVOICE_CUSTOMER'
+
       return this.formatResponse({
         success: true,
         intent: intentResult.intent,
@@ -122,6 +125,7 @@ export class AICommandProcessor {
         entities,
         validation,
         confidence: intentResult.confidence,
+        autoAccept, // Flag for UI to auto-execute
       })
     } catch (err) {
       console.error('AICommandProcessor error:', err)

@@ -69,6 +69,10 @@ function getRequirements(intent) {
       required: ['customer', 'amount'],
       optional: ['date', 'package', 'category'],
     },
+    QUICK_INVOICE_CUSTOMER: {
+      required: ['customer', 'amount'],
+      optional: ['date', 'package'],
+    },
     EDIT_INVOICE: {
       required: ['invoiceId'],
       optional: ['customer', 'amount', 'date', 'status'],

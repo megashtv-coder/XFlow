@@ -153,7 +153,7 @@ const INTENT_PATTERNS = {
 
   // Quick Commands (Shortcuts)
   QUICK_INVOICE_CUSTOMER: [
-    /@\w+/i, // @EmriMbiermi format
+    /@[\w\s]+\s+@[\w\s]+/i, // @Emri @Produkt format - auto-generate invoice
   ],
   ADD_CUSTOMER_QUICK: [
     /shto\s+klient\s+/i,
