@@ -78,9 +78,16 @@ export function extractCustomerMentions(text, customers = []) {
   if (mentionMatches.length === 0) return []
 
   const firstMention = mentionMatches[0].substring(1).toLowerCase().trim()
-  return customers.filter(c =>
-    c.name.toLowerCase().includes(firstMention)
-  )
+  // Match customer name case-insensitively and return exact customer object
+  const matches = customers.filter(c => {
+    const customerLower = c.name.toLowerCase()
+    const mentionLower = firstMention.toLowerCase()
+    // Match if mention is contained in customer name (case-insensitive)
+    return customerLower.includes(mentionLower)
+  })
+
+  // If we have matches, return them (they'll be used by extractCustomerName)
+  return matches
 }
 
 /**
