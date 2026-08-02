@@ -201,7 +201,7 @@ export function detectIntent(text) {
   )[0]
 
   // Calculate confidence based on pattern matches
-  const confidence = Math.min(intentCounts[topIntent] / patterns.length, 1.0)
+  const confidence = Math.min(intentCounts[topIntent] / matches.length, 1.0)
 
   return {
     intent: topIntent,

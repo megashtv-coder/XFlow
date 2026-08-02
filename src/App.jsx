@@ -5,6 +5,7 @@ import RoleBasedRouter from './components/RoleBasedRouter'
 import Login from './pages/Login'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
+import AIChatFloat from './components/AIChatFloat'
 import { Toast, LoadingSkeleton } from './components/UI'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import AutoNotificationService from './services/AutoNotificationService'
@@ -127,6 +128,8 @@ function OrgAppLayout() {
           {modal}
         </div>
       )}
+
+      <AIChatFloat />
     </div>
   )
 }
