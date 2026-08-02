@@ -56,7 +56,14 @@ export default async function handler(req, res) {
     }
 
     const result = await resp.json()
-    const answer = result.content?.find(b => b.type === 'text')?.text || 'Nuk munda të gjeja përgjigje.'
+    const answer = result.content?.find(b => b.type === 'text')?.text
+    if (!answer) {
+      // TEMP DEBUG: expose why extraction failed instead of a silent fallback
+      return res.status(200).json({
+        answer: 'Nuk munda të gjeja përgjigje.',
+        debug: { stop_reason: result.stop_reason, usage: result.usage, content: result.content },
+      })
+    }
     return res.status(200).json({ answer })
   } catch (err) {
     return res.status(500).json({ error: err.message })
