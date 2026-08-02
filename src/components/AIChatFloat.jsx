@@ -31,9 +31,9 @@ export default function AIChatFloat() {
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Initialize AI processor
+  // Initialize AI processor - only when customers are loaded
   useEffect(() => {
-    if (!processorRef.current && appContext) {
+    if (!processorRef.current && appContext && appContext.customers?.length > 0) {
       console.log('🚀 Initializing AI processor with appContext:', {
         hasCustomers: !!appContext.customers,
         customersCount: appContext.customers?.length || 0,
