@@ -83,11 +83,17 @@ export default function AIChatFloat() {
 
   const selectCustomer = (customerName) => {
     const mentions = input.match(/@([\w\s]+)/g) || []
+    console.log('📌 selectCustomer - input:', input)
+    console.log('📌 mentions found:', mentions)
+    console.log('📌 replacing with:', customerName)
+
     let newInput = input
     if (mentions.length > 0) {
       newInput = input.replace(mentions[0], `@${customerName}`)
     }
     const finalInput = newInput + ' '
+    console.log('📌 final input:', finalInput)
+
     setInput(finalInput)
     setCustomerSuggestions([])
     setTimeout(() => {
