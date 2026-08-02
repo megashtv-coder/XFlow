@@ -20,7 +20,7 @@ export function extractEntities(text, context = {}) {
   entities.customer = extractCustomerName(text, context.customers || [])
 
   // Extract referent/representative (only when explicitly @mentioned)
-  entities.referent = extractReferent(text, context.representatives || [])
+  entities.referent = extractReferent(text, getReferentCandidates(context))
 
   // Extract amount/price
   entities.amount = extractAmount(text)
@@ -207,16 +207,29 @@ function extractAmount(text) {
 }
 
 /**
+ * Full list of referent candidates, matching what the invoice form itself
+ * offers: the persistent representatives list plus every unique
+ * "Referuar nga" value already used on a customer.
+ */
+export function getReferentCandidates(context = {}) {
+  const fromReps = context.representatives || []
+  const fromCustomers = (context.customers || [])
+    .filter(c => c.referredBy && c.referredBy.trim())
+    .map(c => c.referredBy.trim())
+  return Array.from(new Set([...fromReps, ...fromCustomers]))
+}
+
+/**
  * Extract a representative/referent, only when it was explicitly @mentioned
  * as the second mention in a 3+-mention command ("@Klienti @Referenti @Paketa")
- * and matches a known representative name exactly.
+ * and matches a known referent name exactly.
  */
-function extractReferent(text, representatives = []) {
+function extractReferent(text, referents = []) {
   const mentionMatches = text.match(/@([\w\s]+)/g) || []
   if (mentionMatches.length < 3) return null
 
   const secondMention = mentionMatches[1].substring(1).toLowerCase().trim()
-  const match = representatives.find(rep => rep.toLowerCase().trim() === secondMention)
+  const match = referents.find(rep => rep.toLowerCase().trim() === secondMention)
   return match || null
 }
 

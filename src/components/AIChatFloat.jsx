@@ -8,7 +8,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users, Package, HelpCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
-import { extractCustomerMentions, extractProductMentions } from '../services/ai/EntityExtractor'
+import { extractCustomerMentions, extractProductMentions, getReferentCandidates } from '../services/ai/EntityExtractor'
 import { executeAction } from '../services/ai/ActionExecutor'
 
 export default function AIChatFloat() {
@@ -74,7 +74,8 @@ export default function AIChatFloat() {
       setCustomerSuggestions([])
     }
 
-    // Second @ can be a referent (only if it matches a known representative)
+    // Second @ can be a referent (only if it matches a known referent — the
+    // persistent representatives list plus every customer's "Referuar nga")
     // or, when no referent is intended, the product. Third @ (once a
     // referent is present) is always the product.
     setReferentSuggestions([])
@@ -83,7 +84,7 @@ export default function AIChatFloat() {
     if (mentions.length === 2) {
       const secondMention = mentions[1].substring(1).toLowerCase().trim()
       if (secondMention.length > 0) {
-        const repMatches = (appContext?.representatives || []).filter(rep =>
+        const repMatches = getReferentCandidates(appContext).filter(rep =>
           rep.toLowerCase().includes(secondMention)
         )
         if (repMatches.length > 0) {
