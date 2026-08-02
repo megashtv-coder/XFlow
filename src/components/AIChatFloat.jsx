@@ -22,7 +22,7 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\nPagesë: Pagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki',
+      content: 'Përshëndetje! Format: @Emer_Klientit @Paketa Shuma\nP.sh: @Viktor Shemshiri @12 muaj 100 eur\n\nMe referent: @Klienti @Referenti @Paketa Shuma DataSkadimit(ddmmyyyy)\n\nPagesë: Pagese @Klienti @FormaPageses Shuma Fee @Enndy/Samki\n\nShpenzim: Shpenzim lloji i shpenzimit, shuma, llogaria, Enndy/Samki',
       timestamp: new Date(),
     },
   ])

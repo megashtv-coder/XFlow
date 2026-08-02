@@ -379,10 +379,12 @@ function generateRegisterExpense(entities, context) {
     operation: 'CREATE',
     parameters: {
       amount: entities.amount,
-      category: entities.category,
-      vendor: entities.vendor,
+      type: entities.category,
+      vendor: entities.vendor || '',
+      paidFrom: entities.paidFrom || '',
+      paidBy: entities.paidBy || '',
       date: entities.date || new Date().toISOString().slice(0, 10),
-      description: entities.description,
+      description: entities.description || '',
     },
   }
 }

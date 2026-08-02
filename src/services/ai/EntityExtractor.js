@@ -3,7 +3,7 @@
  * Extracts entities (customer name, amount, date, etc.) from user input
  */
 
-import { depositedToOptions } from '../../data/mockData'
+import { depositedToOptions, expenseTypes } from '../../data/mockData'
 
 /**
  * Extract entities from user text
@@ -33,6 +33,14 @@ export function extractEntities(text, context = {}) {
   if (paymentCommand) {
     return Object.fromEntries(
       Object.entries(paymentCommand).filter(([_, v]) => v !== null && v !== undefined && v !== '')
+    )
+  }
+
+  // "Shpenzim <lloji>, <shuma>, <llogaria>, <partneri>" (register expense)
+  const expenseCommand = extractExpenseCommand(text, context)
+  if (expenseCommand) {
+    return Object.fromEntries(
+      Object.entries(expenseCommand).filter(([_, v]) => v !== null && v !== undefined && v !== '')
     )
   }
 
@@ -150,6 +158,71 @@ function extractPaymentCommand(text, context = {}) {
     depositedTo,
     amount,
     fee,
+  }
+}
+
+/**
+ * Find the best match for `text` among `candidates` (plain strings): an exact
+ * case-insensitive substring match wins outright (longest candidate first);
+ * otherwise fall back to word-overlap scoring so a typo'd or partial name
+ * ("blerje predator") can still resolve to the real value
+ * ("Blerje krediti Predator") — a plain .includes() check alone can't do that.
+ */
+function fuzzyMatchList(text, candidates = []) {
+  const lowerText = text.toLowerCase()
+
+  const substringMatches = candidates.filter(c => lowerText.includes(c.toLowerCase()))
+  if (substringMatches.length > 0) {
+    return substringMatches.sort((a, b) => b.length - a.length)[0]
+  }
+
+  let best = null
+  let bestScore = 0
+  for (const candidate of candidates) {
+    const words = candidate.toLowerCase().split(/[\s-]+/).filter(w => w.length > 2)
+    if (words.length === 0) continue
+    const matchedWords = words.filter(w => lowerText.includes(w))
+    const score = matchedWords.length / words.length
+    if (score > bestScore && score >= 0.5) {
+      bestScore = score
+      best = candidate
+    }
+  }
+  return best
+}
+
+/**
+ * Parse the "register expense" command:
+ * "Shpenzim <lloji i shpenzimit>, <shuma>, <llogaria>, <partneri>"
+ * The type and account are fuzzy-matched (see fuzzyMatchList) against the
+ * real expenseTypes/depositAccounts lists, so an inexact name ("blerje
+ * krediti predator") still resolves to the real one ("Blerje krediti
+ * Predator"). Commas are optional — matching is by known-value lookup
+ * across the whole text, not by strict field position.
+ */
+function extractExpenseCommand(text, context = {}) {
+  const trimmed = text.trim()
+  if (!/^shpenzim\b/i.test(trimmed)) return null
+
+  let cleaned = trimmed.replace(/^shpenzim\b/i, ' ').replace(/,/g, ' ')
+
+  const type = fuzzyMatchList(cleaned, expenseTypes)
+  if (type) cleaned = cleaned.replace(new RegExp(escapeRegex(type), 'i'), ' ')
+
+  const account = fuzzyMatchList(cleaned, context.depositAccounts || [])
+  if (account) cleaned = cleaned.replace(new RegExp(escapeRegex(account), 'i'), ' ')
+
+  const paidBy = depositedToOptions.find(d => new RegExp(`\\b${escapeRegex(d)}\\b`, 'i').test(cleaned)) || null
+  if (paidBy) cleaned = cleaned.replace(new RegExp(`\\b${escapeRegex(paidBy)}\\b`, 'i'), ' ')
+
+  const numbers = (cleaned.match(/\d+(?:[.,]\d+)?/g) || []).map(n => parseFloat(n.replace(',', '.')))
+  const amount = numbers.length > 0 ? numbers[0] : null
+
+  return {
+    category: type,
+    paidFrom: account,
+    paidBy,
+    amount,
   }
 }
 

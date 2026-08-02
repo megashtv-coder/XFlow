@@ -256,6 +256,7 @@ function executeRegisterPayment(params, appContext) {
       recurring: false,
       recurringFreq: '',
       amount: fee,
+      orgId: currentOrgId,
     }, ...prev])
   }
 
@@ -267,6 +268,40 @@ function executeRegisterPayment(params, appContext) {
     invoice: targetInvoice,
     message: `✓ Pagesa u regjistrua! Neto: €${net} — Fatura ${targetInvoice.id} (${targetInvoice.customer})`,
   }
+}
+
+function executeRegisterExpense(params, appContext) {
+  const { setExpenses, logActivity, currentOrgId } = appContext
+
+  if (!params?.amount) {
+    return { success: false, error: 'Mungon shuma e shpenzimit.' }
+  }
+  if (!params?.type) {
+    return { success: false, error: 'Mungon lloji i shpenzimit.' }
+  }
+  if (typeof setExpenses !== 'function') {
+    return { success: false, error: 'Nuk mund të regjistrohet shpenzimi (sistemi nuk është gati).' }
+  }
+
+  const newId = `EXP-${Date.now()}`
+  const expense = {
+    id: newId,
+    date: params.date,
+    type: params.type,
+    vendor: params.vendor || '',
+    paidFrom: params.paidFrom || '',
+    reference: params.description || '',
+    paidBy: params.paidBy || 'Enndy',
+    recurring: false,
+    recurringFreq: 'Mujore',
+    amount: params.amount,
+    orgId: currentOrgId,
+  }
+
+  setExpenses(prev => [expense, ...prev])
+  logActivity?.(`Regjistroi shpenzimin ${newId} — ${params.type} €${params.amount} (AI)`, 'Shpenzimet')
+
+  return { success: true, expense, message: `✓ Shpenzimi u regjistrua! ${params.type} — €${params.amount}` }
 }
 
 /**
@@ -287,6 +322,8 @@ export function executeAction(action, appContext) {
       return executeCreateCustomer(action.parameters, appContext)
     case 'register_payment':
       return executeRegisterPayment(action.parameters, appContext)
+    case 'register_expense':
+      return executeRegisterExpense(action.parameters, appContext)
     default:
       return {
         success: false,
