@@ -5,9 +5,10 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2 } from 'lucide-react'
+import { Send, X, Loader, AlertCircle, CheckCircle, MessageCircle, Minimize2, Users } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { createAICommandProcessor } from '../services/ai/AICommandProcessor'
+import { extractCustomerMentions } from '../services/ai/EntityExtractor'
 
 export default function AIChatFloat() {
   const appContext = useApp()
@@ -19,12 +20,13 @@ export default function AIChatFloat() {
     {
       id: 'welcome',
       type: 'system',
-      content: 'Përshëndetje! Jam AI asistenti juaj. Mund të më japni komandat në shqip.',
+      content: 'Përshëndetje! Kam shortcuts të reja: @Emri për faturë shpejt, ose "shto klient Emer..."',
       timestamp: new Date(),
     },
   ])
   const [loading, setLoading] = useState(false)
   const [currentResult, setCurrentResult] = useState(null)
+  const [customerSuggestions, setCustomerSuggestions] = useState([])
   const messagesEndRef = useRef(null)
 
   // Initialize AI processor
@@ -38,6 +40,31 @@ export default function AIChatFloat() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Handle customer mentions with @
+  const handleInputChange = (e) => {
+    const value = e.target.value
+    setInput(value)
+
+    // Check for @mention
+    const mentionMatch = value.match(/@(\w*)$/)
+    if (mentionMatch && appContext?.customers) {
+      const mention = mentionMatch[1].toLowerCase()
+      const matches = appContext.customers.filter(c =>
+        c.name.toLowerCase().includes(mention) ||
+        c.name.split(' ')[0].toLowerCase().includes(mention)
+      )
+      setCustomerSuggestions(matches)
+    } else {
+      setCustomerSuggestions([])
+    }
+  }
+
+  const selectCustomer = (customerName) => {
+    const newInput = input.replace(/@\w*$/, `@${customerName} `)
+    setInput(newInput)
+    setCustomerSuggestions([])
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -236,14 +263,31 @@ export default function AIChatFloat() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg">
+          {/* Input Form with Customer Suggestions */}
+          <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg space-y-2">
+            {/* Customer Picker */}
+            {customerSuggestions.length > 0 && (
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+                {customerSuggestions.map(customer => (
+                  <button
+                    key={customer.id}
+                    type="button"
+                    onClick={() => selectCustomer(customer.name)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                  >
+                    <Users size={14} className="text-red-500" />
+                    {customer.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="flex gap-2">
               <input
                 type="text"
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Shkruaj komandë..."
+                onChange={handleInputChange}
+                placeholder="Shkruaj komandë (@Emri, shto klient, etj)..."
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                 disabled={loading}
               />

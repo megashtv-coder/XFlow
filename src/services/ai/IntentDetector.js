@@ -150,6 +150,14 @@ const INTENT_PATTERNS = {
     /kur\s+/i,
     /ku\s+/i,
   ],
+
+  // Quick Commands (Shortcuts)
+  QUICK_INVOICE_CUSTOMER: [
+    /@\w+/i, // @EmriMbiermi format
+  ],
+  ADD_CUSTOMER_QUICK: [
+    /shto\s+klient\s+/i,
+  ],
 }
 
 /**

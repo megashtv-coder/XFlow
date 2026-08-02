@@ -52,9 +52,35 @@ export function extractEntities(text, context = {}) {
 }
 
 /**
+ * Extract customers mentioned with @ prefix
+ * @param {string} text - User input
+ * @param {Array} customers - List of customers
+ * @returns {Array} - Matching customers
+ */
+export function extractCustomerMentions(text, customers = []) {
+  const mentionMatch = text.match(/@(\w+)/i)
+  if (!mentionMatch) return []
+
+  const mention = mentionMatch[1].toLowerCase()
+  return customers.filter(c =>
+    c.name.toLowerCase().includes(mention) ||
+    c.name.split(' ')[0].toLowerCase() === mention
+  )
+}
+
+/**
  * Extract customer name from text
  */
 function extractCustomerName(text, customers = []) {
+  // Check for @mention first
+  const mentions = extractCustomerMentions(text, customers)
+  if (mentions.length === 1) {
+    return mentions[0].name
+  }
+  if (mentions.length > 1) {
+    return null // Require user to select
+  }
+
   // Check for known customers in text
   for (const customer of customers) {
     if (text.toLowerCase().includes(customer.name.toLowerCase())) {
