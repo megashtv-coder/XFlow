@@ -1369,7 +1369,7 @@ export default function Invoices() {
 
   // Calculate total unpaid invoices for resellers from filtered data
   const sellerInvoices = filtered.filter(i => {
-    const customer = customers.find(c => c.name === i.customer)
+    const customer = customerMap.get(i.customer)
     return customer?.type === 'reseller' && (i.status === 'pending' || i.status === 'overdue')
   })
   const totalUnpaidSellers = sellerInvoices.reduce((sum, i) => sum + (i.amount || 0), 0)

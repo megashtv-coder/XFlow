@@ -8,7 +8,6 @@ import Header from './components/Header'
 import AIChatFloat from './components/AIChatFloat'
 import { Toast, LoadingSkeleton } from './components/UI'
 import { useEffect, useState, lazy, Suspense } from 'react'
-import AutoNotificationService from './services/AutoNotificationService'
 import BackupService from './services/BackupService'
 
 // Lazy load all pages to reduce initial bundle size
@@ -54,24 +53,6 @@ function OrgAppLayout() {
   const editId = pageMatch[2] // Only for edit routes
 
   const PageComponent = ORG_PAGES[basePage] || Dashboard
-
-  // Check for pending auto-notifications when app loads
-  useEffect(() => {
-    // Get configured advance days from localStorage
-    const savedAdvanceDays = localStorage.getItem('xflow_notif_advance_days')
-    const advanceDays = savedAdvanceDays ? parseInt(savedAdvanceDays) : 7
-
-    const pending = AutoNotificationService.getPendingNotifications(invoices, customers, advanceDays)
-
-    if (pending.length > 0) {
-      console.log(`📬 Found ${pending.length} pending subscription notifications`)
-      // Auto-send notifications
-      const sentCount = AutoNotificationService.checkAndSendNotifications(invoices, customers, advanceDays)
-      if (sentCount > 0) {
-        showToast(`📱 ${sentCount} njoftim u dërgua nëpërmjet WhatsApp`, 'success')
-      }
-    }
-  }, [invoices, customers, showToast])
 
   // Auto-backup every 48 hours (fixed schedule, not on every refresh)
   useEffect(() => {

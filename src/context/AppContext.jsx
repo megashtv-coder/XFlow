@@ -25,13 +25,19 @@ async function diffSync(table, curr, prevRef, orgId) {
   const prev = prevRef.current
   if (prev === curr) return               // asnjë ndryshim
 
+  // Map/Set lookups instead of .find() inside .filter() — O(n+m) instead of
+  // O(n·m), same exact result. Matters with thousands of rows: this used to
+  // run a full linear scan of `prev` for every item in `curr`.
+  const prevById = new Map(prev.map(item => [item.id, item]))
+  const currIds = new Set(curr.map(item => item.id))
+
   const toUpsert = curr.filter(item => {
-    const old = prev.find(i => i.id === item.id)
+    const old = prevById.get(item.id)
     // Fast comparison: check if item changed by comparing _synced timestamp + key fields
     // Only upsert if missing or if _synced is missing (unsync'd changes)
     return !old || !old._synced || !item._synced || item._synced !== old._synced
   })
-  const toDelete = prev.filter(item => !curr.find(i => i.id === item.id))
+  const toDelete = prev.filter(item => !currIds.has(item.id))
 
   prevRef.current = curr
 
