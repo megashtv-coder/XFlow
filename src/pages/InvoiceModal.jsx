@@ -99,45 +99,45 @@ function Combobox({
         className="form-control flex items-center justify-between cursor-pointer select-none gap-2 min-h-[38px]"
         onClick={openDrop}
       >
-        <span className={`${textClass} truncate flex-1 ${selected ? 'text-gray-800' : 'text-gray-400'}`}>
+        <span className={`${textClass} truncate flex-1 ${selected ? 'text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}`}>
           {selected ? getLabel(selected) : placeholder}
         </span>
-        <ChevronDown size={14} className={`text-gray-400 flex-shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-gray-400 flex-shrink-0 transition-transform duration-150 dark:text-gray-500 ${open ? 'rotate-180' : ''}`} />
       </div>
 
       {open && createPortal(
         <div
           ref={dropRef}
           style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width, zIndex: 9999 }}
-          className="bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden"
+          className="bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden dark:bg-gray-800 dark:border-gray-700"
         >
-          <div className="p-2 bg-gray-50 border-b border-gray-100">
-            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
-              <Search size={12} className="text-gray-400 flex-shrink-0" />
+          <div className="p-2 bg-gray-50 border-b border-gray-100 dark:bg-gray-900/50 dark:border-gray-700">
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 dark:bg-gray-800 dark:border-gray-700">
+              <Search size={12} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
               <input
                 autoFocus
-                className="bg-transparent outline-none text-xs w-full text-gray-700 placeholder-gray-400"
+                className="bg-transparent outline-none text-xs w-full text-gray-700 placeholder-gray-400 dark:text-gray-200"
                 placeholder="Kërko..."
                 value={search}
                 onChange={e => handleSearchChange(e.target.value)}
               />
-              {search && <button onClick={() => { setSearch(''); setDebouncedSearch('') }} className="text-gray-300 hover:text-gray-500"><X size={10}/></button>}
+              {search && <button onClick={() => { setSearch(''); setDebouncedSearch('') }} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"><X size={10}/></button>}
             </div>
           </div>
           <div className="max-h-52 overflow-y-auto">
             {filtered.length === 0 && !onAddNew && (
-              <p className="text-xs text-gray-400 text-center py-4 italic">Nuk u gjet asgjë</p>
+              <p className="text-xs text-gray-400 text-center py-4 italic dark:text-gray-500">Nuk u gjet asgjë</p>
             )}
             {filtered.map((o, i) => (
               <div
                 key={getKey ? getKey(o) : i}
-                className={`px-3 py-2.5 cursor-pointer hover:bg-red-50 transition-colors border-b border-gray-50 last:border-0 ${
+                className={`px-3 py-2.5 cursor-pointer hover:bg-red-50 transition-colors border-b border-gray-50 last:border-0 dark:border-gray-700 ${
                   getLabel(o) === value ? 'bg-red-50' : ''
                 }`}
                 onClick={() => { onChange(o); setOpen(false); setSearch('') }}
               >
                 {renderOption ? renderOption(o) : (
-                  <span className={`text-sm ${getLabel(o) === value ? 'text-red-600 font-semibold' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${getLabel(o) === value ? 'text-red-600 font-semibold' : 'text-gray-700 dark:text-gray-200'}`}>
                     {getLabel(o)}
                   </span>
                 )}
@@ -145,7 +145,7 @@ function Combobox({
             ))}
             {onAddNew && (
               <div
-                className="px-3 py-2.5 cursor-pointer hover:bg-emerald-50 transition-colors border-t border-gray-100 flex items-center gap-2"
+                className="px-3 py-2.5 cursor-pointer hover:bg-emerald-50 transition-colors border-t border-gray-100 flex items-center gap-2 dark:border-gray-700"
                 onClick={() => { onAddNew(search); setOpen(false); setSearch('') }}
               >
                 <UserPlus size={13} className="text-emerald-600 flex-shrink-0" />
@@ -168,7 +168,7 @@ function Combobox({
 ───────────────────────────────────────────────────────────── */
 const CUST_COLORS = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2','#be185d','#0f766e']
 
-const FLD = 'text-[10px] text-gray-500 font-bold uppercase tracking-wide block mb-1'
+const FLD = 'text-[10px] text-gray-500 font-bold uppercase tracking-wide block mb-1 dark:text-gray-400'
 
 function QuickAddCustomer({ initialName, onSave, onCancel }) {
   const parts = (initialName || '').trim().split(' ')
@@ -216,13 +216,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
         <div className="flex gap-2">
           <button type="button" onClick={() => set('type', 'individual')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-              !isReseller ? 'border-red-500 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-red-300'
+              !isReseller ? 'border-red-500 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
             }`}>
             <User size={12}/> Individual
           </button>
           <button type="button" onClick={() => set('type', 'reseller')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-              isReseller ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300'
+              isReseller ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
             }`}>
             <Users size={12}/> Reseller
           </button>
@@ -233,13 +233,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       <div className="grid grid-cols-2 gap-2 mb-2">
         <div>
           <label className={FLD}>Emri *</label>
-          <input className="form-control text-sm bg-white" autoFocus
+          <input className="form-control text-sm bg-white dark:bg-gray-800" autoFocus
             value={form.firstName} onChange={e => set('firstName', e.target.value)}
             placeholder="p.sh. Ardit" />
         </div>
         <div>
           <label className={FLD}>Mbiemri *</label>
-          <input className="form-control text-sm bg-white"
+          <input className="form-control text-sm bg-white dark:bg-gray-800"
             value={form.lastName} onChange={e => set('lastName', e.target.value)}
             placeholder="p.sh. Krasniqi" />
         </div>
@@ -249,13 +249,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       <div className="grid grid-cols-2 gap-2 mb-2">
         <div>
           <label className={FLD}>Numri i telefonit *</label>
-          <input className="form-control text-sm bg-white"
+          <input className="form-control text-sm bg-white dark:bg-gray-800"
             value={form.phone} onChange={e => set('phone', e.target.value)}
             placeholder="+383 44 000 000" />
         </div>
         <div>
           <label className={FLD}>Email</label>
-          <input className="form-control text-sm bg-white" type="email"
+          <input className="form-control text-sm bg-white dark:bg-gray-800" type="email"
             value={form.email} onChange={e => set('email', e.target.value)}
             placeholder="email@shembull.com" />
         </div>
@@ -264,7 +264,7 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       {/* Shteti */}
       <div className="mb-2">
         <label className={FLD}>Shteti *</label>
-        <select className="form-control text-sm bg-white"
+        <select className="form-control text-sm bg-white dark:bg-gray-800"
           value={form.country} onChange={e => set('country', e.target.value)}>
           <option value="">— Zgjidh shtetin —</option>
           {countries.map(c => <option key={c} value={c}>{c}</option>)}
@@ -277,13 +277,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
           <>
             <div>
               <label className={FLD}>Aplikacioni që përdor</label>
-              <input className="form-control text-sm bg-white"
+              <input className="form-control text-sm bg-white dark:bg-gray-800"
                 value={form.app} onChange={e => set('app', e.target.value)}
                 placeholder="p.sh. Predator IPTV" />
             </div>
             <div>
               <label className={FLD}>MAC Adresa</label>
-              <input className="form-control text-sm bg-white"
+              <input className="form-control text-sm bg-white dark:bg-gray-800"
                 value={form.macAddress} onChange={e => set('macAddress', e.target.value)}
                 placeholder="AA:BB:CC:DD:EE:FF" />
             </div>
@@ -292,13 +292,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
           <>
             <div>
               <label className={FLD}>Username</label>
-              <input className="form-control text-sm bg-white"
+              <input className="form-control text-sm bg-white dark:bg-gray-800"
                 value={form.username} onChange={e => set('username', e.target.value)}
                 placeholder="p.sh. ardit_reseller" />
             </div>
             <div>
               <label className={FLD}>Paneli</label>
-              <input className="form-control text-sm bg-white"
+              <input className="form-control text-sm bg-white dark:bg-gray-800"
                 value={form.panel} onChange={e => set('panel', e.target.value)}
                 placeholder="p.sh. panel1.iptv.com" />
             </div>
@@ -309,7 +309,7 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       {/* Referuar nga */}
       <div className="mb-3">
         <label className={FLD}>Referuar nga</label>
-        <input className="form-control text-sm bg-white"
+        <input className="form-control text-sm bg-white dark:bg-gray-800"
           value={form.referredBy} onChange={e => set('referredBy', e.target.value)}
           placeholder="Emri i personit që e referoi..." />
       </div>
@@ -347,7 +347,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
 
   return (
     <div
-      className="item-row grid items-start gap-2 py-2.5 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors"
+      className="item-row grid items-start gap-2 py-2.5 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors dark:border-gray-700"
     >
       {/* Product combobox + description */}
       <div className="flex flex-col gap-1 min-w-0">
@@ -361,13 +361,13 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
           textClass="text-base sm:text-sm"
           renderOption={p => (
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm text-gray-800 truncate">{p.name}</span>
+              <span className="text-sm text-gray-800 truncate dark:text-gray-100">{p.name}</span>
               <span className="text-xs font-bold text-red-500 flex-shrink-0">€{p.salePrice}</span>
             </div>
           )}
         />
         <input
-          className="w-full text-base sm:text-xs text-gray-500 italic bg-transparent outline-none border-b border-dashed border-gray-200 focus:border-red-300 px-1 py-0.5 placeholder-gray-300 transition-colors"
+          className="w-full text-base sm:text-xs text-gray-500 italic bg-transparent outline-none border-b border-dashed border-gray-200 focus:border-red-300 px-1 py-0.5 placeholder-gray-300 transition-colors dark:text-gray-400 dark:border-gray-700"
           placeholder="Përshkrim (opsional)..."
           value={item.note || ''}
           onChange={e => onUpdate({ note: e.target.value })}
@@ -392,7 +392,7 @@ function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
       />
 
       {/* Line total */}
-      <div className={`hidden sm:block text-right text-base sm:text-sm font-bold py-2 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800' : 'text-gray-300'}`}>
+      <div className={`hidden sm:block text-right text-base sm:text-sm font-bold py-2 px-1 mt-0.5 ${lineTotal > 0 ? 'text-gray-800 dark:text-gray-100' : 'text-gray-300'}`}>
         €{fmtN(lineTotal)}
       </div>
 
@@ -650,8 +650,8 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
               getLabel={c => c.name}
               renderOption={c => (
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">{c.name}</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{[c.country, c.email].filter(Boolean).join(' · ')}</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{c.name}</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5 dark:text-gray-500">{[c.country, c.email].filter(Boolean).join(' · ')}</p>
                 </div>
               )}
               onAddNew={handleAddNewCustomer}
@@ -702,7 +702,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
             getKey={ref => ref.id}
             getLabel={ref => ref.name}
             renderOption={ref => (
-              <span className="text-sm text-gray-800">{ref.name}</span>
+              <span className="text-sm text-gray-800 dark:text-gray-100">{ref.name}</span>
             )}
             onAddNew={name => {
               // Add new representative to persistent list if not already there
@@ -731,7 +731,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
           <label className="form-label mb-0 text-sm sm:text-base font-bold">Artikujt</label>
           {/* Column labels */}
           <div
-            className="hidden sm:grid text-[13px] text-gray-600 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9"
+            className="hidden sm:grid text-[13px] text-gray-600 font-bold uppercase tracking-wider gap-2 pr-2 sm:pr-9 dark:text-gray-300"
             style={{ gridTemplateColumns: '1fr 60px 80px 70px' }}
           >
             <span className="pl-2 sm:pl-3"></span>
@@ -741,7 +741,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
           </div>
         </div>
 
-        <div className="border border-gray-200 rounded-xl overflow-x-auto bg-white">
+        <div className="border border-gray-200 rounded-xl overflow-x-auto bg-white dark:border-gray-700 dark:bg-gray-800">
           <div className="min-w-[380px]">
           {lineItems.map(item => (
             <ItemRow
@@ -765,23 +765,23 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       </div>
 
       {/* ── Totals block ── */}
-      <div className="bg-gray-50 rounded-xl border border-gray-100 px-4 py-3 mb-4 space-y-2">
+      <div className="bg-gray-50 rounded-xl border border-gray-100 px-4 py-3 mb-4 space-y-2 dark:bg-gray-900/50 dark:border-gray-700">
         <div className="flex items-center justify-between text-base sm:text-sm">
-          <span className="text-gray-500 font-medium">Sub Total</span>
-          <span className="font-semibold text-gray-800">€{fmtN(subTotal)}</span>
+          <span className="text-gray-500 font-medium dark:text-gray-400">Sub Total</span>
+          <span className="font-semibold text-gray-800 dark:text-gray-100">€{fmtN(subTotal)}</span>
         </div>
         <div className="flex items-center justify-between text-base sm:text-sm">
-          <div className="flex items-center gap-2 text-gray-500 font-medium">
+          <div className="flex items-center gap-2 text-gray-500 font-medium dark:text-gray-400">
             <span>Zbritja</span>
             <input
-              className="w-16 border border-gray-200 rounded-lg px-2 py-1.5 text-base sm:text-xs text-right outline-none focus:border-red-400 bg-white font-semibold"
+              className="w-16 border border-gray-200 rounded-lg px-2 py-1.5 text-base sm:text-xs text-right outline-none focus:border-red-400 bg-white font-semibold dark:border-gray-700 dark:bg-gray-800"
               type="number" min="0" max={discount.type === '%' ? 100 : undefined}
               value={discount.value}
               onChange={e => setDiscount(p => ({ ...p, value: e.target.value }))}
               placeholder="0"
             />
             <select
-              className="border border-gray-200 rounded-lg px-2 py-1.5 text-base sm:text-xs outline-none focus:border-red-400 bg-white text-gray-700 font-semibold"
+              className="border border-gray-200 rounded-lg px-2 py-1.5 text-base sm:text-xs outline-none focus:border-red-400 bg-white text-gray-700 font-semibold dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
               value={discount.type}
               onChange={e => setDiscount(p => ({ ...p, type: e.target.value }))}
             >
@@ -793,8 +793,8 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
             -{discAmount > 0 ? `€${fmtN(discAmount)}` : '€0'}
           </span>
         </div>
-        <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-          <span className="font-bold text-gray-800 text-base sm:text-sm">Total (€)</span>
+        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+          <span className="font-bold text-gray-800 text-base sm:text-sm dark:text-gray-100">Total (€)</span>
           <span className="text-2xl sm:text-xl font-bold text-red-600">€{fmtN(total)}</span>
         </div>
       </div>
@@ -829,8 +829,8 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       {/* ── Notify date (Full width, highlight) ── */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4">
         <FormGroup label="🔔 Rikujtim për riabonimin">
-          <input className="form-control text-base sm:text-sm bg-white" type="date" value={form.notifyDate} onChange={e => set('notifyDate', e.target.value)} />
-          <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1.5">Shfaqet në menunë "Abonimet" si rikujtim për klientin.</p>
+          <input className="form-control text-base sm:text-sm bg-white dark:bg-gray-800" type="date" value={form.notifyDate} onChange={e => set('notifyDate', e.target.value)} />
+          <p className="text-[10px] sm:text-[11px] text-gray-500 mt-1.5 dark:text-gray-400">Shfaqet në menunë "Abonimet" si rikujtim për klientin.</p>
         </FormGroup>
       </div>
 
@@ -861,7 +861,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     return (
       <div className="space-y-4">
         {formContent}
-        <div className="flex gap-2 pt-4 border-t border-gray-200">
+        <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button className="btn btn-outline flex-1" onClick={handleCancel} disabled={isSaving}>Anulo</button>
           <button className={`btn btn-primary flex-1 ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving}>
             {isSaving ? (

@@ -99,7 +99,7 @@ export default function CommunicationHistory() {
       failed: { icon: '✕', label: 'Dështoi', color: 'bg-red-100 text-red-700' },
       read: { icon: '✓✓', label: 'Lexuar', color: 'bg-red-100 text-red-600' },
     }
-    const s = statusMap[status] || { icon: '•', label: status || 'Dërguar', color: 'bg-gray-100 text-gray-700' }
+    const s = statusMap[status] || { icon: '•', label: status || 'Dërguar', color: 'bg-gray-100 text-gray-700 dark:bg-gray-700/50 dark:text-gray-200' }
     return s
   }
 
@@ -108,8 +108,8 @@ export default function CommunicationHistory() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Përgjagjimi i Komunikimeve</h2>
-          <p className="text-sm text-gray-400 mt-0.5">Historia e të gjitha mesazheve të dërguar tek klientët</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Përgjagjimi i Komunikimeve</h2>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">Historia e të gjitha mesazheve të dërguar tek klientët</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -136,9 +136,9 @@ export default function CommunicationHistory() {
       {/* Statistics */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-          <div className="bg-white rounded-lg p-3 border border-gray-100">
-            <p className="text-xs text-gray-500 font-semibold uppercase">Totali</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
+          <div className="bg-white rounded-lg p-3 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+            <p className="text-xs text-gray-500 font-semibold uppercase dark:text-gray-400">Totali</p>
+            <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{stats.total}</p>
           </div>
           <div className="bg-green-50 rounded-lg p-3 border border-green-100">
             <p className="text-xs text-green-600 font-semibold uppercase">WhatsApp</p>
@@ -160,20 +160,20 @@ export default function CommunicationHistory() {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-lg border border-gray-100 p-4 mb-6">
+      <div className="bg-white rounded-lg border border-gray-100 p-4 mb-6 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search */}
-          <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-            <Search size={16} className="text-gray-400" />
+          <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 dark:bg-gray-900/50 dark:border-gray-700">
+            <Search size={16} className="text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Kërko sipas emrit, numrit ose mesazhit..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm flex-1 text-gray-600"
+              className="bg-transparent border-none outline-none text-sm flex-1 text-gray-600 dark:text-gray-300"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500">
+              <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
                 ✕
               </button>
             )}
@@ -183,7 +183,7 @@ export default function CommunicationHistory() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm font-semibold text-gray-600 outline-none focus:border-red-400"
+            className="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm font-semibold text-gray-600 outline-none focus:border-red-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
           >
             <option value="all">Të gjitha tipet</option>
             <option value="whatsapp">💬 WhatsApp</option>
@@ -196,7 +196,7 @@ export default function CommunicationHistory() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm font-semibold text-gray-600 outline-none focus:border-red-400"
+            className="px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm font-semibold text-gray-600 outline-none focus:border-red-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
           >
             <option value="all">Të gjitha statuset</option>
             <option value="prepared">⏳ Gati për dërgim</option>
@@ -232,42 +232,42 @@ export default function CommunicationHistory() {
       )}
 
       {/* Messages table */}
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
         {paged.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-sm text-gray-500">Nuk ka mesazhe në këtë filtrim</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Nuk ka mesazhe në këtë filtrim</p>
           </div>
         ) : (
           <>
             {/* Desktop view */}
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
+                <thead className="bg-gray-50 border-b border-gray-100 dark:bg-gray-900/50 dark:border-gray-700">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Koha</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Lloji</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Klienti</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Numri/Email</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Mesazhi</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Statusi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Koha</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Lloji</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Klienti</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Numri/Email</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Mesazhi</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Statusi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paged.map((msg) => (
-                    <tr key={msg.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                    <tr key={msg.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:hover:bg-gray-900/50">
+                      <td className="px-4 py-3 text-gray-600 whitespace-nowrap dark:text-gray-300">
                         {formatDate(msg.timestamp)}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${MESSAGE_TYPES[msg.type]?.color || 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${MESSAGE_TYPES[msg.type]?.color || 'bg-gray-100 text-gray-700 dark:text-gray-200'}`}>
                           {MESSAGE_TYPES[msg.type]?.label || msg.type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-medium text-gray-800">{msg.customerName}</td>
-                      <td className="px-4 py-3 text-gray-600 text-xs font-mono">
+                      <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-100">{msg.customerName}</td>
+                      <td className="px-4 py-3 text-gray-600 text-xs font-mono dark:text-gray-300">
                         {msg.phoneNumber || msg.email || '—'}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 max-w-xs truncate" title={msg.message}>
+                      <td className="px-4 py-3 text-gray-600 max-w-xs truncate dark:text-gray-300" title={msg.message}>
                         {formatMessage(msg.message)}
                       </td>
                       <td className="px-4 py-3">
@@ -287,22 +287,22 @@ export default function CommunicationHistory() {
             </div>
 
             {/* Mobile view */}
-            <div className="sm:hidden divide-y divide-gray-100">
+            <div className="sm:hidden divide-y divide-gray-100 dark:divide-gray-700">
               {paged.map((msg) => (
-                <div key={msg.id} className="p-4 hover:bg-gray-50 transition-colors">
+                <div key={msg.id} className="p-4 hover:bg-gray-50 transition-colors dark:hover:bg-gray-900/50">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="font-semibold text-gray-800">{msg.customerName}</p>
-                      <p className="text-xs text-gray-500">{formatDate(msg.timestamp)}</p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-100">{msg.customerName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(msg.timestamp)}</p>
                     </div>
-                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${MESSAGE_TYPES[msg.type]?.color || 'bg-gray-100 text-gray-700'}`}>
+                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${MESSAGE_TYPES[msg.type]?.color || 'bg-gray-100 text-gray-700 dark:text-gray-200'}`}>
                       {MESSAGE_TYPES[msg.type]?.label || msg.type}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-600 mb-2">
+                  <p className="text-xs text-gray-600 mb-2 dark:text-gray-300">
                     {msg.phoneNumber || msg.email || '—'}
                   </p>
-                  <p className="text-xs text-gray-700 mb-2">
+                  <p className="text-xs text-gray-700 mb-2 dark:text-gray-200">
                     {formatMessage(msg.message)}
                   </p>
                   <div className="mt-2">
@@ -321,15 +321,15 @@ export default function CommunicationHistory() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-                <p className="text-xs text-gray-500">
+              <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between dark:border-gray-700">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Faqja {page} nga {totalPages} · {filtered.length} rezultate
                 </p>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-2 py-1 border border-gray-200 rounded text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-2 py-1 border border-gray-200 rounded text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
                   >
                     ← Mbrapa
                   </button>
@@ -340,7 +340,7 @@ export default function CommunicationHistory() {
                       className={`px-2 py-1 rounded text-xs font-semibold ${
                         p === page
                           ? 'bg-red-500 text-white'
-                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50'
                       }`}
                     >
                       {p}
@@ -349,7 +349,7 @@ export default function CommunicationHistory() {
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-2 py-1 border border-gray-200 rounded text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-2 py-1 border border-gray-200 rounded text-xs font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
                   >
                     Përpara →
                   </button>

@@ -23,7 +23,7 @@ function PinModal({ onSuccess, onClose }) {
     <Modal
       title={
         <span className="flex items-center gap-2">
-          <Lock size={16} className="text-gray-500" />
+          <Lock size={16} className="text-gray-500 dark:text-gray-400" />
           Fut PIN-in për të parë çmimet
         </span>
       }
@@ -37,7 +37,7 @@ function PinModal({ onSuccess, onClose }) {
         </>
       }
     >
-      <p className="text-xs text-gray-400 mb-4">Fut kodin 4-shifror për të zbuluar çmimin e blerjes dhe marzhën.</p>
+      <p className="text-xs text-gray-400 mb-4 dark:text-gray-500">Fut kodin 4-shifror për të zbuluar çmimin e blerjes dhe marzhën.</p>
       <div className="flex justify-center">
         <input
           className="form-control text-center text-2xl font-mono tracking-[0.5em] w-40"
@@ -137,7 +137,7 @@ function ItemModal({ item, onClose, isFormPage }) {
       <div className="grid grid-cols-2 gap-4">
         <FormGroup label="Çmimi i shitjes *">
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">€</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none dark:text-gray-500">€</span>
             <input
               className="form-control pl-7"
               type="number"
@@ -152,7 +152,7 @@ function ItemModal({ item, onClose, isFormPage }) {
 
         <FormGroup label="Çmimi i blerjes">
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">€</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none dark:text-gray-500">€</span>
             <input
               className="form-control pl-7"
               type="number"
@@ -198,7 +198,7 @@ function ItemModal({ item, onClose, isFormPage }) {
       {/* Marzha live */}
       {form.salePrice !== '' && form.purchasePrice !== '' &&
        Number(form.salePrice) > 0 && Number(form.purchasePrice) > 0 && (
-        <div className="mt-1 flex items-center gap-3 text-xs text-gray-400 bg-gray-50 rounded-lg px-4 py-2.5">
+        <div className="mt-1 flex items-center gap-3 text-xs text-gray-400 bg-gray-50 rounded-lg px-4 py-2.5 dark:text-gray-500 dark:bg-gray-900/50">
           <span>Marzha:</span>
           <span className="font-bold text-emerald-600">
             €{(Number(form.salePrice) - Number(form.purchasePrice)).toFixed(2)}
@@ -233,10 +233,10 @@ function DeleteConfirm({ item, onClose }) {
         </>
       }
     >
-      <p className="text-sm text-gray-600">
-        A jeni i sigurt që dëshironi të fshini <span className="font-bold text-gray-800">"{item.name}"</span>?
+      <p className="text-sm text-gray-600 dark:text-gray-300">
+        A jeni i sigurt që dëshironi të fshini <span className="font-bold text-gray-800 dark:text-gray-100">"{item.name}"</span>?
         <br />
-        <span className="text-gray-400 text-xs">Ky veprim nuk mund të kthehet mbrapsht.</span>
+        <span className="text-gray-400 text-xs dark:text-gray-500">Ky veprim nuk mund të kthehet mbrapsht.</span>
       </p>
     </Modal>
   )
@@ -340,8 +340,8 @@ export default function Items() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Produktet &amp; Shërbimet</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{totalItems} artikuj aktiv</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Produktet &amp; Shërbimet</h2>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{totalItems} artikuj aktiv</p>
         </div>
         <button className="hidden sm:flex btn btn-primary btn-sm self-start sm:self-auto" onClick={openAdd}>
           <Plus size={16} /> Shto produkt
@@ -358,23 +358,23 @@ export default function Items() {
 
       {/* Stat mini-cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
-          <p className="text-2xl font-bold text-gray-800">{totalItems}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Artikuj gjithsej</p>
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{totalItems}</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Artikuj gjithsej</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
           <p className="text-2xl font-bold text-red-500">{fmt(avgSale.toFixed(2))}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Çmimi mesatar shitje</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Çmimi mesatar shitje</p>
         </div>
         <div
-          className="bg-white rounded-xl border border-gray-100 px-5 py-4 cursor-pointer hover:border-gray-200 transition-colors"
+          className="bg-white rounded-xl border border-gray-100 px-5 py-4 cursor-pointer hover:border-gray-200 transition-colors dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-700"
           onClick={() => !pinUnlocked && setShowPin(true)}
         >
           {pinUnlocked
             ? <p className="text-2xl font-bold text-emerald-600">{avgMargin.toFixed(1)}%</p>
             : <p className="text-2xl font-bold text-gray-300 font-mono tracking-widest select-none">••••</p>
           }
-          <p className="text-xs text-gray-400 mt-0.5 font-medium flex items-center gap-1">
+          <p className="text-xs text-gray-400 mt-0.5 font-medium flex items-center gap-1 dark:text-gray-500">
             Marzha mesatare
             {pinUnlocked
               ? <Unlock size={10} className="text-emerald-400"/>
@@ -382,30 +382,29 @@ export default function Items() {
             }
           </p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
-          <p className="text-2xl font-bold text-gray-800">{withVendor}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Me furnitor</p>
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{withVendor}</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Me furnitor</p>
         </div>
       </div>
 
       {/* Kërkim */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2
-                        focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 max-w-sm">
-          <Search size={14} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 max-w-sm dark:bg-gray-800 dark:border-gray-700">
+          <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
           <input
-            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400"
+            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
             placeholder="Kërko produkt ose furnitor..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPg(1) }}
           />
           {search && (
-            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500">
+            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
               <X size={13} />
             </button>
           )}
         </div>
-        <span className="text-xs text-gray-400">{filtered.length} rezultate</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500">{filtered.length} rezultate</span>
       </div>
 
       {/* Tabela */}
@@ -421,32 +420,32 @@ export default function Items() {
           )}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">
+              <tr className="border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50">
+                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide dark:text-gray-400">
                   <button
-                    className="flex items-center gap-1 hover:text-gray-700 transition-colors"
+                    className="flex items-center gap-1 hover:text-gray-700 transition-colors dark:hover:text-gray-200"
                     onClick={() => toggleSort('name')}
                   >
                     Emri <SortIcon k="name" />
                   </button>
                 </th>
-                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">
+                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide dark:text-gray-400">
                   <button
-                    className="flex items-center gap-1 hover:text-gray-700 transition-colors ml-auto"
+                    className="flex items-center gap-1 hover:text-gray-700 transition-colors ml-auto dark:hover:text-gray-200"
                     onClick={() => toggleSort('salePrice')}
                   >
                     Çm. Shitjes <SortIcon k="salePrice" />
                   </button>
                 </th>
-                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide">
+                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide dark:text-gray-400">
                   <div className="flex items-center justify-end gap-1.5">
                     {pinUnlocked && (
                       <button
-                        className="flex items-center gap-1 hover:text-gray-700 transition-colors"
+                        className="flex items-center gap-1 hover:text-gray-700 transition-colors dark:hover:text-gray-200"
                         onClick={() => toggleSort('purchasePrice')}
                       >
                         Çm. Blerjes <SortIcon k="purchasePrice" />
@@ -454,7 +453,7 @@ export default function Items() {
                     )}
                     {!pinUnlocked && <span>Çm. Blerjes</span>}
                     <button
-                      className={`ml-1 p-0.5 rounded transition-colors ${pinUnlocked ? 'text-emerald-500 hover:text-emerald-600' : 'text-gray-300 hover:text-gray-500'}`}
+                      className={`ml-1 p-0.5 rounded transition-colors ${pinUnlocked ? 'text-emerald-500 hover:text-emerald-600' : 'text-gray-300 hover:text-gray-500 dark:hover:text-gray-400'}`}
                       onClick={handleLockToggle}
                       title={pinUnlocked ? 'Mbyll' : 'Hap me PIN'}
                     >
@@ -462,7 +461,7 @@ export default function Items() {
                     </button>
                   </div>
                 </th>
-                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell">
+                <th className="text-right px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell dark:text-gray-400">
                   <div className="flex items-center justify-end gap-1">
                     Marzha
                     {pinUnlocked
@@ -471,10 +470,10 @@ export default function Items() {
                     }
                   </div>
                 </th>
-                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell">
+                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell dark:text-gray-400">
                   Llogaria Kontabel
                 </th>
-                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell">
+                <th className="text-left px-5 py-3 font-semibold text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell dark:text-gray-400">
                   Furnitori
                 </th>
                 <th className="px-5 py-3 w-20" />
@@ -497,22 +496,22 @@ export default function Items() {
                           <Package size={15} className="text-red-500" />
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-800 text-sm">{item.name}</p>
-                          <p className="text-xs text-gray-400 lg:hidden">{accountLabel(item.account)}</p>
+                          <p className="font-semibold text-gray-800 text-sm dark:text-gray-100">{item.name}</p>
+                          <p className="text-xs text-gray-400 lg:hidden dark:text-gray-500">{accountLabel(item.account)}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Çmimi shitjes */}
                     <td className="px-5 py-3.5 text-right">
-                      <span className="font-bold text-gray-800">{fmt(item.salePrice)}</span>
+                      <span className="font-bold text-gray-800 dark:text-gray-100">{fmt(item.salePrice)}</span>
                     </td>
 
                     {/* Çmimi blerjes */}
                     <td className="px-5 py-3.5 text-right">
                       {pinUnlocked
                         ? item.purchasePrice > 0
-                          ? <span className="text-gray-600">{fmt(item.purchasePrice)}</span>
+                          ? <span className="text-gray-600 dark:text-gray-300">{fmt(item.purchasePrice)}</span>
                           : <span className="text-gray-300">—</span>
                         : <span onClick={() => setShowPin(true)}>{masked}</span>
                       }
@@ -534,13 +533,13 @@ export default function Items() {
 
                     {/* Llogaria */}
                     <td className="px-5 py-3.5 hidden lg:table-cell">
-                      <span className="text-xs text-gray-500">{accountLabel(item.account)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{accountLabel(item.account)}</span>
                     </td>
 
                     {/* Furnitori */}
                     <td className="px-5 py-3.5 hidden md:table-cell">
                       {item.vendor
-                        ? <span className="text-xs text-gray-600 font-medium">{item.vendor}</span>
+                        ? <span className="text-xs text-gray-600 font-medium dark:text-gray-300">{item.vendor}</span>
                         : <span className="text-gray-300 text-xs">—</span>
                       }
                     </td>

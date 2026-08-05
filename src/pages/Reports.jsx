@@ -92,7 +92,7 @@ function FinanciareTab({ invoices, expenses, fmt }) {
               <Icon size={22} style={{ color }}/>
             </div>
             <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">{val}</p>
-            <p className="text-xs text-gray-400 mt-1 font-medium">{label}</p>
+            <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">{label}</p>
           </div>
         ))}
       </div>
@@ -105,7 +105,7 @@ function FinanciareTab({ invoices, expenses, fmt }) {
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                  tab === t.id ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                  tab === t.id ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-100 shadow-sm dark:bg-gray-800' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 dark:text-gray-400 dark:hover:text-gray-200'
                 }`}>
                 {t.label}
               </button>
@@ -141,7 +141,7 @@ function FinanciareTab({ invoices, expenses, fmt }) {
                       <span className="w-2 h-2 rounded-full" style={{ background: statusColors[status] }}/>
                       {statusLabels[status]}
                     </span>
-                    <span className="text-gray-500">{count} · <span className="font-bold text-gray-700 dark:text-gray-200">{pct}%</span></span>
+                    <span className="text-gray-500 dark:text-gray-400">{count} · <span className="font-bold text-gray-700 dark:text-gray-200">{pct}%</span></span>
                   </div>
                   <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-700" style={{ width:`${pct}%`, background:statusColors[status] }}/>
@@ -180,7 +180,7 @@ function FinanciareTab({ invoices, expenses, fmt }) {
                           {i+1}
                         </span>
                       </td>
-                      <td className="table-td font-semibold text-gray-700 dark:text-gray-300 text-xs">{c.name}</td>
+                      <td className="table-td font-semibold text-gray-700 dark:text-gray-300 text-xs dark:text-gray-200">{c.name}</td>
                       <td className="table-td text-right font-bold text-red-500 text-sm">{fmt(c.calculatedTotal)}</td>
                     </tr>
                   ))
@@ -302,7 +302,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
           {['month','quarter'].map(m => (
             <button key={m} onClick={() => setMode(m)}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                mode===m ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-100 shadow-sm' : 'text-gray-500'
+                mode===m ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-100 shadow-sm dark:bg-gray-800' : 'text-gray-500 dark:text-gray-400'
               }`}>
               {m==='month' ? 'Mujore' : '3-Mujore'}
             </button>
@@ -336,11 +336,11 @@ function BarazimiTab({ payments, expenses, fmt }) {
                 style={{ background: P_COLOR[d.partner] }}>{d.partner[0]}</div>
               <div>
                 <p className="font-bold text-gray-800 dark:text-gray-100">{d.partner}</p>
-                <p className="text-xs text-gray-400">Partneri</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Partneri</p>
               </div>
               <div className="ml-auto text-right">
                 <p className={`text-xl font-black ${d.net >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{fmt(d.net)}</p>
-                <p className="text-[11px] text-gray-400">Neto</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500">Neto</p>
               </div>
             </div>
 
@@ -354,13 +354,13 @@ function BarazimiTab({ payments, expenses, fmt }) {
                   </span>
                   <span className="flex items-center gap-2">
                     <span className="text-sm font-bold text-emerald-600">+{fmt(d.income)}</span>
-                    {expand[`${d.partner}-pay`] ? <ChevronUp size={14} className="text-gray-400"/> : <ChevronDown size={14} className="text-gray-400"/>}
+                    {expand[`${d.partner}-pay`] ? <ChevronUp size={14} className="text-gray-400 dark:text-gray-500"/> : <ChevronDown size={14} className="text-gray-400 dark:text-gray-500"/>}
                   </span>
                 </button>
                 {expand[`${d.partner}-pay`] && (
                   <div className="px-5 pb-3 space-y-1.5">
                     {d.payItems.length === 0
-                      ? <p className="text-xs text-gray-400">Asnjë pagesë në këtë periudhë.</p>
+                      ? <p className="text-xs text-gray-400 dark:text-gray-500">Asnjë pagesë në këtë periudhë.</p>
                       : d.payItems.map(p => (
                           <div key={p.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span className="truncate max-w-[200px]">{p.customer} · {formatDate(p.date)}</span>
@@ -381,13 +381,13 @@ function BarazimiTab({ payments, expenses, fmt }) {
                   </span>
                   <span className="flex items-center gap-2">
                     <span className="text-sm font-bold text-red-500">-{fmt(d.spent)}</span>
-                    {expand[`${d.partner}-exp`] ? <ChevronUp size={14} className="text-gray-400"/> : <ChevronDown size={14} className="text-gray-400"/>}
+                    {expand[`${d.partner}-exp`] ? <ChevronUp size={14} className="text-gray-400 dark:text-gray-500"/> : <ChevronDown size={14} className="text-gray-400 dark:text-gray-500"/>}
                   </span>
                 </button>
                 {expand[`${d.partner}-exp`] && (
                   <div className="px-5 pb-3 space-y-1.5">
                     {d.expItems.length === 0
-                      ? <p className="text-xs text-gray-400">Asnjë shpenzim në këtë periudhë.</p>
+                      ? <p className="text-xs text-gray-400 dark:text-gray-500">Asnjë shpenzim në këtë periudhë.</p>
                       : d.expItems.map(e => (
                           <div key={e.id} className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span className="truncate max-w-[200px]">{e.type} · {formatDate(e.date)}</span>
@@ -440,16 +440,16 @@ function BarazimiTab({ payments, expenses, fmt }) {
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-5">
-          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <p className="text-xs text-gray-400 mb-1">Totali neto</p>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg dark:bg-gray-900/50">
+            <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">Totali neto</p>
             <p className="text-lg font-black text-gray-800 dark:text-gray-100">{fmt(totalNet)}</p>
           </div>
           <div className="text-center p-3 bg-red-50 dark:bg-red-800/20 rounded-lg">
             <p className="text-xs text-red-500 mb-1">Pjesa e drejtë (50/50)</p>
             <p className="text-lg font-black text-red-500">{fmt(fairShare)}</p>
           </div>
-          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <p className="text-xs text-gray-400 mb-1">Diferenca</p>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg dark:bg-gray-900/50">
+            <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">Diferenca</p>
             <p className="text-lg font-black text-gray-800 dark:text-gray-100">
               {fmt(Math.abs(partnerData[0].net - fairShare))}
             </p>
@@ -486,9 +486,9 @@ function BarazimiTab({ payments, expenses, fmt }) {
 
         {/* Verdict */}
         {totalNet === 0 ? (
-          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-            <CheckCircle size={20} className="text-gray-400"/>
-            <p className="text-sm text-gray-500">Asnjë të ardhur në këtë periudhë.</p>
+          <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl dark:bg-gray-900/50">
+            <CheckCircle size={20} className="text-gray-400 dark:text-gray-500"/>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Asnjë të ardhur në këtë periudhë.</p>
           </div>
         ) : settlement === null ? (
           <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
@@ -547,9 +547,9 @@ function BarazimiTab({ payments, expenses, fmt }) {
                     style={{ background: P_COLOR[t.to] }}>{t.to[0]}</div>
                   <div className="flex-1 min-w-0">
                     <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{t.from} → {t.to}</span>
-                    {t.note && <span className="text-xs text-gray-400 ml-2">· {t.note}</span>}
+                    {t.note && <span className="text-xs text-gray-400 ml-2 dark:text-gray-500">· {t.note}</span>}
                   </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(t.date)}</span>
+                  <span className="text-xs text-gray-400 flex-shrink-0 dark:text-gray-500">{formatDate(t.date)}</span>
                   <span className="text-sm font-black text-red-500 flex-shrink-0">{fmt(t.amount)}</span>
                   <button onClick={() => deleteTrf(t.id)}
                     className="text-gray-300 hover:text-red-400 transition-colors text-xl leading-none flex-shrink-0 ml-1"
@@ -560,16 +560,16 @@ function BarazimiTab({ payments, expenses, fmt }) {
           )}
 
           {periodTransfers.length === 0 && !showTrf && (
-            <p className="text-xs text-gray-400 italic">Asnjë dorëzim i regjistruar për këtë periudhë.</p>
+            <p className="text-xs text-gray-400 italic dark:text-gray-500">Asnjë dorëzim i regjistruar për këtë periudhë.</p>
           )}
 
           {/* Form */}
           {showTrf && (
-            <div className="bg-gray-50 dark:bg-gray-700/40 rounded-xl p-4 space-y-3 border border-gray-200 dark:border-gray-600">
+            <div className="bg-gray-50 dark:bg-gray-700/40 rounded-xl p-4 space-y-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-900/50 dark:border-gray-700">
               <p className="text-xs font-bold text-gray-600 dark:text-gray-300">Regjistro dorëzim të mjeteve</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 mb-1 block">Nga</label>
+                  <label className="text-xs font-semibold text-gray-500 mb-1 block dark:text-gray-400">Nga</label>
                   <select value={trfFrom}
                     onChange={e => { setTrfFrom(e.target.value); setTrfTo(PARTNERS.find(p => p !== e.target.value)) }}
                     className="form-control text-xs">
@@ -577,7 +577,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 mb-1 block">Tek</label>
+                  <label className="text-xs font-semibold text-gray-500 mb-1 block dark:text-gray-400">Tek</label>
                   <select value={trfTo}
                     onChange={e => { setTrfTo(e.target.value); setTrfFrom(PARTNERS.find(p => p !== e.target.value)) }}
                     className="form-control text-xs">
@@ -587,19 +587,19 @@ function BarazimiTab({ payments, expenses, fmt }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 mb-1 block">Shuma (€)</label>
+                  <label className="text-xs font-semibold text-gray-500 mb-1 block dark:text-gray-400">Shuma (€)</label>
                   <input type="number" min="0" step="0.01" value={trfAmt}
                     onChange={e => setTrfAmt(e.target.value)}
                     className="form-control text-xs" placeholder="0.00"/>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 mb-1 block">Data</label>
+                  <label className="text-xs font-semibold text-gray-500 mb-1 block dark:text-gray-400">Data</label>
                   <input type="date" value={trfDate} onChange={e => setTrfDate(e.target.value)}
                     className="form-control text-xs"/>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1 block">Shënim (opsional)</label>
+                <label className="text-xs font-semibold text-gray-500 mb-1 block dark:text-gray-400">Shënim (opsional)</label>
                 <input type="text" value={trfNote} onChange={e => setTrfNote(e.target.value)}
                   className="form-control text-xs" placeholder="p.sh. Barazim Maj 2026"/>
               </div>
@@ -643,7 +643,7 @@ function KlientetTab({ invoices }) {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-bold text-gray-800 dark:text-gray-100 text-sm">Klientët aktivë — numri mujor</p>
-          <p className="text-xs text-gray-400 mt-0.5">Bazuar në datën e skadimit të abonimit</p>
+          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">Bazuar në datën e skadimit të abonimit</p>
         </div>
         <div className="flex items-center gap-3">
           {growth !== null && (
@@ -667,7 +667,7 @@ function KlientetTab({ invoices }) {
             <span className="w-3 h-3 rounded-sm bg-red-500 inline-block"/>
             {chartYear}
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500">
             <span className="w-3 h-1 bg-gray-400 inline-block rounded-full"/>
             {prevYear}
           </div>
@@ -711,9 +711,9 @@ function KlientetTab({ invoices }) {
                 const diff = cur - prev
                 return (
                   <tr key={i} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors border-b border-gray-50 dark:border-gray-700 last:border-0">
-                    <td className="table-td font-semibold text-gray-700 dark:text-gray-300">{MONTHS_FULL[i]}</td>
+                    <td className="table-td font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-200">{MONTHS_FULL[i]}</td>
                     <td className="table-td text-right">
-                      <span className={`font-bold text-sm ${cur > 0 ? 'text-red-500' : 'text-gray-400'}`}>{cur}</span>
+                      <span className={`font-bold text-sm ${cur > 0 ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>{cur}</span>
                     </td>
                     <td className="table-td text-right">
                       <span className="text-gray-500 dark:text-gray-400 text-sm">{prev}</span>
@@ -726,17 +726,17 @@ function KlientetTab({ invoices }) {
                           {diff > 0 ? '+' : ''}{diff}
                         </span>
                       ) : (
-                        <span className="text-xs text-gray-400">—</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500">—</span>
                       )}
                     </td>
                   </tr>
                 )
               })}
               {/* Total row */}
-              <tr className="bg-gray-50 dark:bg-gray-700/30">
+              <tr className="bg-gray-50 dark:bg-gray-700/30 dark:bg-gray-900/50">
                 <td className="table-td font-black text-gray-800 dark:text-gray-100">TOTAL</td>
                 <td className="table-td text-right font-black text-red-500">{totCurrent}</td>
-                <td className="table-td text-right font-bold text-gray-500">{totPrev}</td>
+                <td className="table-td text-right font-bold text-gray-500 dark:text-gray-400">{totPrev}</td>
                 <td className="table-td text-right">
                   {growth !== null && (
                     <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
@@ -788,7 +788,7 @@ function ShtetTab() {
             <p className="text-sm font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
               <Globe size={15} className="text-red-500"/> Klientët sipas shtetit
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">{customers.length} klientë · {countryData.length} shtete</p>
+            <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{customers.length} klientë · {countryData.length} shtete</p>
           </div>
         </div>
         <div className="p-5">
@@ -837,7 +837,7 @@ function ShtetTab() {
                 </td>
                 <td className="table-td">
                   <div>
-                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{country}</p>
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-200">{country}</p>
                     <div className="mt-1 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden w-36">
                       <div className="h-full rounded-full transition-all duration-700"
                         style={{ width: `${(count / max) * 100}%`, background: CHART_COLORS[realIndex % CHART_COLORS.length] }}/>
@@ -846,7 +846,7 @@ function ShtetTab() {
                 </td>
                 <td className="table-td text-right font-bold text-red-500 text-base">{count}</td>
                 <td className="table-td text-right">
-                  <span className="text-xs font-bold text-gray-500 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-gray-500 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full dark:text-gray-400">
                     {Math.round((count / customers.length) * 100)}%
                   </span>
                 </td>
@@ -855,10 +855,10 @@ function ShtetTab() {
           </tbody>
         </table>
         <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between text-xs">
-          <span className="text-gray-400">Faqja {page} e {maxPages}</span>
+          <span className="text-gray-400 dark:text-gray-500">Faqja {page} e {maxPages}</span>
           <div className="flex gap-2">
-            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">←</button>
-            <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">→</button>
+            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">←</button>
+            <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">→</button>
           </div>
         </div>
       </div>
@@ -917,7 +917,7 @@ function AbonentVjeterTab() {
         </div>
         <div>
           <p className="font-bold text-gray-800 dark:text-gray-100 text-sm">Abonentët më të vjetër</p>
-          <p className="text-xs text-gray-400 mt-0.5">Renditur nga fatura e parë (më i vjetri sipër)</p>
+          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">Renditur nga fatura e parë (më i vjetri sipër)</p>
         </div>
         <span className="ml-auto text-xs font-bold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full flex-shrink-0">
           {subscriberData.length} klientë me historik
@@ -955,8 +955,8 @@ function AbonentVjeterTab() {
                         {(c.name || '?')[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{c.name}</p>
-                        <p className="text-[10px] text-gray-400">{c.type === 'reseller' ? 'Reseller' : 'Individual'}</p>
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 dark:text-gray-200">{c.name}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500">{c.type === 'reseller' ? 'Reseller' : 'Individual'}</p>
                       </div>
                     </div>
                   </td>
@@ -976,10 +976,10 @@ function AbonentVjeterTab() {
           </table>
         </div>
         <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between text-xs">
-          <span className="text-gray-400">Faqja {page} e {maxPages}</span>
+          <span className="text-gray-400 dark:text-gray-500">Faqja {page} e {maxPages}</span>
           <div className="flex gap-2">
-            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">←</button>
-            <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">→</button>
+            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">←</button>
+            <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">→</button>
           </div>
         </div>
       </div>
@@ -1018,23 +1018,23 @@ function ReferuesitTab() {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-5 py-4 text-center">
           <p className="text-2xl font-bold text-red-500">{referralData.length}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Referues aktivë</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Referues aktivë</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-5 py-4 text-center">
           <p className="text-2xl font-bold text-emerald-600">{totalReferred}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Klientë të referuar</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Klientë të referuar</p>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-5 py-4 text-center">
           <p className="text-2xl font-bold text-gray-700 dark:text-gray-200">{notReferred}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Pa referues</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Pa referues</p>
         </div>
       </div>
 
       {referralData.length === 0 ? (
         <div className="card p-12 text-center">
           <Share2 size={36} className="text-gray-200 mx-auto mb-3"/>
-          <p className="text-sm font-semibold text-gray-500">Asnjë klient nuk ka referuar ende.</p>
-          <p className="text-xs text-gray-400 mt-1">Referuesit shfaqen kur plotësohet fusha "Referuar nga" te klienti.</p>
+          <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Asnjë klient nuk ka referuar ende.</p>
+          <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">Referuesit shfaqen kur plotësohet fusha "Referuar nga" te klienti.</p>
         </div>
       ) : (
         <div className="card">
@@ -1063,7 +1063,7 @@ function ReferuesitTab() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className="text-2xl font-black text-red-500">{count}</span>
-                    <p className="text-[10px] text-gray-400 font-medium">referime</p>
+                    <p className="text-[10px] text-gray-400 font-medium dark:text-gray-500">referime</p>
                   </div>
                 </div>
                 <div className="mt-2.5 ml-10 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -1074,10 +1074,10 @@ function ReferuesitTab() {
             )})}
           </div>
           <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between text-xs">
-            <span className="text-gray-400">Faqja {page} e {maxPages}</span>
+            <span className="text-gray-400 dark:text-gray-500">Faqja {page} e {maxPages}</span>
             <div className="flex gap-2">
-              <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">←</button>
-              <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">→</button>
+              <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">←</button>
+              <button onClick={() => setPage(Math.min(maxPages, page + 1))} disabled={page === maxPages} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:hover:bg-gray-900/50">→</button>
             </div>
           </div>
         </div>
@@ -1117,7 +1117,7 @@ export default function Reports() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Raportet</h2>
-          <p className="text-sm text-gray-400 mt-0.5">Pasqyra e plotë e performancës</p>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">Pasqyra e plotë e performancës</p>
         </div>
         <button className="btn btn-outline btn-sm self-start sm:self-auto"><Download size={14}/>Eksporto</button>
       </div>
@@ -1128,7 +1128,7 @@ export default function Reports() {
           <button key={id} onClick={() => setMainTab(id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap px-2 ${
               mainTab === id
-                ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm'
+                ? 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 shadow-sm dark:bg-gray-800'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
             }`}>
             <Icon size={13}/>

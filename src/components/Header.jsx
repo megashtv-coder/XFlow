@@ -104,7 +104,7 @@ export default function Header() {
     : 'AK'
 
   return (
-    <header className="h-12 sm:h-14 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center px-3 sm:px-5 gap-2 sm:gap-4 sticky top-0 z-30 transition-colors">
+    <header className="h-12 sm:h-14 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center px-3 sm:px-5 gap-2 sm:gap-4 sticky top-0 z-30 transition-colors dark:bg-gray-800 dark:border-gray-700">
       {/* Mobile menu */}
       <button className="icon-btn lg:hidden flex-shrink-0 p-1.5 sm:p-2" onClick={() => setSidebarOpen(true)}>
         <Menu size={18} />
@@ -118,8 +118,8 @@ export default function Header() {
       </div>
 
       {/* Search - hidden on mobile */}
-      <div className="hidden lg:flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 w-48 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-shrink-0">
-        <Search size={14} className="text-gray-400 flex-shrink-0" />
+      <div className="hidden lg:flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 w-48 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-shrink-0 dark:bg-gray-900/50">
+        <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
         <input
           className="bg-transparent border-none outline-none text-sm text-gray-600 dark:text-gray-300 w-full placeholder-gray-400"
           placeholder="Emri i klientit..."
@@ -134,7 +134,7 @@ export default function Header() {
         {searchInput && (
           <button
             onClick={handleSearchClear}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0 dark:text-gray-500"
           >
             ✕
           </button>
@@ -157,7 +157,7 @@ export default function Header() {
                 navigate('invoices:create')
                 setAddOpen(false)
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-900/50"
             >
               <FileText size={16} />
               Faturë e Re
@@ -167,7 +167,7 @@ export default function Header() {
                 navigate('expenses:create')
                 setAddOpen(false)
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-900/50"
             >
               <DollarSign size={16} />
               Shpenzim i Ri
@@ -179,19 +179,19 @@ export default function Header() {
       {/* Currency selector */}
       <div className="relative hidden xs:block flex-shrink-0">
         <button
-          className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors dark:bg-gray-900/50"
           onClick={() => setCurOpen(v => !v)}
         >
           <span>{currency.symbol}</span>
           <span className="hidden sm:inline">{currency.code}</span>
-          <ChevronDown size={11} className="text-gray-400" />
+          <ChevronDown size={11} className="text-gray-400 dark:text-gray-500" />
         </button>
         {curOpen && (
           <div className="absolute top-full right-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-lg py-1 w-44 z-50">
             {currencies.map(c => (
               <button
                 key={c.code}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left dark:hover:bg-gray-900/50"
                 onClick={() => { setCurrency(c); setCurOpen(false) }}
               >
                 <span className="font-bold text-red-500 w-5">{c.symbol}</span>
@@ -259,7 +259,7 @@ export default function Header() {
                         setReadNotifications(p => ({ ...p, [inv.id]: true }))
                         navigate('subscriptions')
                       }}
-                      className={`w-full px-4 py-3 border-b border-gray-50 dark:border-gray-700 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                      className={`w-full px-4 py-3 border-b border-gray-50 dark:border-gray-700 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors dark:hover:bg-gray-900/50 ${
                         isRead ? 'opacity-60' : 'opacity-100 bg-red-50/30 dark:bg-red-800/10'
                       }`}
                     >

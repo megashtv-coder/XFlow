@@ -37,15 +37,15 @@ function TaskModal({ task, onClose, onSave, customers }) {
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
-          <h2 className="font-bold text-gray-800">{task ? 'Ndrysho Detyrën' : 'Detyrë e Re'}</h2>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto dark:bg-gray-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100">{task ? 'Ndrysho Detyrën' : 'Detyrë e Re'}</h2>
           <button onClick={onClose} className="icon-btn"><X size={18} /></button>
         </div>
 
         <div className="p-6 space-y-4">
           <div className="relative">
-            <label className="block text-xs font-bold text-gray-600 mb-2">Emri i Klientit</label>
+            <label className="block text-xs font-bold text-gray-600 mb-2 dark:text-gray-300">Emri i Klientit</label>
             <input
               type="text"
               placeholder="Kërko klient..."
@@ -55,19 +55,19 @@ function TaskModal({ task, onClose, onSave, customers }) {
                 setShowCustomerDropdown(true)
               }}
               onFocus={() => setShowCustomerDropdown(true)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-gray-700"
             />
 
             {showCustomerDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
                 {filteredCustomers.length === 0 ? (
-                  <div className="px-3 py-2 text-xs text-gray-400">Nuk ka klientë</div>
+                  <div className="px-3 py-2 text-xs text-gray-400 dark:text-gray-500">Nuk ka klientë</div>
                 ) : (
                   filteredCustomers.map((c, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleSelectCustomer(c.name)}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 border-b border-gray-100 last:border-b-0 transition-colors dark:text-gray-200 dark:border-gray-700"
                     >
                       {c.name}
                     </button>
@@ -78,22 +78,22 @@ function TaskModal({ task, onClose, onSave, customers }) {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 mb-2">Data e Kujtesës</label>
+            <label className="block text-xs font-bold text-gray-600 mb-2 dark:text-gray-300">Data e Kujtesës</label>
             <input
               type="date"
               value={formData.reminderDate}
               onChange={(e) => setFormData({ ...formData, reminderDate: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-gray-700"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-600 mb-2">Përshkrimi i Punës</label>
+            <label className="block text-xs font-bold text-gray-600 mb-2 dark:text-gray-300">Përshkrimi i Punës</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Përshkruaj detyrën..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none dark:border-gray-700"
               rows="6"
             />
           </div>
@@ -107,7 +107,7 @@ function TaskModal({ task, onClose, onSave, customers }) {
             </button>
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
             >
               Anulo
             </button>
@@ -142,22 +142,22 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
   return (
     <div className={`rounded-xl overflow-hidden transition-all ${
       task.completed
-        ? 'bg-gray-50 opacity-60 shadow-sm'
+        ? 'bg-gray-50 opacity-60 shadow-sm dark:bg-gray-900/50'
         : isOverdue
-        ? 'bg-white shadow-md hover:shadow-lg border-l-4 border-l-red-500'
+        ? 'bg-white shadow-md hover:shadow-lg border-l-4 border-l-red-500 dark:bg-gray-800'
         : isToday
-        ? 'bg-white shadow-md hover:shadow-lg border-l-4 border-l-amber-500'
-        : 'bg-white shadow-sm hover:shadow-md border-l-4 border-l-blue-500'
+        ? 'bg-white shadow-md hover:shadow-lg border-l-4 border-l-amber-500 dark:bg-gray-800'
+        : 'bg-white shadow-sm hover:shadow-md border-l-4 border-l-blue-500 dark:bg-gray-800'
     }`}>
       <div className="p-4">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
             <p className={`font-bold text-base ${
-              task.completed ? 'line-through text-gray-400' : 'text-gray-900'
+              task.completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-50'
             }`}>
               {task.customer}
             </p>
-            <p className="text-xs text-gray-600 mt-1">{task.description}</p>
+            <p className="text-xs text-gray-600 mt-1 dark:text-gray-300">{task.description}</p>
           </div>
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ${statusColor}`}>
             {statusBadge}
@@ -177,7 +177,7 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
                 <Circle size={18} />
               )}
             </button>
-            <div className="flex items-center gap-1 text-gray-500">
+            <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
               <Calendar size={14} />
               <p className="text-xs">{formatDate(task.reminderDate)}</p>
             </div>
@@ -186,14 +186,14 @@ function TaskCard({ task, customers, onEdit, onDelete, onToggle }) {
           <div className="flex items-center gap-1">
             <button
               onClick={() => onEdit(task)}
-              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors dark:text-gray-500"
               title="Ndrysho"
             >
               <Pencil size={14} />
             </button>
             <button
               onClick={() => onDelete(task.id)}
-              className="p-1.5 text-gray-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors"
+              className="p-1.5 text-gray-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors dark:text-gray-500"
               title="Fshi"
             >
               <Trash2 size={14} />
@@ -419,12 +419,12 @@ export default function Tasks() {
   ]
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-gray-50">
+    <div className="h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900/50">
       {/* Header */}
-      <div className="px-4 sm:px-6 py-5 bg-white border-b border-gray-200">
+      <div className="px-4 sm:px-6 py-5 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2 dark:text-gray-50">
               <ListTodo size={28} className="text-red-500" />
               Detyrat
             </h1>
@@ -460,7 +460,7 @@ export default function Tasks() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="px-4 sm:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto">
+      <div className="px-4 sm:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto dark:bg-gray-800 dark:border-gray-700">
         {filterOptions.map(filter => (
           <button
             key={filter.key}
@@ -468,10 +468,10 @@ export default function Tasks() {
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex-shrink-0 ${
               filterType === filter.key
                 ? 'bg-red-500 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:text-gray-300'
             }`}
           >
-            {filter.label} <span className={`ml-1.5 ${filterType === filter.key ? 'text-red-200' : 'text-gray-400'}`}>({filter.count})</span>
+            {filter.label} <span className={`ml-1.5 ${filterType === filter.key ? 'text-red-200' : 'text-gray-400 dark:text-gray-500'}`}>({filter.count})</span>
           </button>
         ))}
       </div>
@@ -482,19 +482,19 @@ export default function Tasks() {
           <div className="flex items-center justify-center h-full">
             <div className="flex flex-col items-center gap-3">
               <div className="relative w-12 h-12">
-                <div className="absolute inset-0 rounded-full border-4 border-gray-200" />
+                <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700" />
                 <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-red-500 animate-spin" />
               </div>
-              <p className="text-sm text-gray-500">Po ngarkon detyrat...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Po ngarkon detyrat...</p>
             </div>
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <ListTodo size={40} className="text-gray-400" />
+              <ListTodo size={40} className="text-gray-400 dark:text-gray-500" />
             </div>
-            <p className="text-gray-600 font-semibold mb-1">Nuk ka detyra</p>
-            <p className="text-sm text-gray-400 mb-6">
+            <p className="text-gray-600 font-semibold mb-1 dark:text-gray-300">Nuk ka detyra</p>
+            <p className="text-sm text-gray-400 mb-6 dark:text-gray-500">
               {filterType === 'completed' ? 'Nuk keni detyrë të përfunduar.' : filterType === 'overdue' ? 'Nuk keni detyrë vonuar. 🎉' : 'Krijo detyrën e parë tënde'}
             </p>
             {filterType === 'all' && (

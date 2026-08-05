@@ -10,15 +10,15 @@ export default function FormPageWrapper({ title, subtitle, children, onBack }) {
 
   return (
     <div className={`h-full w-full flex flex-col relative ${
-      darkMode ? 'bg-gray-900' : 'bg-gray-50'
+      darkMode ? 'bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'
     }`}>
       {/* Close button - Top right corner */}
       <button
         onClick={onBack}
         className={`absolute top-6 right-6 z-50 flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
           darkMode
-            ? 'text-gray-400 hover:bg-gray-700'
-            : 'text-gray-400 hover:bg-gray-100'
+            ? 'text-gray-400 hover:bg-gray-700 dark:text-gray-500'
+            : 'text-gray-400 hover:bg-gray-100 dark:text-gray-500'
         }`}
         title="Kthehu"
       >
@@ -27,9 +27,9 @@ export default function FormPageWrapper({ title, subtitle, children, onBack }) {
 
       {/* Content - Full page */}
       <div className={`flex-1 overflow-y-auto p-0 ${
-        darkMode ? 'bg-gray-900' : 'bg-gray-50'
+        darkMode ? 'bg-gray-900' : 'bg-gray-50 dark:bg-gray-900/50'
       }`}>
-        <div className={`max-w-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border-0 shadow-none p-6 min-h-full`}>
+        <div className={`max-w-2xl ${darkMode ? 'bg-gray-800' : 'bg-white dark:bg-gray-800'} border-0 shadow-none p-6 min-h-full`}>
           {children}
         </div>
       </div>

@@ -58,27 +58,27 @@ function PaymentsExportModal({ isOpen, onClose, payments, fmt }) {
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 dark:bg-gray-800">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Eksporto Pagesat</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Eksporto Pagesat</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
             <X size={20} />
           </button>
         </div>
 
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Muaji (opsional)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 dark:text-gray-200">Muaji (opsional)</label>
             <input
               type="month"
               value={exportMonth}
               onChange={(e) => setExportMonth(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-gray-700"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Format</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 dark:text-gray-200">Format</label>
             <div className="flex gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -87,7 +87,7 @@ function PaymentsExportModal({ isOpen, onClose, payments, fmt }) {
                   checked={exportFormat === 'csv'}
                   onChange={(e) => setExportFormat(e.target.value)}
                 />
-                <span className="text-sm text-gray-700">CSV</span>
+                <span className="text-sm text-gray-700 dark:text-gray-200">CSV</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -96,13 +96,13 @@ function PaymentsExportModal({ isOpen, onClose, payments, fmt }) {
                   checked={exportFormat === 'json'}
                   onChange={(e) => setExportFormat(e.target.value)}
                 />
-                <span className="text-sm text-gray-700">JSON</span>
+                <span className="text-sm text-gray-700 dark:text-gray-200">JSON</span>
               </label>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
-            <p className="text-sm text-gray-600">
+          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 dark:bg-gray-900/50 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               <span className="font-semibold">{filtered.length}</span> pagesa do të eksportohen
             </p>
           </div>
@@ -111,7 +111,7 @@ function PaymentsExportModal({ isOpen, onClose, payments, fmt }) {
         <div className="flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 border border-gray-200 text-gray-600 font-semibold rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
           >
             Anulo
           </button>
@@ -378,13 +378,13 @@ export default function Payments() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Pagesat e Marra</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{payments.length} pagesa gjithsej</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Pagesat e Marra</h2>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{payments.length} pagesa gjithsej</p>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Export - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
             onClick={() => setExportOpen(true)}
             title="Eksporto"
           >
@@ -393,7 +393,7 @@ export default function Payments() {
 
           {/* Import - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
@@ -423,24 +423,23 @@ export default function Payments() {
 
       {/* Filtrat */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2
-                        focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px]">
-          <Search size={14} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px] dark:bg-gray-800 dark:border-gray-700">
+          <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
           <input
-            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400"
+            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
             placeholder="Kërko klient, faturë..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPg(1) }}
           />
           {search && (
-            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500">
+            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
               <X size={13} />
             </button>
           )}
         </div>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={monthFilt}
           onChange={e => { setMonthFilt(e.target.value); setPg(1) }}
         >
@@ -449,7 +448,7 @@ export default function Payments() {
         </select>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={partnerFilt}
           onChange={e => { setPartner(e.target.value); setPg(1) }}
         >
@@ -459,7 +458,7 @@ export default function Payments() {
         </select>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={methodFilt}
           onChange={e => { setMethod(e.target.value); setPg(1) }}
         >
@@ -468,7 +467,7 @@ export default function Payments() {
         </select>
 
         <select
-          className="hidden sm:block bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="hidden sm:block bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={perPage}
           onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}
         >
@@ -479,7 +478,7 @@ export default function Payments() {
           <option value={300}>300 / faqe</option>
         </select>
 
-        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto">
+        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto dark:text-gray-500">
           <Filter size={12} /> {filtered.length}
         </span>
       </div>
@@ -488,18 +487,18 @@ export default function Payments() {
       {paged.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
           {paged.map(p => (
-            <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-3">
+            <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-3 dark:bg-gray-800 dark:border-gray-700">
               <div className="flex justify-between items-start gap-2">
                 {/* Col 1: Customer + Payment Date + Invoice */}
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openEditPayment(p)}>
-                  <p className="font-bold text-gray-800 text-sm truncate hover:text-red-500 transition-colors">{p.customer}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{formatDate(p.date)}</p>
+                  <p className="font-bold text-gray-800 text-sm truncate hover:text-red-500 transition-colors dark:text-gray-100">{p.customer}</p>
+                  <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{formatDate(p.date)}</p>
                   <p className="text-xs font-semibold text-red-500">{p.invoiceId}</p>
                 </div>
 
                 {/* Col 2: Amount + Fee + Partner */}
                 <div className="text-right">
-                  <p className="font-bold text-gray-800 text-sm">{fmt(p.amount)}</p>
+                  <p className="font-bold text-gray-800 text-sm dark:text-gray-100">{fmt(p.amount)}</p>
                   <p className="text-xs text-amber-500 mt-0.5">{p.fee > 0 ? `- ${fmt(p.fee)}` : '—'}</p>
                   <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
                     p.depositedTo === 'Enndy'
@@ -531,7 +530,7 @@ export default function Payments() {
 
               {/* Delete confirmation inline */}
               {deletingId === p.id && (
-                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2 justify-end">
+                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2 justify-end dark:border-gray-700">
                   <button
                     className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-semibold"
                     onClick={() => deletePayment(p)}
@@ -539,7 +538,7 @@ export default function Payments() {
                     Po, fshi
                   </button>
                   <button
-                    className="px-3 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold"
+                    className="px-3 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
                     onClick={() => setDeletingId(null)}
                   >
                     Anulo
@@ -573,11 +572,11 @@ export default function Payments() {
           }
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block dark:bg-gray-800 dark:border-gray-700">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
           <table className="w-full text-sm min-w-[560px]">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-100 bg-gray-50">
+              <tr className="border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50">
                 {[
                   { key: 'date',        label: 'Data',    cls: '' },
                   { key: 'invoiceId',   label: 'Fatura',  cls: '' },
@@ -628,23 +627,23 @@ export default function Payments() {
             <tbody className="divide-y divide-gray-50">
               {paged.map(p => (
                 <tr key={p.id} className="hover:bg-red-50/20 transition-colors group">
-                  <td className="table-td text-gray-400 text-xs">{formatDate(p.date)}</td>
+                  <td className="table-td text-gray-400 text-xs dark:text-gray-500">{formatDate(p.date)}</td>
                   <td className="table-td font-bold text-red-500 text-xs">{p.invoiceId}</td>
-                  <td className="table-td font-medium text-gray-800 text-xs max-w-[140px] truncate">{p.customer}</td>
-                  <td className="table-td text-right font-semibold text-gray-700">{fmt(p.amount)}</td>
+                  <td className="table-td font-medium text-gray-800 text-xs max-w-[140px] truncate dark:text-gray-100">{p.customer}</td>
+                  <td className="table-td text-right font-semibold text-gray-700 dark:text-gray-200">{fmt(p.amount)}</td>
                   <td className="table-td text-right text-amber-500 text-xs hidden md:table-cell">
                     {p.fee > 0 ? `- ${fmt(p.fee)}` : <span className="text-gray-300">—</span>}
                   </td>
                   <td className="table-td text-right font-bold text-emerald-600">{fmt(p.net)}</td>
                   <td className="table-td hidden lg:table-cell">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${METHOD_COLOR[p.method] || 'bg-gray-50 text-gray-600'}`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${METHOD_COLOR[p.method] || 'bg-gray-50 text-gray-600 dark:bg-gray-900/50 dark:text-gray-300'}`}>
                       {METHOD_ICON[p.method] || '💳'} {p.method}
                     </span>
                   </td>
-                  <td className="table-td text-xs text-gray-500 hidden lg:table-cell max-w-[130px] truncate">
+                  <td className="table-td text-xs text-gray-500 hidden lg:table-cell max-w-[130px] truncate dark:text-gray-400">
                     {p.depositAccount || <span className="text-gray-300">—</span>}
                   </td>
-                  <td className="table-td text-xs text-gray-500 hidden md:table-cell">
+                  <td className="table-td text-xs text-gray-500 hidden md:table-cell dark:text-gray-400">
                     {p.reference || <span className="text-gray-300">—</span>}
                   </td>
                   <td className="table-td">
@@ -669,7 +668,7 @@ export default function Payments() {
                           Po
                         </button>
                         <button
-                          className="px-2 py-0.5 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50 transition-colors"
+                          className="px-2 py-0.5 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
                           onClick={() => setDeletingId(null)}
                         >
                           Jo
@@ -702,8 +701,8 @@ export default function Payments() {
 
           {/* Totals row - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500">
-              <span>Bruto: <span className="text-gray-700">{fmt(totalGross)}</span></span>
+            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400">
+              <span>Bruto: <span className="text-gray-700 dark:text-gray-200">{fmt(totalGross)}</span></span>
               <span>Fee: <span className="text-amber-500">- {fmt(totalFee)}</span></span>
               <span>Neto: <span className="text-emerald-600 text-sm font-bold">{fmt(totalNet)}</span></span>
             </div>
@@ -717,25 +716,25 @@ export default function Payments() {
 
       {/* Profit split box (kur filtrohet muaj) */}
       {monthFilt !== 'all' && filtered.length > 0 && (
-        <div className="mt-4 bg-white rounded-xl border border-gray-100 p-5">
-          <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+        <div className="mt-4 bg-white rounded-xl border border-gray-100 p-5 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 dark:text-gray-200">
             <Users size={15} className="text-red-500" />
             Ndarja e Fitimit — {monthFilt}
           </h3>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="bg-emerald-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1">Neto Totale</p>
+              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">Neto Totale</p>
               <p className="text-lg font-bold text-emerald-600">{fmt(totalNet)}</p>
             </div>
             <div className="bg-red-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1">👤 Enndy</p>
+              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">👤 Enndy</p>
               <p className="text-lg font-bold text-red-500">{fmt(enndiNet)}</p>
-              <p className="text-xs text-gray-400 mt-1">Pritshme 50%: {fmt(totalNet / 2)}</p>
+              <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">Pritshme 50%: {fmt(totalNet / 2)}</p>
             </div>
             <div className="bg-purple-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1">👤 Samki</p>
+              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">👤 Samki</p>
               <p className="text-lg font-bold text-purple-600">{fmt(samkiNet)}</p>
-              <p className="text-xs text-gray-400 mt-1">Pritshme 50%: {fmt(totalNet / 2)}</p>
+              <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">Pritshme 50%: {fmt(totalNet / 2)}</p>
             </div>
           </div>
           {Math.abs(enndiNet - samkiNet) > 0.01 && (

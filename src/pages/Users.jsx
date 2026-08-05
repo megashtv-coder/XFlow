@@ -10,7 +10,7 @@ import { Modal, FormGroup, EmptyState } from '../components/UI'
 const ROLE_META = {
   admin:  { label: 'Admin',  cls: 'bg-red-50 text-red-600 border border-red-100',       icon: Shield },
   editor: { label: 'Editor', cls: 'bg-emerald-50 text-emerald-700 border border-emerald-100', icon: Edit3 },
-  viewer: { label: 'Viewer', cls: 'bg-gray-100 text-gray-600 border border-gray-200',      icon: Eye },
+  viewer: { label: 'Viewer', cls: 'bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-700/50 dark:text-gray-300 dark:border-gray-700',      icon: Eye },
   tester: { label: 'Tester', cls: 'bg-orange-50 text-orange-700 border border-orange-100', icon: Package },
 }
 
@@ -22,7 +22,7 @@ const MODULE_COLORS = {
   'Shpenzimet': 'bg-red-50 text-red-600',
   'Pagesat':    'bg-amber-50 text-amber-600',
   'Furnitorët': 'bg-purple-50 text-purple-600',
-  'Sistemi':    'bg-gray-100 text-gray-500',
+  'Sistemi':    'bg-gray-100 text-gray-500 dark:bg-gray-700/50 dark:text-gray-400',
 }
 
 function fmtTime(ts) {
@@ -112,7 +112,7 @@ function UserModal({ user, onClose }) {
                     ? key === 'admin'  ? 'border-red-500 bg-red-500 text-white'
                     : key === 'editor' ? 'border-emerald-600 bg-emerald-600 text-white'
                     :                   'border-gray-500 bg-gray-500 text-white'
-                    : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+                    : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
                 }`}>
                 <Icon size={12} /> {meta.label}
               </button>
@@ -139,7 +139,7 @@ function UserModal({ user, onClose }) {
           <input className="form-control pr-10" type={showPw ? 'text' : 'password'}
             value={form.password} onChange={e => set('password', e.target.value)}
             placeholder="min. 6 karaktere" />
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             onClick={() => setShowPw(v => !v)}>
             {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
           </button>
@@ -163,13 +163,13 @@ function UserModal({ user, onClose }) {
           <div className="flex gap-2">
             <button type="button" onClick={() => set('active', true)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-                form.active ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-200 bg-white text-gray-500'
+                form.active ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
               }`}>
               <CheckCircle size={12} /> Aktiv
             </button>
             <button type="button" onClick={() => set('active', false)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-                !form.active ? 'border-red-500 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500'
+                !form.active ? 'border-red-500 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
               }`}>
               <XCircle size={12} /> Joaktiv
             </button>
@@ -226,7 +226,7 @@ export default function UsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Përdoruesit</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{users.length} përdorues të regjistruar</p>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{users.length} përdorues të regjistruar</p>
         </div>
         {currentUser?.role === 'admin' && (
           <button className="btn btn-primary" onClick={openAdd}>
@@ -265,18 +265,18 @@ export default function UsersPage() {
                     <p className="font-bold text-gray-800 dark:text-gray-100 text-sm truncate">{u.name}</p>
                     {isMe && <span className="text-[10px] bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-full">Unë</span>}
                   </div>
-                  <p className="text-xs text-gray-400 font-mono mt-0.5">@{u.username}</p>
+                  <p className="text-xs text-gray-400 font-mono mt-0.5 dark:text-gray-500">@{u.username}</p>
                 </div>
 
                 {/* Actions */}
                 {currentUser?.role === 'admin' && (
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                    <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors dark:text-gray-500"
                       onClick={() => openEdit(u)}>
                       <Pencil size={13} />
                     </button>
                     {!isMe && (
-                      <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                      <button className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors dark:text-gray-500"
                         onClick={() => handleDelete(u)}>
                         <Trash2 size={13} />
                       </button>
@@ -298,7 +298,7 @@ export default function UsersPage() {
                 </span>
               </div>
 
-              <p className="text-[10px] text-gray-400 mt-2">
+              <p className="text-[10px] text-gray-400 mt-2 dark:text-gray-500">
                 Regjistruar: {new Date(u.createdAt).toLocaleDateString('sq-AL')}
               </p>
             </div>
@@ -310,9 +310,9 @@ export default function UsersPage() {
       <div className="card">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Clock size={16} className="text-gray-400" />
+            <Clock size={16} className="text-gray-400 dark:text-gray-500" />
             <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Historia e aktivitetit</p>
-            <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
+            <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full dark:text-gray-500">
               {filteredLog.length} / {activityLog.length}
             </span>
           </div>
@@ -320,9 +320,8 @@ export default function UsersPage() {
           {/* Filters */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Searchbar */}
-            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2.5 py-1.5
-                            focus-within:border-red-400 focus-within:bg-white dark:focus-within:bg-gray-800 transition-all">
-              <Search size={12} className="text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2.5 py-1.5 focus-within:border-red-400 focus-within:bg-white dark:focus-within:bg-gray-800 transition-all dark:bg-gray-900/50 dark:border-gray-700">
+              <Search size={12} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
               <input
                 className="bg-transparent border-none outline-none text-xs text-gray-600 dark:text-gray-300 w-36 placeholder-gray-400"
                 placeholder="Kërko veprim..."
@@ -330,7 +329,7 @@ export default function UsersPage() {
                 onChange={e => setLogSearch(e.target.value)}
               />
               {logSearch && (
-                <button onClick={() => setLogSearch('')} className="text-gray-300 hover:text-gray-500">
+                <button onClick={() => setLogSearch('')} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
                   <X size={11} />
                 </button>
               )}
@@ -338,9 +337,9 @@ export default function UsersPage() {
 
             {/* User filter dropdown */}
             <div className="flex items-center gap-1.5">
-              <Filter size={11} className="text-gray-400" />
+              <Filter size={11} className="text-gray-400 dark:text-gray-500" />
               <select
-                className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+                className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-2.5 py-1.5 text-xs text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-900/50 dark:border-gray-700"
                 value={logUserFilter}
                 onChange={e => setLogUserFilter(e.target.value)}
               >
@@ -354,7 +353,7 @@ export default function UsersPage() {
             {/* Clear filters */}
             {(logSearch || logUserFilter !== 'all') && (
               <button
-                className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
+                className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors dark:text-gray-500 dark:hover:text-gray-300"
                 onClick={() => { setLogSearch(''); setLogUserFilter('all') }}
               >
                 <X size={11}/> Pastro
@@ -366,7 +365,7 @@ export default function UsersPage() {
         {filteredLog.length === 0 ? (
           <div className="py-12 text-center">
             <Package size={32} className="text-gray-200 mx-auto mb-3" />
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 dark:text-gray-500">
               {activityLog.length === 0
                 ? 'Nuk ka aktivitet të regjistruar ende.'
                 : 'Nuk u gjet asnjë veprim për këtë filtër.'}
@@ -386,7 +385,7 @@ export default function UsersPage() {
                     {initials}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 dark:text-gray-200 truncate">{log.action}</p>
+                    <p className="text-sm text-gray-800 dark:text-gray-200 truncate dark:text-gray-100">{log.action}</p>
                     <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{log.userName}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">

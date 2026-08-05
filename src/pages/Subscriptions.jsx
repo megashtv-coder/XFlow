@@ -37,14 +37,14 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
   const dateCls =
     urgency === 'high'   ? 'text-red-600 font-bold' :
     urgency === 'medium' ? 'text-amber-600 font-semibold' :
-                           'text-gray-600'
+                           'text-gray-600 dark:text-gray-300'
 
   const daysLeft = inv.notifyDate
     ? Math.round((new Date(inv.notifyDate) - new Date(today)) / 86_400_000)
     : null
 
   return (
-    <tr className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors">
+    <tr className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors dark:border-gray-700">
       {/* Klienti */}
       <td className="table-td">
         <div className="flex items-center gap-2.5">
@@ -52,8 +52,8 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
             {inv.customer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-gray-800 text-sm">{inv.customer}</p>
-            <p className="text-[11px] text-gray-400">{inv.id}</p>
+            <p className="font-semibold text-gray-800 text-sm dark:text-gray-100">{inv.customer}</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">{inv.id}</p>
           </div>
         </div>
       </td>
@@ -71,7 +71,7 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
             <p className={`text-[11px] mt-0.5 ${
               daysLeft < 0  ? 'text-red-400' :
               daysLeft === 0 ? 'text-red-500 font-bold' :
-              'text-gray-400'
+              'text-gray-400 dark:text-gray-500'
             }`}>
               {daysLeft < 0  ? `${Math.abs(daysLeft)} ditë e kaluar` :
                daysLeft === 0 ? 'Sot!' :
@@ -94,7 +94,7 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
 
       {/* Vlera */}
       <td className="table-td">
-        <span className="font-bold text-gray-800">{fmt(inv.amount)}</span>
+        <span className="font-bold text-gray-800 dark:text-gray-100">{fmt(inv.amount)}</span>
       </td>
 
       {/* Kontakto manualisht */}
@@ -150,7 +150,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
         }`} />
         <h3 className={`text-sm font-bold ${
           color === 'red'   ? 'text-red-700' :
-          color === 'amber' ? 'text-amber-700' : 'text-gray-600'
+          color === 'amber' ? 'text-amber-700' : 'text-gray-600 dark:text-gray-300'
         }`}>{title}</h3>
         <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
           color === 'red'   ? 'bg-red-50 text-red-500' :
@@ -170,25 +170,25 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
               : null
 
             return (
-              <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3">
+              <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3 dark:bg-gray-800 dark:border-gray-700">
                 <div className="flex justify-between items-start gap-2">
                   {/* Col 1: Customer + Expiry + Notify */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 text-sm truncate">{inv.customer}</p>
+                    <p className="font-bold text-gray-800 text-sm truncate dark:text-gray-100">{inv.customer}</p>
                     <p className="text-xs font-bold text-red-500 mt-0.5">{formatDate(inv.subscriptionExpiry)}</p>
                     <p className="text-xs font-bold text-red-600 mt-0.5">{formatDate(inv.notifyDate)}</p>
                   </div>
 
                   {/* Col 2: Amount + Product */}
                   <div className="text-right">
-                    <p className="font-bold text-gray-800 text-sm">{fmt(inv.amount)}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{inv.type || inv.product || '—'}</p>
+                    <p className="font-bold text-gray-800 text-sm dark:text-gray-100">{fmt(inv.amount)}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{inv.type || inv.product || '—'}</p>
                   </div>
 
                   {/* Col 3: Contact - Dropdown */}
                   <div className="relative flex-shrink-0">
                     <button
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white transition-all"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white transition-all dark:text-gray-300"
                       onClick={() => setOpenDropdown(openDropdown === inv.id ? null : inv.id)}
                     >
                       ⋮
@@ -196,7 +196,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
 
                     {/* Dropdown Menu */}
                     {openDropdown === inv.id && phone && (
-                      <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+                      <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
                         <a
                           href={`https://wa.me/${phone}?text=${msg}`}
                           target="_blank" rel="noopener noreferrer"
@@ -233,15 +233,15 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
           >
             ←
           </button>
-          <span className="text-xs text-gray-500">{page}/{totalPages}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
           >
             →
           </button>
@@ -252,7 +252,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
         <div className="overflow-auto">
           <table className="w-full">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b-2 border-gray-50 bg-white dark:bg-gray-800">
+              <tr className="border-b-2 border-gray-50 bg-white dark:bg-gray-800 dark:border-gray-700">
                 <th className="table-th">Klienti</th>
                 <th className="table-th">Skadon</th>
                 <th className="table-th">Njoftim</th>
@@ -283,15 +283,15 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
           >
             ←
           </button>
-          <span className="text-xs text-gray-500">{page}/{totalPages}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{page}/{totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50"
+            className="px-2 py-1 text-xs rounded border border-gray-200 text-gray-600 disabled:opacity-50 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
           >
             →
           </button>
@@ -351,11 +351,11 @@ export default function Subscriptions() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 dark:text-gray-100">
             <Bell size={20} className="text-red-500" />
             Njoftimet e Abonimit
           </h2>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">
             {withNotify.length} abonim ·{' '}
             {totalPending > 0
               ? <span className="text-red-500 font-semibold">{totalPending} kërkon vëmendje sot</span>
@@ -364,9 +364,9 @@ export default function Subscriptions() {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="text-xs text-gray-400 flex items-center gap-1.5">
+          <div className="text-xs text-gray-400 flex items-center gap-1.5 dark:text-gray-500">
             <Calendar size={13} />
-            Sot: <span className="font-semibold text-gray-600">{today}</span>
+            Sot: <span className="font-semibold text-gray-600 dark:text-gray-300">{today}</span>
           </div>
         </div>
       </div>
@@ -392,18 +392,18 @@ export default function Subscriptions() {
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="stat-card !border-l-4 !border-l-red-400">
           <p className="text-3xl font-bold text-red-600">{urgent.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium">Duhen kontaktuar sot</p>
+          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Duhen kontaktuar sot</p>
           {unsent > 0 && (
             <p className="text-[11px] text-amber-500 mt-1">{unsent} ende pa dërguar</p>
           )}
         </div>
         <div className="stat-card !border-l-4 !border-l-amber-400">
           <p className="text-3xl font-bold text-amber-500">{thisWeek.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium">Këtë javë (7 ditë)</p>
+          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Këtë javë (7 ditë)</p>
         </div>
         <div className="stat-card !border-l-4 !border-l-red-400">
           <p className="text-3xl font-bold text-red-500">{future.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium">Ardhshme</p>
+          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Ardhshme</p>
         </div>
       </div>
 
@@ -413,8 +413,8 @@ export default function Subscriptions() {
           <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
             <Bell size={28} className="text-blue-200" />
           </div>
-          <p className="text-base font-semibold text-gray-500 mb-1">Nuk ka njoftime të konfigurura</p>
-          <p className="text-sm text-gray-400 max-w-xs">
+          <p className="text-base font-semibold text-gray-500 mb-1 dark:text-gray-400">Nuk ka njoftime të konfigurura</p>
+          <p className="text-sm text-gray-400 max-w-xs dark:text-gray-500">
             Njoftime automatike aktivizohen vetëm për faturat me datë njoftimi nga{' '}
             <strong>1 Korriku 2026</strong> e tutje.
           </p>

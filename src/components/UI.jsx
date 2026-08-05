@@ -52,8 +52,8 @@ export function EmptyState({ icon: Icon, title, sub, action }) {
       <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
         <Icon size={28} className="text-gray-300" />
       </div>
-      <p className="text-base font-semibold text-gray-500 mb-1">{title}</p>
-      {sub && <p className="text-sm text-gray-400 mb-4">{sub}</p>}
+      <p className="text-base font-semibold text-gray-500 mb-1 dark:text-gray-400">{title}</p>
+      {sub && <p className="text-sm text-gray-400 mb-4 dark:text-gray-500">{sub}</p>}
       {action}
     </div>
   )
@@ -73,9 +73,9 @@ export function StatCard({ icon: Icon, iconBg, iconColor, val, label, badge, bad
           </span>
         )}
       </div>
-      <div className="text-2xl font-bold text-gray-800 tracking-tight">{val}</div>
-      <div className="text-xs text-gray-400 mt-1 font-medium">{label}</div>
-      {sub && <div className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-50">{sub}</div>}
+      <div className="text-2xl font-bold text-gray-800 tracking-tight dark:text-gray-100">{val}</div>
+      <div className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">{label}</div>
+      {sub && <div className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-50 dark:text-gray-500 dark:border-gray-700">{sub}</div>}
     </div>
   )
 }
@@ -84,12 +84,12 @@ export function Modal({ title, children, footer, onClose }) {
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-bold text-gray-800">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">{title}</h2>
           <button className="icon-btn" onClick={onClose}><X size={18} /></button>
         </div>
         <div className="px-6 py-5">{children}</div>
-        {footer && <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">{footer}</div>}
+        {footer && <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700">{footer}</div>}
       </div>
     </div>
   )
@@ -113,25 +113,25 @@ export function Pagination({ page, total, perPage, onChange }) {
 
   const btn = active =>
     `min-w-[2rem] h-8 px-2 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${
-      active ? 'bg-red-500 text-white' : 'text-gray-500 hover:bg-gray-100'
+      active ? 'bg-red-500 text-white' : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
     }`
 
   return (
-    <div className="flex items-center gap-1 px-4 py-3 border-t border-gray-50 flex-wrap">
-      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+    <div className="flex items-center gap-1 px-4 py-3 border-t border-gray-50 flex-wrap dark:border-gray-700">
+      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30 dark:text-gray-500"
         onClick={() => onChange(1)} disabled={page === 1} title="E para">«</button>
-      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30 dark:text-gray-500"
         onClick={() => onChange(page - 1)} disabled={page === 1}>‹</button>
       {getWindow().map((p, i) =>
         p === '...'
-          ? <span key={`e${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm select-none">…</span>
+          ? <span key={`e${i}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-sm select-none dark:text-gray-500">…</span>
           : <button key={p} onClick={() => onChange(p)} className={btn(page === p)}>{p}</button>
       )}
-      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30 dark:text-gray-500"
         onClick={() => onChange(page + 1)} disabled={page === pages}>›</button>
-      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30"
+      <button className="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-100 disabled:opacity-30 dark:text-gray-500"
         onClick={() => onChange(pages)} disabled={page === pages} title="E fundit">»</button>
-      <span className="ml-auto text-xs text-gray-400">{total} rezultate · faqja {page}/{pages}</span>
+      <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">{total} rezultate · faqja {page}/{pages}</span>
     </div>
   )
 }

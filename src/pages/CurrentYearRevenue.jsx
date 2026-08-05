@@ -11,32 +11,32 @@ export default function CurrentYearRevenue() {
     <div className="space-y-4 max-w-6xl">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => navigate('dashboard')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-          <ChevronLeft size={20} className="text-gray-600" />
+          <ChevronLeft size={20} className="text-gray-600 dark:text-gray-300" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Të ardhura {thisYear}</h1>
-          <p className="text-sm text-gray-500 mt-1">Lista e pagesave të pranuara për vitin aktual</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Të ardhura {thisYear}</h1>
+          <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">Lista e pagesave të pranuara për vitin aktual</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <p className="font-semibold text-gray-800">{data.length} pagese{data.length !== 1 ? '' : ''}</p>
-          <p className="text-sm font-bold text-gray-600">{fmt(data.reduce((s, p) => s + p.amount, 0))}</p>
+      <div className="bg-white rounded-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center dark:border-gray-700">
+          <p className="font-semibold text-gray-800 dark:text-gray-100">{data.length} pagese{data.length !== 1 ? '' : ''}</p>
+          <p className="text-sm font-bold text-gray-600 dark:text-gray-300">{fmt(data.reduce((s, p) => s + p.amount, 0))}</p>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 dark:divide-gray-700">
           {data.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">Nuk ka pagesa për këtë periudhë</div>
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">Nuk ka pagesa për këtë periudhë</div>
           ) : (
             data.map(pay => (
-              <div key={pay.id} className="p-6 hover:bg-gray-50 transition-colors">
+              <div key={pay.id} className="p-6 hover:bg-gray-50 transition-colors dark:hover:bg-gray-900/50">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-800">{pay.invoiceNumber}</p>
-                    <p className="text-sm text-gray-600 mt-0.5">{pay.customerName}</p>
+                    <p className="font-semibold text-gray-800 dark:text-gray-100">{pay.invoiceNumber}</p>
+                    <p className="text-sm text-gray-600 mt-0.5 dark:text-gray-300">{pay.customerName}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">{pay.method}</span>
-                      <span className="text-xs text-gray-400">{pay.date}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{pay.date}</span>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">

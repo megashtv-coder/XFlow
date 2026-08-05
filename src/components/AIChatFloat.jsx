@@ -414,11 +414,11 @@ export default function AIChatFloat() {
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2">
               <MessageCircle size={20} className="text-red-500" />
-              <h3 className="font-bold text-gray-900 dark:text-white">🤖 AI Asistenti</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white dark:text-gray-50">🤖 AI Asistenti</h3>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors dark:text-gray-500"
               title="Mbyll"
             >
               <X size={20} />
@@ -438,7 +438,7 @@ export default function AIChatFloat() {
                 )}
 
                 {msg.type === 'system' && (
-                  <div className="text-left text-sm text-gray-600 dark:text-gray-400 py-2 whitespace-pre-line">
+                  <div className="text-left text-sm text-gray-600 dark:text-gray-400 py-2 whitespace-pre-line dark:text-gray-300">
                     {msg.content}
                   </div>
                 )}
@@ -447,7 +447,7 @@ export default function AIChatFloat() {
                   <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                     <div className="flex gap-2 items-start">
                       <HelpCircle size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-gray-800 dark:text-gray-200">{msg.content}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 dark:text-gray-100">{msg.content}</p>
                     </div>
                   </div>
                 )}
@@ -456,14 +456,14 @@ export default function AIChatFloat() {
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
                     <div className="flex gap-2 items-start">
                       <AlertCircle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-gray-800 dark:text-gray-200">{msg.content}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 dark:text-gray-100">{msg.content}</p>
                     </div>
                   </div>
                 )}
 
                 {msg.type === 'answer' && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-lg max-w-[85%] whitespace-pre-line text-sm">
+                    <div className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white px-4 py-2 rounded-lg max-w-[85%] whitespace-pre-line text-sm dark:text-gray-50">
                       {msg.content}
                     </div>
                   </div>
@@ -471,7 +471,7 @@ export default function AIChatFloat() {
 
                 {msg.type === 'action' && msg.action && (
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 space-y-2">
-                    <p className="font-semibold text-sm text-gray-900 dark:text-white">{msg.content}</p>
+                    <p className="font-semibold text-sm text-gray-900 dark:text-white dark:text-gray-50">{msg.content}</p>
                     <div className="flex gap-2">
                       <button
                         onClick={handleAcceptAction}
@@ -481,7 +481,7 @@ export default function AIChatFloat() {
                       </button>
                       <button
                         onClick={() => setCurrentResult(null)}
-                        className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm py-1.5 rounded transition-colors"
+                        className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm py-1.5 rounded transition-colors dark:text-gray-200"
                       >
                         ✗ Anulo
                       </button>
@@ -493,7 +493,7 @@ export default function AIChatFloat() {
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
                     <div className="flex gap-2 items-start">
                       <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-gray-800 dark:text-gray-200">{msg.content}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 dark:text-gray-100">{msg.content}</p>
                     </div>
                   </div>
                 )}
@@ -511,13 +511,13 @@ export default function AIChatFloat() {
           <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-b-lg space-y-2">
             {/* Customer Picker */}
             {customerSuggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto dark:bg-gray-800">
                 {customerSuggestions.map(customer => (
                   <button
                     key={customer.id}
                     type="button"
                     onClick={() => selectCustomer(customer.name)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0 dark:text-gray-50 dark:border-gray-700"
                   >
                     <Users size={14} className="text-red-500" />
                     {customer.name}
@@ -528,13 +528,13 @@ export default function AIChatFloat() {
 
             {/* Referent Picker */}
             {referentSuggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto dark:bg-gray-800">
                 {referentSuggestions.map(rep => (
                   <button
                     key={rep}
                     type="button"
                     onClick={() => selectReferent(rep)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0 dark:text-gray-50 dark:border-gray-700"
                   >
                     <Users size={14} className="text-yellow-500" />
                     {rep}
@@ -545,13 +545,13 @@ export default function AIChatFloat() {
 
             {/* Product Picker */}
             {productSuggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto dark:bg-gray-800">
                 {productSuggestions.map(product => (
                   <button
                     key={product.id}
                     type="button"
                     onClick={() => selectProduct(product.name)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0 dark:text-gray-50 dark:border-gray-700"
                   >
                     <Package size={14} className="text-blue-500" />
                     {product.name} - €{product.salePrice}
@@ -562,13 +562,13 @@ export default function AIChatFloat() {
 
             {/* Payment Mode Picker */}
             {paymentModeSuggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto dark:bg-gray-800">
                 {paymentModeSuggestions.map(mode => (
                   <button
                     key={mode}
                     type="button"
                     onClick={() => selectPaymentMode(mode)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0 dark:text-gray-50 dark:border-gray-700"
                   >
                     <CreditCard size={14} className="text-purple-500" />
                     {mode}
@@ -579,13 +579,13 @@ export default function AIChatFloat() {
 
             {/* Deposited To Picker */}
             {depositedToSuggestions.length > 0 && (
-              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto">
+              <div className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg max-h-32 overflow-y-auto dark:bg-gray-800">
                 {depositedToSuggestions.map(name => (
                   <button
                     key={name}
                     type="button"
                     onClick={() => selectDepositedTo(name)}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-200 dark:border-gray-600 last:border-0 dark:text-gray-50 dark:border-gray-700"
                   >
                     <Wallet size={14} className="text-green-500" />
                     {name}
@@ -601,7 +601,7 @@ export default function AIChatFloat() {
                 value={input}
                 onChange={handleInputChange}
                 placeholder="Shkruaj komandë (@Emri, shto klient, etj)..."
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-gray-50"
                 disabled={loading}
               />
               <button

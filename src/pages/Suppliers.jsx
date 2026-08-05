@@ -81,7 +81,7 @@ function SupplierModal({ supplier, onClose }) {
       {/* Numri i telefonit */}
       <FormGroup label="Numri i telefonit">
         <div className="relative">
-          <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none dark:text-gray-500" />
           <input
             className="form-control pl-9"
             value={form.phone}
@@ -94,7 +94,7 @@ function SupplierModal({ supplier, onClose }) {
       {/* Linku i panelit */}
       <FormGroup label="Linku i panelit">
         <div className="relative">
-          <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none dark:text-gray-500" />
           <input
             className="form-control pl-9"
             value={form.panelLink}
@@ -125,27 +125,27 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
   const hasPhone = !!vendor.phone
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 hover:border-blue-200 hover:shadow-md transition-all duration-200 group flex flex-col gap-4">
+    <div className="bg-white rounded-xl border border-gray-100 p-5 hover:border-blue-200 hover:shadow-md transition-all duration-200 group flex flex-col gap-4 dark:bg-gray-800 dark:border-gray-700">
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-bold text-base flex-shrink-0 select-none">
           {initials}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-gray-800 truncate">{vendor.name}</p>
-          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide">Furnitor</p>
+          <p className="font-bold text-gray-800 truncate dark:text-gray-100">{vendor.name}</p>
+          <p className="text-[11px] text-gray-400 mt-0.5 uppercase tracking-wide dark:text-gray-500">Furnitor</p>
         </div>
         {/* Edit / Delete */}
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors dark:text-gray-500"
             onClick={() => onEdit(vendor)}
             title="Edito"
           >
             <Pencil size={14} />
           </button>
           <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors dark:text-gray-500"
             onClick={() => onDelete(vendor)}
             title="Fshi"
           >
@@ -157,8 +157,8 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
       {/* Info */}
       <div className="space-y-2 flex-1">
         {hasPhone ? (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Phone size={13} className="text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <Phone size={13} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
             <span>{vendor.phone}</span>
           </div>
         ) : (
@@ -170,7 +170,7 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
 
         {hasLink ? (
           <div className="flex items-center gap-2 text-sm text-red-500 truncate">
-            <Link2 size={13} className="text-gray-400 flex-shrink-0" />
+            <Link2 size={13} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
             <a
               href={vendor.panelLink.startsWith('http') ? vendor.panelLink : `https://${vendor.panelLink}`}
               target="_blank"
@@ -180,7 +180,7 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
             >
               {vendor.panelLink.replace(/^https?:\/\//, '')}
             </a>
-            <ExternalLink size={11} className="text-gray-400 flex-shrink-0" />
+            <ExternalLink size={11} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
           </div>
         ) : (
           <div className="flex items-center gap-2 text-sm text-gray-300 italic">
@@ -192,7 +192,7 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
 
       {/* Veprimet — WhatsApp + Telegram */}
       {hasPhone && (
-        <div className="flex gap-2 pt-3 border-t border-gray-50">
+        <div className="flex gap-2 pt-3 border-t border-gray-50 dark:border-gray-700">
           <a
             href={`https://wa.me/${phone}`}
             target="_blank"
@@ -227,7 +227,7 @@ function SupplierCard({ vendor, onEdit, onDelete }) {
 
       {/* Nëse nuk ka telefon por ka link */}
       {!hasPhone && hasLink && (
-        <div className="pt-3 border-t border-gray-50">
+        <div className="pt-3 border-t border-gray-50 dark:border-gray-700">
           <a
             href={vendor.panelLink.startsWith('http') ? vendor.panelLink : `https://${vendor.panelLink}`}
             target="_blank"
@@ -269,8 +269,8 @@ export default function Suppliers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Furnitorët</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{vendors.length} furnitor{vendors.length !== 1 ? 'ë' : ''} gjithsej</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Furnitorët</h2>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{vendors.length} furnitor{vendors.length !== 1 ? 'ë' : ''} gjithsej</p>
         </div>
         <button className="btn btn-primary btn-sm self-start sm:self-auto" onClick={openAdd}>
           <Plus size={16} /> Shto furnitor
@@ -278,18 +278,16 @@ export default function Suppliers() {
       </div>
 
       {/* Kërkimi */}
-      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2
-                      focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50
-                      transition-all mb-6 w-full max-w-sm">
-        <Search size={14} className="text-gray-400 flex-shrink-0" />
+      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all mb-6 w-full max-w-sm dark:bg-gray-800 dark:border-gray-700">
+        <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
         <input
-          className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400"
+          className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
           placeholder="Kërko furnitor..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
         {search && (
-          <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500">
+          <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
             <X size={13} />
           </button>
         )}

@@ -242,7 +242,7 @@ export default function AIChat() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white dark:bg-gray-800">
       {/* Header */}
       <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-4 shadow-lg">
         <h1 className="text-2xl font-bold">🤖 AI Asistenti</h1>
@@ -261,7 +261,7 @@ export default function AIChat() {
         ))}
 
         {loading && (
-          <div className="flex items-center gap-2 text-gray-500">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Loader size={16} className="animate-spin" />
             Po përpunon komandën...
           </div>
@@ -273,7 +273,7 @@ export default function AIChat() {
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="border-t border-gray-200 bg-gray-50 p-4"
+        className="border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50"
       >
         <div className="flex gap-2">
           <input
@@ -294,7 +294,7 @@ export default function AIChat() {
         </div>
 
         {/* Help text */}
-        <div className="mt-2 text-xs text-gray-500">
+        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           💡 Shembuj: "Arditi pagoi", "Shfaq faturat e papaguara", "Sa fitim kam këtë muaj"
         </div>
       </form>
@@ -318,7 +318,7 @@ function ChatMessage({ message, onFollowUp, onAccept }) {
 
     case 'system':
       return (
-        <div className="text-center text-gray-500 text-sm py-4">
+        <div className="text-center text-gray-500 text-sm py-4 dark:text-gray-400">
           {message.content}
           {message.examples && (
             <div className="mt-3 space-y-1 text-xs">
@@ -394,7 +394,7 @@ function ChatMessage({ message, onFollowUp, onAccept }) {
                     >
                       ✓ Pranohe
                     </button>
-                    <button className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">
+                    <button className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300 dark:text-gray-200">
                       ✗ Anulo
                     </button>
                   </div>

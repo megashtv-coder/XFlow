@@ -89,7 +89,7 @@ function ReferredBySelect({ value, onChange, excludeId }) {
     <div ref={wrapRef} className="relative">
       {/* Input */}
       <div className="relative flex items-center">
-        <Search size={14} className="absolute left-3 text-gray-400 pointer-events-none" />
+        <Search size={14} className="absolute left-3 text-gray-400 pointer-events-none dark:text-gray-500" />
         <input
           ref={inputRef}
           className="form-control pl-8 pr-8"
@@ -101,17 +101,17 @@ function ReferredBySelect({ value, onChange, excludeId }) {
           autoComplete="off"
         />
         {query
-          ? <button type="button" onClick={clear} className="absolute right-3 text-gray-300 hover:text-gray-500"><X size={13}/></button>
+          ? <button type="button" onClick={clear} className="absolute right-3 text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"><X size={13}/></button>
           : <ChevronDown size={13} className="absolute right-3 text-gray-300 pointer-events-none"/>
         }
       </div>
 
       {/* Dropdown list */}
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto">
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
           {/* Opsioni "asnjë" */}
           <div
-            className="px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 cursor-pointer border-b border-gray-100"
+            className="px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 cursor-pointer border-b border-gray-100 dark:text-gray-500 dark:hover:bg-gray-900/50 dark:border-gray-700"
             onMouseDown={() => select('')}
           >
             — Asnjë —
@@ -123,7 +123,7 @@ function ReferredBySelect({ value, onChange, excludeId }) {
               <div
                 key={name}
                 className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 transition-colors ${
-                  i === active ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-700'
+                  i === active ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-700 dark:hover:bg-gray-900/50 dark:text-gray-200'
                 }`}
                 onMouseDown={() => select(name)}
                 onMouseEnter={() => setActive(i)}
@@ -138,7 +138,7 @@ function ReferredBySelect({ value, onChange, excludeId }) {
           {query.trim() && (filtered.length === 0 || !filtered.includes(query.trim())) ? (
             <div
               className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 transition-colors hover:bg-red-50 text-red-500 hover:text-red-600 font-medium ${
-                filtered.length > 0 ? 'border-t border-gray-100' : ''
+                filtered.length > 0 ? 'border-t border-gray-100 dark:border-gray-700' : ''
               }`}
               onMouseDown={() => select(query.trim())}
               onMouseEnter={() => setActive(filtered.length)}
@@ -150,7 +150,7 @@ function ReferredBySelect({ value, onChange, excludeId }) {
 
           {/* No results */}
           {filtered.length === 0 && !query.trim() ? (
-            <div className="px-3 py-3 text-xs text-gray-400 text-center">Nuk u gjet asnjë klient</div>
+            <div className="px-3 py-3 text-xs text-gray-400 text-center dark:text-gray-500">Nuk u gjet asnjë klient</div>
           ) : null}
         </div>
       )}
@@ -256,7 +256,7 @@ export function CustomerModal({ customer, onClose, isFormPage }) {
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${
               !isReseller
                 ? 'border-red-500 bg-red-500 text-white shadow-sm'
-                : 'border-gray-200 bg-white text-gray-500 hover:border-red-300'
+                : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
             }`}>
             <User size={15}/> Individual
           </button>
@@ -264,7 +264,7 @@ export function CustomerModal({ customer, onClose, isFormPage }) {
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${
               isReseller
                 ? 'border-purple-600 bg-purple-600 text-white shadow-sm'
-                : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300'
+                : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
             }`}>
             <Users size={15}/> Reseller
           </button>
@@ -380,7 +380,7 @@ export function CustomerModal({ customer, onClose, isFormPage }) {
     return (
       <div className="space-y-4">
         {formContent}
-        <div className="flex gap-2 pt-4 border-t border-gray-200">
+        <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button className="btn btn-outline flex-1" onClick={onClose}>Anulo</button>
           <button className="btn btn-primary flex-1" onClick={save}>
             {isEdit ? 'Ruaj ndryshimet' : 'Shto klientin'}
@@ -423,10 +423,10 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
 
   return (
     <div
-      className={`bg-white rounded-xl border p-5 hover:shadow-md transition-all duration-200 group ${
+      className={`bg-white rounded-xl border p-5 hover:shadow-md transition-all duration-200 group dark:bg-gray-800 ${
         isLatePayer
           ? 'border-orange-200 hover:border-orange-300'
-          : 'border-gray-100 hover:border-blue-200'
+          : 'border-gray-100 hover:border-blue-200 dark:border-gray-700'
       } ${checked ? 'ring-2 ring-red-400 bg-red-50/50' : ''}`}
       onClick={() => onEdit(c)}
     >
@@ -445,7 +445,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
         <Avatar name={c.name || c.firstName || '?'} color={c.color} size={44} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <p className="font-bold text-gray-800 truncate text-sm">
+            <p className="font-bold text-gray-800 truncate text-sm dark:text-gray-100">
               {c.name || `${c.firstName} ${c.lastName}`}
             </p>
             {isLatePayer && (
@@ -459,7 +459,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
           </div>
           <div className="flex items-center gap-1.5 mt-0.5">
             <Globe size={10} className="text-gray-300 flex-shrink-0"/>
-            <p className="text-xs text-gray-400 truncate">{c.country}</p>
+            <p className="text-xs text-gray-400 truncate dark:text-gray-500">{c.country}</p>
           </div>
         </div>
         {/* Type badge */}
@@ -471,7 +471,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
       </div>
 
       {/* Info rows */}
-      <div className="space-y-1.5 mb-3 text-xs text-gray-500">
+      <div className="space-y-1.5 mb-3 text-xs text-gray-500 dark:text-gray-400">
         {c.email && (
           <div className="flex items-center gap-2">
             <Mail size={11} className="text-gray-300 flex-shrink-0"/>
@@ -523,14 +523,14 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
       </div>
 
       {/* Footer */}
-      <div className="flex justify-between items-center pt-3 border-t border-gray-50">
+      <div className="flex justify-between items-center pt-3 border-t border-gray-50 dark:border-gray-700">
         <div>
           <p className="text-base font-bold text-red-500">{fmt(c.total)}</p>
-          <p className="text-[10px] text-gray-400 uppercase tracking-wide">Totali</p>
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide dark:text-gray-500">Totali</p>
         </div>
         <div className="text-right">
-          <p className="text-base font-bold text-gray-700">{c.invoices}</p>
-          <p className="text-[10px] text-gray-400 uppercase tracking-wide">Fatura</p>
+          <p className="text-base font-bold text-gray-700 dark:text-gray-200">{c.invoices}</p>
+          <p className="text-[10px] text-gray-400 uppercase tracking-wide dark:text-gray-500">Fatura</p>
         </div>
 
         {/* Action buttons */}
@@ -563,7 +563,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
           )}
           {/* Edit */}
           <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 dark:bg-gray-900/50 dark:text-gray-500"
             onClick={e => { e.stopPropagation(); onEdit(c) }}
             title="Edito"
           >
@@ -571,7 +571,7 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
           </button>
           {/* Delete */}
           <button
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100 dark:bg-gray-900/50 dark:text-gray-500"
             onClick={e => { e.stopPropagation(); onDelete(c.id) }}
             title="Fshi klientin"
           >
@@ -773,13 +773,13 @@ export default function Customers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">Klientët</h2>
-          <p className="text-sm text-gray-400 mt-0.5">{customers.length} klientë aktiv</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Klientët</h2>
+          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{customers.length} klientë aktiv</p>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Import - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
@@ -808,24 +808,24 @@ export default function Customers() {
 
       {/* Mini stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
-          <p className="text-2xl font-bold text-gray-800">{customers.length}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Klientë gjithsej</p>
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{customers.length}</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Klientë gjithsej</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
           <p className="text-2xl font-bold text-red-500">{totalIndividuals}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Individualë</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Individualë</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
           <p className="text-2xl font-bold text-purple-600">{totalResellers}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium">Resellers</p>
+          <p className="text-xs text-gray-400 mt-0.5 font-medium dark:text-gray-500">Resellers</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4">
+        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
           <p className="text-2xl font-bold text-emerald-600">{usedCountries.length}</p>
-          <p className="text-xs text-gray-400 mt-0.5 font-medium flex flex-wrap items-center gap-1">
+          <p className="text-xs text-gray-400 mt-0.5 font-medium flex flex-wrap items-center gap-1 dark:text-gray-500">
             Shtete
             {topCountry && (
-              <span className="text-gray-400 font-normal">· {topCountry.co} ({topCountry.count})</span>
+              <span className="text-gray-400 font-normal dark:text-gray-500">· {topCountry.co} ({topCountry.count})</span>
             )}
           </p>
         </div>
@@ -835,7 +835,7 @@ export default function Customers() {
       <div className="flex flex-wrap items-center gap-2 mb-5">
         {/* Select All Checkbox */}
         {paginatedCustomers.length > 0 && (
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 dark:bg-gray-800 dark:border-gray-700">
             <input
               type="checkbox"
               checked={paginatedCustomers.length > 0 && paginatedCustomers.every(c => selected.has(c.id))}
@@ -843,7 +843,7 @@ export default function Customers() {
               className="w-5 h-5 rounded border-gray-300 text-red-500 cursor-pointer"
               title="Zgjidh faqen"
             />
-            <span className="text-xs text-gray-600 font-medium">
+            <span className="text-xs text-gray-600 font-medium dark:text-gray-300">
               {selected.size > 0 ? `${selected.size} zgjedhur` : 'Zgjidh faqen'}
             </span>
           </div>
@@ -860,24 +860,23 @@ export default function Customers() {
           </button>
         )}
 
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2
-                        focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px]">
-          <Search size={14} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px] dark:bg-gray-800 dark:border-gray-700">
+          <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
           <input
-            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400"
+            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
             placeholder="Kërko emër, telefon..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
           {search && (
-            <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500">
+            <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
               <X size={13} />
             </button>
           )}
         </div>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={typeFilt} onChange={e => setTypeFilt(e.target.value)}
         >
           <option value="all">Të gjitha llojet</option>
@@ -886,7 +885,7 @@ export default function Customers() {
         </select>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={countryFilt} onChange={e => setCountryFilt(e.target.value)}
         >
           <option value="all">Të gjitha shtetet</option>
@@ -894,14 +893,14 @@ export default function Customers() {
         </select>
 
         <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer"
+          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
           value={sortBy} onChange={e => setSortBy(e.target.value)}
         >
           <option value="default">Renditja — Parazgjedhur</option>
           <option value="alphabetic">A — Z (Alfabetik)</option>
         </select>
 
-        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto">
+        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto dark:text-gray-500">
           <Filter size={12} /> {filtered.length}
         </span>
       </div>
@@ -941,7 +940,7 @@ export default function Customers() {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
               >
                 ← Mbrapa
               </button>
@@ -964,7 +963,7 @@ export default function Customers() {
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                         currentPage === pageNum
                           ? 'bg-red-500 text-white'
-                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50'
                       }`}
                     >
                       {pageNum}
@@ -975,11 +974,11 @@ export default function Customers() {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
               >
                 Përpara →
               </button>
-              <span className="text-xs text-gray-400 ml-2">
+              <span className="text-xs text-gray-400 ml-2 dark:text-gray-500">
                 Faqja {currentPage} nga {totalPages}
               </span>
             </div>
@@ -990,9 +989,9 @@ export default function Customers() {
       {/* Delete confirmation dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full">
-            <p className="text-sm font-bold text-gray-800 mb-2">Fshi {showDeleteConfirm.type === 'single' ? 'klientin' : 'klientët'}?</p>
-            <p className="text-xs text-gray-500 mb-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full dark:bg-gray-800">
+            <p className="text-sm font-bold text-gray-800 mb-2 dark:text-gray-100">Fshi {showDeleteConfirm.type === 'single' ? 'klientin' : 'klientët'}?</p>
+            <p className="text-xs text-gray-500 mb-4 dark:text-gray-400">
               {showDeleteConfirm.type === 'single'
                 ? `Ai klient do të fshihet përgjithmonë.`
                 : `${selected.size} klientë do të fshihen përgjithmonë.`
