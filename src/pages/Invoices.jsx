@@ -640,9 +640,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
               </span>
             </div>
             {inv.subscriptionExpiry && (
-              <div className="bg-amber-50 rounded-lg border border-amber-100 p-1.5">
-                <span className="text-amber-600 font-semibold text-[11px] mb-0.5 uppercase tracking-wide block">⏰ Skadimi:</span>
-                <span className="font-semibold text-amber-700 text-sm block">{formatDate(inv.subscriptionExpiry)}</span>
+              <div className="bg-red-50 rounded-lg border border-red-100 p-1.5 dark:bg-red-900/20 dark:border-red-900/40">
+                <span className="text-red-600 font-semibold text-[11px] mb-0.5 uppercase tracking-wide block dark:text-red-400">⏰ Skadimi:</span>
+                <span className="font-semibold text-red-700 text-sm block dark:text-red-300">{formatDate(inv.subscriptionExpiry)}</span>
               </div>
             )}
             {inv.notifyDate && (
