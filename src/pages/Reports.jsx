@@ -876,11 +876,21 @@ function AbonentVjeterTab() {
 
   const subscriberData = useMemo(() => {
     const today = new Date()
+
+    // Group invoices by customer name once (O(invoices)) instead of
+    // filtering the full invoices array per customer (O(customers × invoices))
+    const invoicesByCustomer = new Map()
+    for (const inv of invoices) {
+      const list = invoicesByCustomer.get(inv.customer)
+      if (list) list.push(inv)
+      else invoicesByCustomer.set(inv.customer, [inv])
+    }
+
     return customers
       .map(c => {
         const name = c.name || `${c.firstName} ${c.lastName}`
-        const custInvoices = invoices.filter(inv => inv.customer === name)
-        if (!custInvoices.length) return null
+        const custInvoices = invoicesByCustomer.get(name)
+        if (!custInvoices || !custInvoices.length) return null
         const firstDate = custInvoices.reduce((min, inv) => inv.date < min ? inv.date : min, custInvoices[0].date)
         const daysActive = Math.floor((today - new Date(firstDate)) / 86400000)
         return { ...c, name, firstDate, daysActive, invoiceCount: custInvoices.length }

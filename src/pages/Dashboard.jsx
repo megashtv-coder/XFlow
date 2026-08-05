@@ -107,7 +107,8 @@ export default function Dashboard() {
   }, [payments, expenses])
 
   /* ── Helpers ── */
-  const getType = name => customers.find(c => c.name === name)?.type || 'individual'
+  const customerTypeMap = useMemo(() => new Map(customers.map(c => [c.name, c.type])), [customers])
+  const getType = name => customerTypeMap.get(name) || 'individual'
 
   /* ── KPI 1: Klientë aktivë ── */
   // Fatura jo-void me subscriptionExpiry në të ardhmen (paguar ose jo)
@@ -146,12 +147,17 @@ export default function Dashboard() {
     invoices.filter(i => i.status === 'pending' || i.status === 'overdue'),
     [invoices]
   )
-  const pendingKlient   = pendingInvoices.filter(i => getType(i.customer) !== 'reseller')
-  const pendingReseller = pendingInvoices.filter(i => getType(i.customer) === 'reseller')
-
-  const pendingKlientAmt   = pendingKlient.reduce((s, i) => s + i.amount, 0)
-  const pendingResellerAmt = pendingReseller.reduce((s, i) => s + i.amount, 0)
-  const pendingTotalAmt    = pendingInvoices.reduce((s, i) => s + i.amount, 0)
+  const { pendingKlient, pendingReseller, pendingKlientAmt, pendingResellerAmt, pendingTotalAmt } = useMemo(() => {
+    const klient   = pendingInvoices.filter(i => getType(i.customer) !== 'reseller')
+    const reseller = pendingInvoices.filter(i => getType(i.customer) === 'reseller')
+    return {
+      pendingKlient:      klient,
+      pendingReseller:    reseller,
+      pendingKlientAmt:   klient.reduce((s, i) => s + i.amount, 0),
+      pendingResellerAmt: reseller.reduce((s, i) => s + i.amount, 0),
+      pendingTotalAmt:    pendingInvoices.reduce((s, i) => s + i.amount, 0),
+    }
+  }, [pendingInvoices, customerTypeMap])
 
   /* ── Shpenzime sipas emrit të shpenzimit (me filter) ── */
   const catData = useMemo(() => {

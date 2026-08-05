@@ -1,12 +1,18 @@
+import { useMemo } from 'react'
 import { useApp } from '../context/AppContext'
 import { ChevronLeft } from 'lucide-react'
 
 export default function PendingResellerInvoices() {
   const { invoices, customers, fmt, navigate } = useApp()
 
-  const getType = name => customers.find(c => c.name === name)?.type || 'individual'
-  const pendingInvoices = invoices.filter(i => i.status === 'pending' || i.status === 'overdue')
-  const data = pendingInvoices.filter(i => getType(i.customer) === 'reseller').sort((a, b) => new Date(b.date) - new Date(a.date))
+  const customerTypeMap = useMemo(() => new Map(customers.map(c => [c.name, c.type])), [customers])
+  const getType = name => customerTypeMap.get(name) || 'individual'
+  const data = useMemo(() =>
+    invoices
+      .filter(i => (i.status === 'pending' || i.status === 'overdue') && getType(i.customer) === 'reseller')
+      .sort((a, b) => new Date(b.date) - new Date(a.date)),
+    [invoices, customerTypeMap]
+  )
 
   return (
     <div className="space-y-4 max-w-6xl">

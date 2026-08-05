@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { X, Pencil, Save, XCircle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { countries } from '../data/mockData'
@@ -7,13 +7,19 @@ export default function CustomerDetailsModal({ customer, onClose }) {
   const { customers, setCustomers, showToast, invoices, payments, logActivity } = useApp()
   const [isEditing, setIsEditing] = useState(false)
 
-  // Calculate customer stats
-  const customerInvoices = invoices.filter(i => i.customer === customer?.name) || []
-  const subscriptionCount = customerInvoices.length
-  const totalPaid = payments
-    .filter(p => p.customer === customer?.name)
-    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
-  const referredCount = customers.filter(c => c.referredBy === customer?.name).length
+  // Calculate customer stats — memoized so editing form fields (which
+  // re-render this component on every keystroke) doesn't re-scan the full
+  // invoices/payments/customers arrays each time; only the customer itself
+  // or the underlying data changes should trigger a recompute.
+  const customerName = customer?.name
+  const { customerInvoices, subscriptionCount, totalPaid, referredCount } = useMemo(() => {
+    const custInvoices = invoices.filter(i => i.customer === customerName)
+    const paid = payments
+      .filter(p => p.customer === customerName)
+      .reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
+    const referred = customers.filter(c => c.referredBy === customerName).length
+    return { customerInvoices: custInvoices, subscriptionCount: custInvoices.length, totalPaid: paid, referredCount: referred }
+  }, [invoices, payments, customers, customerName])
   const [formData, setFormData] = useState({
     name: customer?.name || '',
     email: customer?.email || '',

@@ -254,8 +254,8 @@ export default function Payments() {
     }
   }, [isFormMode, closeModal])
 
-  const months  = getMonths(payments)
-  const methods = [...new Set(payments.map(p => p.method))]
+  const months  = useMemo(() => getMonths(payments), [payments])
+  const methods = useMemo(() => [...new Set(payments.map(p => p.method))], [payments])
 
   /* filtering */
   const filtered = useMemo(() => {
@@ -293,12 +293,18 @@ export default function Payments() {
 
   const paged = sorted.slice((pg - 1) * perPage, pg * perPage)
 
-  /* stats from filtered */
-  const totalGross = filtered.reduce((s, p) => s + p.amount, 0)
-  const totalFee   = filtered.reduce((s, p) => s + p.fee,    0)
-  const totalNet   = filtered.reduce((s, p) => s + p.net,    0)
-  const enndiNet   = filtered.filter(p => p.depositedTo === 'Enndy').reduce((s, p) => s + p.net, 0)
-  const samkiNet   = filtered.filter(p => p.depositedTo === 'Samki').reduce((s, p) => s + p.net, 0)
+  /* stats from filtered — single pass instead of 5 separate reduce/filter+reduce scans */
+  const { totalGross, totalFee, totalNet, enndiNet, samkiNet } = useMemo(() => {
+    let gross = 0, fee = 0, net = 0, enndi = 0, samki = 0
+    for (const p of filtered) {
+      gross += p.amount
+      fee   += p.fee
+      net   += p.net
+      if (p.depositedTo === 'Enndy') enndi += p.net
+      else if (p.depositedTo === 'Samki') samki += p.net
+    }
+    return { totalGross: gross, totalFee: fee, totalNet: net, enndiNet: enndi, samkiNet: samki }
+  }, [filtered])
 
   const openNewPayment  = ()  => navigate('payments:create')
   const openEditPayment = (p) => navigate(`payments:${p.id}:edit`)

@@ -689,7 +689,7 @@ export default function Customers() {
     }
   }
 
-  const usedCountries = [...new Set(customers.map(c => c.country).filter(Boolean))]
+  const usedCountries = useMemo(() => [...new Set(customers.map(c => c.country).filter(Boolean))], [customers])
 
   /* klientët me vonesë pagese: kanë fatura overdue ose kaluar afatin */
   const today = new Date().toISOString().slice(0, 10)
@@ -737,12 +737,22 @@ export default function Customers() {
     return result
   }, [customers, search, typeFilt, countryFilt, sortBy])
 
-  /* stats */
-  const totalResellers   = customers.filter(c => c.type === 'reseller').length
-  const totalIndividuals = customers.filter(c => c.type === 'individual').length
-  const topCountry       = usedCountries
-    .map(co => ({ co, count: customers.filter(c => c.country === co).length }))
-    .sort((a, b) => b.count - a.count)[0]
+  /* stats — single pass instead of a country × customers nested scan */
+  const { totalResellers, totalIndividuals, topCountry } = useMemo(() => {
+    let resellers = 0
+    let individuals = 0
+    const countryCounts = new Map()
+    for (const c of customers) {
+      if (c.type === 'reseller') resellers++
+      else if (c.type === 'individual') individuals++
+      if (c.country) countryCounts.set(c.country, (countryCounts.get(c.country) || 0) + 1)
+    }
+    let top = null
+    for (const [co, count] of countryCounts) {
+      if (!top || count > top.count) top = { co, count }
+    }
+    return { totalResellers: resellers, totalIndividuals: individuals, topCountry: top }
+  }, [customers])
 
   const openAdd  = ()     => navigate('customers:create')
   const openEdit = cust   => navigate(`customers:${cust.id}:edit`)

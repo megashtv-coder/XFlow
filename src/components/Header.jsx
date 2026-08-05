@@ -1,7 +1,7 @@
 import { Search, Bell, Moon, Sun, Menu, ChevronDown, Zap, Check, Plus, FileText, DollarSign } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { currencies } from '../data/mockData'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 
 const PAGE_TITLES = {
   dashboard:     'Dashboard',
@@ -78,12 +78,18 @@ export default function Header() {
     }
   }, [notifOpen])
 
-  const today       = new Date().toISOString().slice(0, 10)
-  const upcomingNotifications = invoices
-    .filter(i => i.notifyDate && i.notifyDate <= today)
-    .sort((a, b) => new Date(b.notifyDate) - new Date(a.notifyDate))
+  const today = new Date().toISOString().slice(0, 10)
+  const upcomingNotifications = useMemo(() =>
+    invoices
+      .filter(i => i.notifyDate && i.notifyDate <= today)
+      .sort((a, b) => new Date(b.notifyDate) - new Date(a.notifyDate)),
+    [invoices, today]
+  )
 
-  const unreadCount = upcomingNotifications.filter(i => !readNotifications[i.id]).length
+  const unreadCount = useMemo(() =>
+    upcomingNotifications.filter(i => !readNotifications[i.id]).length,
+    [upcomingNotifications, readNotifications]
+  )
 
   const markAllAsRead = () => {
     const newRead = { ...readNotifications }

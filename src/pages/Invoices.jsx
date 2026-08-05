@@ -385,7 +385,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
 })
 
 /* ── invoice side panel (right panel) ───────────────── */
-function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
+function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) {
   const {
     invoices, setInvoices,
     customers,
@@ -402,7 +402,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
   const [confirmDelPayment, setConfirmDelPayment] = useState(false)
   const [comment,           setComment]           = useState('')
 
-  const custObj  = customers.find(c => c.name === inv.customer)
+  const custObj  = customerMap ? customerMap.get(inv.customer) : customers.find(c => c.name === inv.customer)
   const rawPhone = cleanPhone(custObj?.phone || '')
   const today    = new Date().toISOString().slice(0, 10)
   const daysUntilDue = inv.due
@@ -793,9 +793,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer }) {
 /* ══════════════════════════════════════════════════════════
    Kanban Board
 ══════════════════════════════════════════════════════════ */
-function KanbanCard({ inv, onOpen }) {
+function KanbanCard({ inv, onOpen, customerMap }) {
   const { fmt, customers, setModal, closeModal } = useApp()
-  const custObj  = customers.find(c => c.name === inv.customer)
+  const custObj  = customerMap ? customerMap.get(inv.customer) : customers.find(c => c.name === inv.customer)
   const rawPhone = cleanPhone(custObj?.phone || '')
   const today    = new Date().toISOString().slice(0, 10)
   const isOverdue = inv.status === 'overdue' ||
@@ -884,7 +884,7 @@ function KanbanCard({ inv, onOpen }) {
   )
 }
 
-function KanbanBoard({ invoices, setPreview }) {
+function KanbanBoard({ invoices, setPreview, customerMap }) {
   const today = new Date().toISOString().slice(0, 10)
 
   const pending = invoices.filter(i => i.status === 'pending')
@@ -942,7 +942,7 @@ function KanbanBoard({ invoices, setPreview }) {
               <p className="text-xs text-gray-300 italic text-center py-6">{col.empty}</p>
             ) : (
               col.items.map(inv => (
-                <KanbanCard key={inv.id} inv={inv} onOpen={id => setPreview(id)} />
+                <KanbanCard key={inv.id} inv={inv} onOpen={id => setPreview(id)} customerMap={customerMap} />
               ))
             )}
           </div>
@@ -1289,6 +1289,7 @@ export default function Invoices() {
             invId={preview}
             onClose={() => setPreview(null)}
             setSelectedCustomer={setSelectedCustomer}
+            customerMap={customerMap}
           />
         </div>
 
@@ -1343,7 +1344,7 @@ export default function Invoices() {
           </div>
         </div>
 
-        <KanbanBoard invoices={invoices} setPreview={setPreview} />
+        <KanbanBoard invoices={invoices} setPreview={setPreview} customerMap={customerMap} />
 
         {/* Customer Details Modal */}
         {selectedCustomer && (

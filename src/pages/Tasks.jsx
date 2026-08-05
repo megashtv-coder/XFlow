@@ -16,8 +16,9 @@ function TaskModal({ task, onClose, onSave, customers }) {
   const [customerSearch, setCustomerSearch] = useState('')
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
 
-  const filteredCustomers = (customers || []).filter(c =>
-    c.name.toLowerCase().includes(customerSearch.toLowerCase())
+  const filteredCustomers = useMemo(() =>
+    (customers || []).filter(c => c.name.toLowerCase().includes(customerSearch.toLowerCase())),
+    [customers, customerSearch]
   )
 
   const handleSelectCustomer = (customerName) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, ChevronRight, X, Bell,
@@ -22,14 +22,14 @@ export default function Sidebar() {
   const today = new Date().toISOString().slice(0, 10)
 
   // Invoices badge: all unpaid invoices (pending, overdue, partial)
-  const invoicesBadge = invoices.filter(i =>
+  const invoicesBadge = useMemo(() => invoices.filter(i =>
     i.status === 'pending' || i.status === 'overdue' || i.status === 'partial'
-  ).length || null
+  ).length || null, [invoices])
 
   // Subscriptions badge: invoices with notifyDate exactly today
-  const subNotifyCount = invoices.filter(i =>
+  const subNotifyCount = useMemo(() => invoices.filter(i =>
     i.notifyDate && i.notifyDate === today
-  ).length || null
+  ).length || null, [invoices, today])
 
   // Load tasks from Supabase
   useEffect(() => {

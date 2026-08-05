@@ -453,6 +453,15 @@ function calculateSubscriptionExpiry(baseDate, months) {
 export default function InvoiceModal({ initialData, isFormPage, onClose }) {
   const { invoices, customers, setCustomers, items: products, setInvoices, showToast, closeModal, navigate, representatives, setRepresentatives, logActivity } = useApp()
 
+  // Referent combobox options — memoized so typing in any other field (date,
+  // discount, notify date, etc.) doesn't re-scan all customers every keystroke
+  const referentOptions = useMemo(() => Array.from(new Set([
+    ...representatives,
+    ...customers
+      .filter(cust => cust.referredBy && cust.referredBy.trim())
+      .map(cust => cust.referredBy.trim())
+  ])).map(ref => ({ id: ref, name: ref })), [representatives, customers])
+
   const isEdit = !!(initialData?.id)
   const due3d  = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 
@@ -686,17 +695,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
         <FormGroup label="👤 Referenti (Përfaqësuesi)">
           <Combobox
-            options={[
-              // Get unique representatives from:
-              // 1. Persistent representatives list
-              // 2. Customers' "Referuar nga" field
-              ...Array.from(new Set([
-                ...representatives,
-                ...customers
-                  .filter(cust => cust.referredBy && cust.referredBy.trim())
-                  .map(cust => cust.referredBy.trim())
-              ])).map(ref => ({ id: ref, name: ref }))
-            ]}
+            options={referentOptions}
             value={form.referent}
             onChange={ref => set('referent', typeof ref === 'string' ? ref : ref.name)}
             placeholder="Zgjedh referentin..."

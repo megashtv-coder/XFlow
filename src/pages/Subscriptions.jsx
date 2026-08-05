@@ -127,13 +127,13 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
 })
 
 /* ── Section block ── */
-const Section = memo(function Section({ title, color, items, today, sentIds, itemsPerPage = 30 }) {
-  const { customers, fmt } = useApp()
+const Section = memo(function Section({ title, color, items, today, sentIds, customerMap, itemsPerPage = 30 }) {
+  const { fmt } = useApp()
   const [page, setPage] = useState(1)
 
   if (!items.length) return null
 
-  const getPhone = name => cleanPhone(customers.find(c => c.name === name)?.phone || '')
+  const getPhone = name => cleanPhone(customerMap.get(name)?.phone || '')
   const urgency  = color === 'red' ? 'high' : color === 'amber' ? 'medium' : 'low'
 
   const totalPages = Math.ceil(items.length / itemsPerPage)
@@ -310,13 +310,20 @@ export default function Subscriptions() {
   const today  = new Date().toISOString().slice(0, 10)
   const week7  = addDays(today, 7)
 
-  /* Vetëm abonimi me notifyDate nga Korriku e tutje */
-  const withNotify = [...invoices.filter(i => i.notifyDate && i.notifyDate >= AUTO_FROM)]
-    .sort((a, b) => a.notifyDate.localeCompare(b.notifyDate))
+  const customerMap = useMemo(() => new Map(customers.map(c => [c.name, c])), [customers])
 
-  const urgent   = withNotify.filter(i => i.notifyDate <= today)
-  const thisWeek = withNotify.filter(i => i.notifyDate > today && i.notifyDate <= week7)
-  const future   = withNotify.filter(i => i.notifyDate > week7)
+  /* Vetëm abonimi me notifyDate nga Korriku e tutje */
+  const { withNotify, urgent, thisWeek, future } = useMemo(() => {
+    const notified = invoices
+      .filter(i => i.notifyDate && i.notifyDate >= AUTO_FROM)
+      .sort((a, b) => a.notifyDate.localeCompare(b.notifyDate))
+    return {
+      withNotify: notified,
+      urgent:   notified.filter(i => i.notifyDate <= today),
+      thisWeek: notified.filter(i => i.notifyDate > today && i.notifyDate <= week7),
+      future:   notified.filter(i => i.notifyDate > week7),
+    }
+  }, [invoices, today, week7])
 
   /* Gjurmim — cilët janë dërguar sot (vetëm për dërgime manuale nga kjo faqe;
      dërgimet automatike ndodhin server-side tani, jo këtu) */
@@ -325,7 +332,7 @@ export default function Subscriptions() {
     return new Set(Object.keys(m).filter(id => m[id] === today))
   })
 
-  const getPhone = name => cleanPhone(customers.find(c => c.name === name)?.phone || '')
+  const getPhone = name => cleanPhone(customerMap.get(name)?.phone || '')
 
   /* Njoftimet dërgohen automatikisht një herë në ditë nga një cron job
      server-side (api/cron/send-renewal-reminders.js), vetëm për abonimet
@@ -334,7 +341,10 @@ export default function Subscriptions() {
      "urgent" backlog-un e vjetër menjëherë sapo dikush ta hapte faqen). */
 
   const totalPending = urgent.length
-  const unsent       = urgent.filter(i => !sentIds.has(i.id) && getPhone(i.customer)).length
+  const unsent       = useMemo(() =>
+    urgent.filter(i => !sentIds.has(i.id) && getPhone(i.customer)).length,
+    [urgent, sentIds, customerMap]
+  )
 
   return (
     <div>
@@ -411,9 +421,9 @@ export default function Subscriptions() {
         </div>
       ) : (
         <>
-          <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgent}   today={today} sentIds={sentIds} />
-          <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeek} today={today} sentIds={sentIds} />
-          <Section title="Ardhshme"                             color="blue"  items={future}   today={today} sentIds={sentIds} />
+          <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgent}   today={today} sentIds={sentIds} customerMap={customerMap} />
+          <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeek} today={today} sentIds={sentIds} customerMap={customerMap} />
+          <Section title="Ardhshme"                             color="blue"  items={future}   today={today} sentIds={sentIds} customerMap={customerMap} />
         </>
       )}
     </div>

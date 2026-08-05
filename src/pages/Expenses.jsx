@@ -577,7 +577,7 @@ export default function ExpensesPage() {
   }
 
   /* unique types in data */
-  const usedTypes = [...new Set(expenses.map(e => e.type).filter(Boolean))]
+  const usedTypes = useMemo(() => [...new Set(expenses.map(e => e.type).filter(Boolean))], [expenses])
 
   const filtered = useMemo(() => {
     const yearFilter = sessionStorage.getItem('xflow_expense_year')
@@ -609,12 +609,28 @@ export default function ExpensesPage() {
 
   const paged = sorted.slice((pg - 1) * perPage, pg * perPage)
 
-  /* stats */
-  const total      = filtered.reduce((s, e) => s + e.amount, 0)
-  const allTotal   = expenses.reduce((s, e) => s + e.amount, 0)
-  const enndiTotal = expenses.filter(e => e.paidBy === 'Enndy').reduce((s, e) => s + e.amount, 0)
-  const samkiTotal = expenses.filter(e => e.paidBy === 'Samki').reduce((s, e) => s + e.amount, 0)
-  const recurTotal = expenses.filter(e => e.recurring).reduce((s, e) => s + e.amount, 0)
+  /* stats — single pass over `expenses` instead of 4 separate filter+reduce scans */
+  const { allTotal, enndiTotal, samkiTotal, recurTotal } = useMemo(() => {
+    let all = 0, enndi = 0, samki = 0, recur = 0
+    for (const e of expenses) {
+      all += e.amount
+      if (e.paidBy === 'Enndy') enndi += e.amount
+      else if (e.paidBy === 'Samki') samki += e.amount
+      if (e.recurring) recur += e.amount
+    }
+    return { allTotal: all, enndiTotal: enndi, samkiTotal: samki, recurTotal: recur }
+  }, [expenses])
+
+  /* same for the filtered view (footer totals) — single pass over `filtered` */
+  const { total, filteredEnndiTotal, filteredSamkiTotal } = useMemo(() => {
+    let sum = 0, enndi = 0, samki = 0
+    for (const e of filtered) {
+      sum += e.amount
+      if (e.paidBy === 'Enndy') enndi += e.amount
+      else if (e.paidBy === 'Samki') samki += e.amount
+    }
+    return { total: sum, filteredEnndiTotal: enndi, filteredSamkiTotal: samki }
+  }, [filtered])
 
   const openAdd    = ()  => navigate('expenses:create')
   const openEdit   = e   => navigate(`expenses:${e.id}:edit`)
@@ -998,8 +1014,8 @@ export default function ExpensesPage() {
           {filtered.length > 0 && (
             <div className="hidden sm:flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/40 text-xs">
               <div className="flex gap-4 text-gray-400">
-                <span>Enndy: <span className="font-bold text-red-500">- {fmt(filtered.filter(e=>e.paidBy==='Enndy').reduce((s,e)=>s+e.amount,0))}</span></span>
-                <span>Samki: <span className="font-bold text-purple-600">- {fmt(filtered.filter(e=>e.paidBy==='Samki').reduce((s,e)=>s+e.amount,0))}</span></span>
+                <span>Enndy: <span className="font-bold text-red-500">- {fmt(filteredEnndiTotal)}</span></span>
+                <span>Samki: <span className="font-bold text-purple-600">- {fmt(filteredSamkiTotal)}</span></span>
               </div>
               <span className="font-semibold text-gray-500">
                 Total: <span className="text-red-500 font-bold">{fmt(total)}</span>
