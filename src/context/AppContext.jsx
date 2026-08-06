@@ -33,9 +33,16 @@ async function diffSync(table, curr, prevRef, orgId) {
 
   const toUpsert = curr.filter(item => {
     const old = prevById.get(item.id)
-    // Fast comparison: check if item changed by comparing _synced timestamp + key fields
-    // Only upsert if missing or if _synced is missing (unsync'd changes)
-    return !old || !old._synced || !item._synced || item._synced !== old._synced
+    // Reference-equality check: every update site in this app uses immutable
+    // patterns (`{ ...i, field: x }` or `.map(i => cond ? {...} : i)`), so an
+    // item that actually changed is always a *new* object reference, while
+    // untouched items keep the exact same reference they had in `prev`. This
+    // needs no cooperation from callers (unlike the old _synced-timestamp
+    // check below, which silently dropped any update that forgot to reset
+    // _synced -- e.g. editing an invoice's amount, voiding it, editing a
+    // customer or payment, or the AI chat's payment registration all wrote
+    // the change to local state only and never reached Supabase).
+    return !old || old !== item
   })
   const toDelete = prev.filter(item => !currIds.has(item.id))
 

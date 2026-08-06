@@ -614,7 +614,11 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     // Update state in background
     setTimeout(() => {
       if (isEdit) {
-        setInvoices(prev => prev.map(i => i.id === initialData.id ? { ...i, ...payload } : i))
+        // _synced: null forces diffSync (AppContext) to detect the change and
+        // push it to Supabase -- otherwise its fast-path comparison sees an
+        // unchanged _synced timestamp and silently skips the upsert, so the
+        // edit only lives in local state until the next reload reverts it.
+        setInvoices(prev => prev.map(i => i.id === initialData.id ? { ...i, ...payload, _synced: null } : i))
         logActivity(`Përditësoi faturën ${initialData.id} — ${form.customer} €${total}`, 'Faturat')
       } else {
         const newId = generateNextInvoiceId()
