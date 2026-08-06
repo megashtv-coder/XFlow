@@ -330,7 +330,11 @@ export default function Subscriptions() {
      (deri sa fatura tjetër e rinovimit të krijojë datë të re njoftimi) */
   const handleMarkSent = useCallback((invId) => {
     setInvoices(prev => prev.map(i =>
-      i.id === invId ? { ...i, renewalReminderSentAt: new Date().toISOString() } : i
+      // _synced: null forces diffSync to detect the change and push it to
+      // Supabase -- without it, the fast-path comparison in AppContext's
+      // diffSync sees an unchanged _synced timestamp and silently skips the
+      // upsert, so the mark would only live in local state until refresh.
+      i.id === invId ? { ...i, renewalReminderSentAt: new Date().toISOString(), _synced: null } : i
     ))
     showToast?.('U shënua si njoftuar', 'success')
   }, [setInvoices, showToast])
