@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Eye, EyeOff, AlertCircle, Zap } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 
 export default function Login({ users = [], onLogin }) {
   const [username, setUsername] = useState('')
@@ -41,9 +41,7 @@ export default function Login({ users = [], onLogin }) {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center text-white">
-            <Zap size={20} strokeWidth={2.5} />
-          </div>
+          <img src="/logo.png" alt="X-Flow" className="w-10 h-10 flex-shrink-0 object-contain" />
           <div>
             <p className="text-base font-bold text-gray-900">X-Flow</p>
             <p className="text-xs text-gray-400">Menaxhimi Financiar</p>

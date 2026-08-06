@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, ChevronRight, X, Bell,
-  Truck, TrendingUp, ChevronLeft, UserCog, LogOut, MessageSquare, CheckSquare,
+  Truck, ChevronLeft, UserCog, LogOut, MessageSquare, CheckSquare,
   Zap,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
@@ -94,9 +94,7 @@ export default function Sidebar() {
       `}>
         {/* Logo + Collapse Button */}
         <div className={`flex items-center border-b border-gray-100 dark:border-gray-800 h-12 sm:h-14 flex-shrink-0 dark:border-gray-700 ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2 sm:gap-3 px-3 sm:px-4'}`}>
-          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center text-white flex-shrink-0 shadow-sm">
-            <TrendingUp size={14} strokeWidth={2.5} />
-          </div>
+          <img src="/logo.png" alt="X-Flow" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 object-contain" />
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
               <div className="text-xs sm:text-sm font-black text-gray-900 dark:text-gray-100 leading-none tracking-tight dark:text-gray-50">X-Flow</div>
