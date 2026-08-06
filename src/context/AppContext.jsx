@@ -274,16 +274,41 @@ export function AppProvider({ children }) {
       return
     }
 
-    // Helper: merr TË GJITHA rreshtat duke paginuar (Supabase kthen max 1000 pa range)
+    // Helper: merr TË GJITHA rreshtat duke paginuar (Supabase kthen max 1000 pa range).
+    // Faqja e parë kërkohet me count 'exact', kështu që dimë menjëherë sa faqe
+    // të tjera duhen dhe i kërkojmë TË GJITHA paralelisht (jo njëra pas tjetrës) --
+    // kjo është pjesa kryesore që bënte ngarkimin fillestar të ngadaltë me tabela
+    // të mëdha (p.sh. faturat/pagesat me mijëra rreshta = shumë faqe sekuenciale).
     const fetchAll = async (table, col = 'id,data') => {
       const PAGE = 1000
-      let from = 0
-      let all  = []
+      const first = await supabase.from(table).select(col, { count: 'exact' }).range(0, PAGE - 1)
+      if (first.error) return { data: [] }
+      let all = first.data || []
+      if (all.length < PAGE) return { data: all } // u mbaru në faqen e parë
+
+      if (typeof first.count === 'number') {
+        const remainingPages = Math.ceil((first.count - PAGE) / PAGE)
+        if (remainingPages > 0) {
+          const requests = []
+          for (let p = 1; p <= remainingPages; p++) {
+            const from = p * PAGE
+            requests.push(supabase.from(table).select(col).range(from, from + PAGE - 1))
+          }
+          const results = await Promise.all(requests)
+          for (const r of results) {
+            if (!r.error && r.data?.length) all = all.concat(r.data)
+          }
+        }
+        return { data: all }
+      }
+
+      // Fallback nëse count s'është i disponueshëm -- sekuencial si më parë,
+      // për të mos rrezikuar mos-marrjen e ndonjë rreshti.
+      let from = PAGE
       while (true) {
-        const { data, error } = await supabase
-          .from(table).select(col).range(from, from + PAGE - 1)
+        const { data, error } = await supabase.from(table).select(col).range(from, from + PAGE - 1)
         if (error || !data?.length) break
-        all  = all.concat(data)
+        all = all.concat(data)
         if (data.length < PAGE) break
         from += PAGE
       }
