@@ -1195,6 +1195,12 @@ export default function Invoices() {
     navigate(path)
   }, [navigate])
 
+  // Paginated slice of `sorted` -- used by both the default table view and the
+  // split-preview left rail below. Without this, opening a preview used to
+  // render an InvoiceListCard for every invoice matching the current filter
+  // (thousands on real data) instead of just the current page, which is what
+  // made clicking an invoice take several seconds to open.
+  const paged = sorted.slice((paginationPage - 1) * perPage, paginationPage * perPage)
 
   /* ── SPLIT LAYOUT (when a preview is selected) ── */
   if (preview) {
@@ -1265,10 +1271,10 @@ export default function Invoices() {
           </div>
 
           <div className="flex-1 overflow-y-auto">
-            {sorted.length === 0 ? (
+            {paged.length === 0 ? (
               <p className="text-xs text-gray-400 text-center py-8 dark:text-gray-500">Asnjë faturë nuk u gjet</p>
             ) : (
-              sorted.map(inv => (
+              paged.map(inv => (
                 <InvoiceListCard
                   key={inv.id}
                   inv={inv}
@@ -1279,6 +1285,8 @@ export default function Invoices() {
               ))
             )}
           </div>
+
+          <Pagination page={paginationPage} total={filtered.length} perPage={perPage} onChange={setPaginationPage}/>
         </div>
 
         {/* Right: invoice side panel */}
@@ -1357,7 +1365,6 @@ export default function Invoices() {
   }
 
   /* ── DEFAULT LAYOUT (full-width table) ── */
-  const paged = sorted.slice((paginationPage - 1) * perPage, paginationPage * perPage)
 
   /* Calculate stats - based on filtered invoices */
   const pendingValue = filtered
