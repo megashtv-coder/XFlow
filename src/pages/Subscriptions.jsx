@@ -116,6 +116,7 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, onMarkSent }) 
 const Section = memo(function Section({ title, color, items, today, onMarkSent, customerMap, itemsPerPage = 30 }) {
   const { fmt } = useApp()
   const [page, setPage] = useState(1)
+  const [openDropdown, setOpenDropdown] = useState(null)
 
   if (!items.length) return null
 
@@ -148,7 +149,6 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
       {paginatedItems.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
           {paginatedItems.map(inv => {
-            const [openDropdown, setOpenDropdown] = useState(null)
             const phone = getPhone(inv.customer)
             const msg = encodeURIComponent(`Përshëndetje!\nAbonimit juaj skadon më ${inv.subscriptionExpiry}.\nJu lutem, rinovoni për të vazhduar shërbimin.\nFaleminderit!`)
             const daysLeft = inv.notifyDate
