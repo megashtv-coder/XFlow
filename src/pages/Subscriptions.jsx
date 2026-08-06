@@ -1,5 +1,5 @@
-import { useState, memo, useMemo } from 'react'
-import { Bell, MessageCircle, Send, Calendar, CheckCircle2 } from 'lucide-react'
+import { useState, memo, useMemo, useCallback } from 'react'
+import { Bell, MessageCircle, Send, Calendar, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 
@@ -19,18 +19,8 @@ function buildRenewalMsg(inv) {
   return `Pershendetje ${firstName}!\nDeshironim t'ju kujtojme se abonimi juaj per TV skadon me date ${formatDate(inv.subscriptionExpiry)}.\nJu lutem na kontaktoni per rinovim.\nFaleminderit!\nMe respekt, PREDATOR - MEGA SH TV`
 }
 
-/* Çelësi i localStorage ku ruajmë { invId: 'YYYY-MM-DD' } */
-const LS_KEY = 'xflow_wa_sent'
-
-function getSentMap() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}') } catch { return {} }
-}
-function markSent(invId, date) {
-  const m = getSentMap(); m[invId] = date
-  localStorage.setItem(LS_KEY, JSON.stringify(m))
-}
 /* ── Single row card ── */
-const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
+const SubRow = memo(function SubRow({ inv, phone, urgency, today, onMarkSent }) {
   const { fmt } = useApp()
   const msg = encodeURIComponent(buildRenewalMsg(inv))
 
@@ -81,23 +71,12 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
         </div>
       </td>
 
-      {/* Statusi i dërgimit */}
-      <td className="table-td">
-        {sentToday ? (
-          <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded-full">
-            <CheckCircle2 size={11} /> Dërguar sot
-          </span>
-        ) : (
-          <span className="text-[11px] text-gray-300">—</span>
-        )}
-      </td>
-
       {/* Vlera */}
       <td className="table-td">
         <span className="font-bold text-gray-800 dark:text-gray-100">{fmt(inv.amount)}</span>
       </td>
 
-      {/* Kontakto manualisht */}
+      {/* Veprime */}
       <td className="table-td">
         <div className="flex items-center justify-end gap-1.5 flex-wrap">
           {phone ? (
@@ -105,21 +84,28 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
               <a
                 href={`https://wa.me/${phone}?text=${msg}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold rounded-lg hover:bg-green-100 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/40 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors whitespace-nowrap"
               >
                 <MessageCircle size={13} /> WA
               </a>
               <a
                 href={`https://t.me/+${phone}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-50 border border-sky-200 text-sky-700 text-xs font-semibold rounded-lg hover:bg-sky-100 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-900/40 text-sky-700 dark:text-sky-400 text-xs font-semibold rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors whitespace-nowrap"
               >
                 <Send size={13} /> TG
               </a>
             </>
           ) : (
-            <span className="text-xs text-gray-300 italic">Pa numër</span>
+            <span className="text-xs text-gray-300 dark:text-gray-600 italic">Pa numër</span>
           )}
+          <button
+            onClick={() => onMarkSent(inv.id)}
+            title="Hiqe nga lista — e keni njoftuar tashmë këtë klient"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/40 transition-colors whitespace-nowrap"
+          >
+            <CheckCircle2 size={13} /> Njoftuar
+          </button>
         </div>
       </td>
     </tr>
@@ -127,7 +113,7 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, sentToday }) {
 })
 
 /* ── Section block ── */
-const Section = memo(function Section({ title, color, items, today, sentIds, customerMap, itemsPerPage = 30 }) {
+const Section = memo(function Section({ title, color, items, today, onMarkSent, customerMap, itemsPerPage = 30 }) {
   const { fmt } = useApp()
   const [page, setPage] = useState(1)
 
@@ -188,36 +174,42 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
                   {/* Col 3: Contact - Dropdown */}
                   <div className="relative flex-shrink-0">
                     <button
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white transition-all dark:text-gray-300"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-all"
                       onClick={() => setOpenDropdown(openDropdown === inv.id ? null : inv.id)}
                     >
                       ⋮
                     </button>
 
                     {/* Dropdown Menu */}
-                    {openDropdown === inv.id && phone && (
-                      <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
-                        <a
-                          href={`https://wa.me/${phone}?text=${msg}`}
-                          target="_blank" rel="noopener noreferrer"
-                          className="w-full text-left px-3 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2 border-b"
-                          onClick={() => setOpenDropdown(null)}
+                    {openDropdown === inv.id && (
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
+                        {phone && (
+                          <>
+                            <a
+                              href={`https://wa.me/${phone}?text=${msg}`}
+                              target="_blank" rel="noopener noreferrer"
+                              className="w-full text-left px-3 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+                              onClick={() => setOpenDropdown(null)}
+                            >
+                              <MessageCircle size={14}/> WhatsApp
+                            </a>
+                            <a
+                              href={`https://t.me/+${phone}`}
+                              target="_blank" rel="noopener noreferrer"
+                              className="w-full text-left px-3 py-2 text-sm text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+                              onClick={() => setOpenDropdown(null)}
+                            >
+                              <Send size={14}/> Telegram
+                            </a>
+                          </>
+                        )}
+                        <button
+                          className="w-full text-left px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-2"
+                          onClick={() => { setOpenDropdown(null); onMarkSent(inv.id) }}
                         >
-                          <MessageCircle size={14}/> WhatsApp
-                        </a>
-                        <a
-                          href={`https://t.me/+${phone}`}
-                          target="_blank" rel="noopener noreferrer"
-                          className="w-full text-left px-3 py-2 text-sm text-sky-600 hover:bg-sky-50 flex items-center gap-2"
-                          onClick={() => setOpenDropdown(null)}
-                        >
-                          <Send size={14}/> Telegram
-                        </a>
+                          <CheckCircle2 size={14}/> Njoftuar
+                        </button>
                       </div>
-                    )}
-
-                    {!phone && (
-                      <span className="text-xs text-gray-300">—</span>
                     )}
                   </div>
                 </div>
@@ -256,9 +248,8 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
                 <th className="table-th">Klienti</th>
                 <th className="table-th">Skadon</th>
                 <th className="table-th">Njoftim</th>
-                <th className="table-th">Statusi</th>
                 <th className="table-th">Vlera</th>
-                <th className="table-th text-right">Kontakto</th>
+                <th className="table-th text-right">Veprime</th>
               </tr>
             </thead>
             <tbody>
@@ -269,7 +260,7 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
                   phone={getPhone(inv.customer)}
                   urgency={urgency}
                   today={today}
-                  sentToday={sentIds.has(inv.id)}
+                  onMarkSent={onMarkSent}
                 />
               ))}
             </tbody>
@@ -305,17 +296,19 @@ const Section = memo(function Section({ title, color, items, today, sentIds, cus
    Main page
 ══════════════════════════════════════════════════════════ */
 export default function Subscriptions() {
-  const { invoices, customers } = useApp()
+  const { invoices, customers, setInvoices, showToast } = useApp()
+  const [showInfo, setShowInfo] = useState(false)
 
   const today  = new Date().toISOString().slice(0, 10)
   const week7  = addDays(today, 7)
 
   const customerMap = useMemo(() => new Map(customers.map(c => [c.name, c])), [customers])
 
-  /* Vetëm abonimi me notifyDate nga Korriku e tutje */
+  /* Vetëm abonimi me notifyDate nga Korriku e tutje, dhe që s'janë shënuar
+     ende si të njoftuar (as automatikisht nga cron-i, as manualisht këtu) */
   const { withNotify, urgent, thisWeek, future } = useMemo(() => {
     const notified = invoices
-      .filter(i => i.notifyDate && i.notifyDate >= AUTO_FROM)
+      .filter(i => i.notifyDate && i.notifyDate >= AUTO_FROM && !i.renewalReminderSentAt)
       .sort((a, b) => a.notifyDate.localeCompare(b.notifyDate))
     return {
       withNotify: notified,
@@ -325,15 +318,6 @@ export default function Subscriptions() {
     }
   }, [invoices, today, week7])
 
-  /* Gjurmim — cilët janë dërguar sot (vetëm për dërgime manuale nga kjo faqe;
-     dërgimet automatike ndodhin server-side tani, jo këtu) */
-  const [sentIds] = useState(() => {
-    const m = getSentMap()
-    return new Set(Object.keys(m).filter(id => m[id] === today))
-  })
-
-  const getPhone = name => cleanPhone(customerMap.get(name)?.phone || '')
-
   /* Njoftimet dërgohen automatikisht një herë në ditë nga një cron job
      server-side (api/cron/send-renewal-reminders.js), vetëm për abonimet
      me datë njoftimi pikërisht sot — jo për backlog-un e vjetër. Kjo faqe
@@ -341,10 +325,15 @@ export default function Subscriptions() {
      "urgent" backlog-un e vjetër menjëherë sapo dikush ta hapte faqen). */
 
   const totalPending = urgent.length
-  const unsent       = useMemo(() =>
-    urgent.filter(i => !sentIds.has(i.id) && getPhone(i.customer)).length,
-    [urgent, sentIds, customerMap]
-  )
+
+  /* Shëno një njoftim si të dërguar/kryer -- e heq nga lista përgjithmonë
+     (deri sa fatura tjetër e rinovimit të krijojë datë të re njoftimi) */
+  const handleMarkSent = useCallback((invId) => {
+    setInvoices(prev => prev.map(i =>
+      i.id === invId ? { ...i, renewalReminderSentAt: new Date().toISOString() } : i
+    ))
+    showToast?.('U shënua si njoftuar', 'success')
+  }, [setInvoices, showToast])
 
   return (
     <div>
@@ -371,21 +360,31 @@ export default function Subscriptions() {
         </div>
       </div>
 
-      {/* Info: automation runs server-side now, not from this page */}
-      <div className="mb-5 bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <p className="text-sm font-bold text-blue-800 mb-1">🔔 Njoftimet dërgohen automatikisht çdo ditë</p>
-        <p className="text-xs text-blue-700">
-          Një herë në ditë sistemi dërgon vetë një mesazh WhatsApp për abonimet që skadojnë pas 7 ditësh (vetëm ditën kur bie data e njoftimit — jo për faturat e vjetra në listën më poshtë). Nga kjo faqe mund të dërgosh edhe manualisht me butonat WA/TG te çdo rresht.
-        </p>
-        <div className="mt-2 bg-blue-100 rounded-lg p-2.5 text-xs text-blue-900">
-          <p className="font-semibold mb-1">Konfigurimi (WhatsApp Cloud API, nëse s'është bërë ende):</p>
-          <ol className="space-y-0.5 list-decimal list-inside">
-            <li>Shko te <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">developers.facebook.com</a>, krijo një Business App, shto produktin "WhatsApp" dhe lidh numrin</li>
-            <li>Krijo një template mesazhi (kategoria "Utility", 2 parametra: emri dhe data e skadimit) dhe prit miratimin nga Meta</li>
-            <li>Merr <strong>Phone Number ID</strong> dhe një <strong>access token të përhershëm</strong> (Business Settings → System Users)</li>
-            <li>Shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>WHATSAPP_PHONE_NUMBER_ID</strong>, <strong>WHATSAPP_ACCESS_TOKEN</strong>, <strong>WHATSAPP_TEMPLATE_NAME</strong>, pastaj redeploy</li>
-          </ol>
-        </div>
+      {/* Info: automation runs server-side now, not from this page -- collapsible, off by default */}
+      <div className="mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/40 rounded-xl overflow-hidden">
+        <button
+          onClick={() => setShowInfo(v => !v)}
+          className="w-full flex items-center justify-between gap-2 p-4 text-left"
+        >
+          <p className="text-sm font-bold text-blue-800 dark:text-blue-300">🔔 Njoftimet dërgohen automatikisht çdo ditë</p>
+          {showInfo ? <ChevronUp size={16} className="text-blue-500 flex-shrink-0" /> : <ChevronDown size={16} className="text-blue-500 flex-shrink-0" />}
+        </button>
+        {showInfo && (
+          <div className="px-4 pb-4">
+            <p className="text-xs text-blue-700 dark:text-blue-300/80">
+              Një herë në ditë sistemi dërgon vetë një mesazh WhatsApp për abonimet që skadojnë pas 7 ditësh (vetëm ditën kur bie data e njoftimit — jo për faturat e vjetra në listën më poshtë). Nga kjo faqe mund të dërgosh edhe manualisht me butonat WA/TG te çdo rresht, ose ta shënosh si "Njoftuar" që të hiqet nga lista.
+            </p>
+            <div className="mt-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2.5 text-xs text-blue-900 dark:text-blue-200">
+              <p className="font-semibold mb-1">Konfigurimi (WhatsApp Cloud API, nëse s'është bërë ende):</p>
+              <ol className="space-y-0.5 list-decimal list-inside">
+                <li>Shko te <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">developers.facebook.com</a>, krijo një Business App, shto produktin "WhatsApp" dhe lidh numrin</li>
+                <li>Krijo një template mesazhi (kategoria "Utility", 2 parametra: emri dhe data e skadimit) dhe prit miratimin nga Meta</li>
+                <li>Merr <strong>Phone Number ID</strong> dhe një <strong>access token të përhershëm</strong> (Business Settings → System Users)</li>
+                <li>Shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>WHATSAPP_PHONE_NUMBER_ID</strong>, <strong>WHATSAPP_ACCESS_TOKEN</strong>, <strong>WHATSAPP_TEMPLATE_NAME</strong>, pastaj redeploy</li>
+              </ol>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Summary stat cards */}
@@ -393,9 +392,6 @@ export default function Subscriptions() {
         <div className="stat-card !border-l-4 !border-l-red-400">
           <p className="text-3xl font-bold text-red-600">{urgent.length}</p>
           <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Duhen kontaktuar sot</p>
-          {unsent > 0 && (
-            <p className="text-[11px] text-amber-500 mt-1">{unsent} ende pa dërguar</p>
-          )}
         </div>
         <div className="stat-card !border-l-4 !border-l-amber-400">
           <p className="text-3xl font-bold text-amber-500">{thisWeek.length}</p>
@@ -410,20 +406,19 @@ export default function Subscriptions() {
       {/* Empty state */}
       {withNotify.length === 0 ? (
         <div className="card flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
-            <Bell size={28} className="text-blue-200" />
+          <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4">
+            <CheckCircle2 size={28} className="text-emerald-400" />
           </div>
-          <p className="text-base font-semibold text-gray-500 mb-1 dark:text-gray-400">Nuk ka njoftime të konfigurura</p>
+          <p className="text-base font-semibold text-gray-500 mb-1 dark:text-gray-400">Gjithçka është e rregullt</p>
           <p className="text-sm text-gray-400 max-w-xs dark:text-gray-500">
-            Njoftime automatike aktivizohen vetëm për faturat me datë njoftimi nga{' '}
-            <strong>1 Korriku 2026</strong> e tutje.
+            Nuk ka asnjë klient që pret njoftim tani. Njoftime të reja shfaqen automatikisht sipas datës së skadimit të abonimit.
           </p>
         </div>
       ) : (
         <>
-          <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgent}   today={today} sentIds={sentIds} customerMap={customerMap} />
-          <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeek} today={today} sentIds={sentIds} customerMap={customerMap} />
-          <Section title="Ardhshme"                             color="blue"  items={future}   today={today} sentIds={sentIds} customerMap={customerMap} />
+          <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgent}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+          <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeek} today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+          <Section title="Ardhshme"                             color="blue"  items={future}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
         </>
       )}
     </div>
