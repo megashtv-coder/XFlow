@@ -295,6 +295,35 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* ── Shitje sipas muajit ── */}
+      <div className="card">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700">
+          <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Shitje sipas muajit — 12 muaj</p>
+          <div className="flex flex-wrap gap-3 text-[11px] text-gray-400 dark:text-gray-500">
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}/>Shitje {thisYear}</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-gray-200 inline-block"/>Shitje {prevYear}</span>
+          </div>
+        </div>
+        <div className="px-2 py-4">
+          <ResponsiveContainer width="100%" height={220}>
+            <ComposedChart data={salesComparison} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+              <defs>
+                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#818cf8" stopOpacity={1} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000 ? v/1000+'k' : v} />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
+              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="#6366f1" radius={[3,3,0,0]} maxBarSize={22} />
+              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#cbd5e1" radius={[3,3,0,0]} maxBarSize={22} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       {/* ── Grafiku i fluksit + Shpenzime sipas kategorisë ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
@@ -388,35 +417,6 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* ── Shitje sipas muajit ── */}
-      <div className="card">
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700">
-          <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Shitje sipas muajit — 12 muaj</p>
-          <div className="flex flex-wrap gap-3 text-[11px] text-gray-400 dark:text-gray-500">
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm" style={{ background: 'linear-gradient(135deg, #6366f1, #818cf8)' }}/>Shitje {thisYear}</span>
-            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-gray-200 inline-block"/>Shitje {prevYear}</span>
-          </div>
-        </div>
-        <div className="px-2 py-4">
-          <ResponsiveContainer width="100%" height={220}>
-            <ComposedChart data={salesComparison} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
-              <defs>
-                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#818cf8" stopOpacity={1} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000 ? v/1000+'k' : v} />
-              <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
-              <Bar dataKey="sales"     name={`Shitje ${thisYear}`} fill="#6366f1" radius={[3,3,0,0]} maxBarSize={22} />
-              <Bar dataKey="salesPrev" name={`Shitje ${prevYear}`} fill="#cbd5e1" radius={[3,3,0,0]} maxBarSize={22} />
-            </ComposedChart>
-          </ResponsiveContainer>
         </div>
       </div>
 
