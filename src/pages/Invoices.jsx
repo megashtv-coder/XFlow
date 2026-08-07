@@ -1615,7 +1615,7 @@ export default function Invoices() {
         </div>
       )}
 
-      {/* Filters — kërkimi majtas, statusi si tabs, tipi si dropdown, gjithçka në një rresht */}
+      {/* Filters — kërkimi majtas, statusi dhe tipi si dropdown, gjithçka në një rresht */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 mb-4">
         <div className="flex flex-wrap items-center gap-2">
 
@@ -1641,29 +1641,19 @@ export default function Invoices() {
             )}
           </div>
 
-          {/* Status tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {[
-              { key: 'all',     label: 'Të gjitha' },
-              { key: 'paid',    label: 'Paguar' },
-              { key: 'pending', label: 'Pritje' },
-              { key: 'overdue', label: 'Vonuar' },
-              { key: 'draft',   label: 'Draft' },
-              { key: 'void',    label: 'Void' },
-            ].map(s => (
-              <button
-                key={s.key}
-                onClick={() => { setStatus(s.key); setPaginationPage(1) }}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap ${
-                  statusFilter === s.key
-                    ? 'bg-gray-900 dark:bg-red-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
+          {/* Status — dropdown */}
+          <select
+            className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+            value={statusFilter}
+            onChange={e => { setStatus(e.target.value); setPaginationPage(1) }}
+          >
+            <option value="all">Të gjitha</option>
+            <option value="paid">Paguar</option>
+            <option value="pending">Pritje</option>
+            <option value="overdue">Vonuar</option>
+            <option value="draft">Draft</option>
+            <option value="void">Void</option>
+          </select>
 
           {/* Type + per-page — dropdown, shtyhen në skaj djathtas */}
           <div className="flex items-center gap-2 ml-auto">
