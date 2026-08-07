@@ -1655,8 +1655,8 @@ export default function Invoices() {
             <option value="void">Void</option>
           </select>
 
-          {/* Type + per-page — dropdown, shtyhen në skaj djathtas */}
-          <div className="flex items-center gap-2 ml-auto">
+          {/* Type + per-page — dropdown */}
+          <div className="flex items-center gap-2">
             <select
               className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
               value={typeFilter}
