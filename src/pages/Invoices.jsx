@@ -307,9 +307,9 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
       </button>
 
       {isOpen && (
-        <div className="absolute w-48 bg-white border border-gray-200 rounded-lg shadow-2xl z-[9999] pointer-events-auto top-full right-0 mt-1 dark:bg-gray-800 dark:border-gray-700">
+        <div className="absolute w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] pointer-events-auto top-full right-0 mt-1.5 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
           <button
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 flex items-center gap-2 border-b border-gray-100 dark:text-gray-200 dark:border-gray-700"
+            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/40"
             onClick={e => {
               e.stopPropagation()
               navigate(`invoices:${inv.id}:edit`)
@@ -323,7 +323,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://wa.me/${rawPhone}?text=${msg}`}
               target="_blank" rel="noopener noreferrer"
-              className={`block w-full text-left px-4 py-2 text-sm hover:bg-green-50 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 ${isOverdue ? 'text-orange-600' : 'text-green-600'}`}
+              className={`block w-full text-left px-3.5 py-2 text-[13px] font-medium hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 ${isOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}
               onClick={handleWhatsAppReminder}
             >
               <MessageCircle size={14}/> Pagesa WA {isOverdue && '🔔'}
@@ -334,7 +334,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://t.me/+${rawPhone}`}
               target="_blank" rel="noopener noreferrer"
-              className="block w-full text-left px-4 py-2 text-sm text-sky-600 hover:bg-sky-50 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
               onClick={e => {
                 e.stopPropagation()
                 setIsOpen(false)
@@ -348,7 +348,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://wa.me/${rawPhone}?text=${encodeURIComponent(buildInvoiceMsg(inv))}`}
               target="_blank" rel="noopener noreferrer"
-              className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
               onClick={handleWhatsAppInvoice}
             >
               <FileText size={14}/> Dërgo faturën WA
@@ -357,7 +357,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
 
           {(inv.status === 'pending' || inv.status === 'overdue') && (
             <button
-              className="w-full text-left px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
               onClick={e => {
                 e.stopPropagation()
                 setModal(<PaymentModal invoice={inv} onClose={closeModal}/>)
@@ -369,7 +369,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
           )}
 
           <button
-            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
             onClick={e => {
               e.stopPropagation()
               setDeletingInvoiceId(inv.id)
@@ -1374,12 +1374,20 @@ export default function Invoices() {
     .filter(i => i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today))
     .reduce((sum, i) => sum + (i.amount || 0), 0)
 
+  // Counts for the KPI card badges -- same predicates as above, just .length
+  const pendingInvoicesCount = filtered.filter(i => i.status === 'pending').length
+  const overdueInvoicesCount = filtered.filter(i => i.status === 'overdue' || (i.status === 'pending' && i.due && i.due < today)).length
+
   // Calculate total unpaid invoices for resellers from filtered data
   const sellerInvoices = filtered.filter(i => {
     const customer = customerMap.get(i.customer)
     return customer?.type === 'reseller' && (i.status === 'pending' || i.status === 'overdue')
   })
   const totalUnpaidSellers = sellerInvoices.reduce((sum, i) => sum + (i.amount || 0), 0)
+
+  // Paid invoices -- new stat card, doesn't affect any existing calculation
+  const paidInvoicesList = filtered.filter(i => i.status === 'paid')
+  const paidValue = paidInvoicesList.reduce((sum, i) => sum + (i.amount || 0), 0)
 
   // If in form mode, show only the form
   if (isFormMode) {
@@ -1389,35 +1397,21 @@ export default function Invoices() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col gap-3 mb-6">
+      <div className="flex flex-col gap-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Faturat</h2>
-            <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{invoices.length} fatura gjithsej</p>
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Faturat</h2>
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              {invoices.length.toLocaleString('de-DE')} fatura
+            </span>
           </div>
 
-          {/* Stats in the middle - Card style for desktop */}
-          <div className="hidden md:flex items-center gap-3">
-            <div className="bg-amber-50 rounded-lg p-3 border border-amber-100 min-w-max">
-              <p className="text-xs text-amber-600 font-medium">Në pritje</p>
-              <p className="text-base font-bold text-amber-700">{fmt(pendingValue)}</p>
-            </div>
-            <div className="bg-red-50 rounded-lg p-3 border border-red-100 min-w-max">
-              <p className="text-xs text-red-600 font-medium">Të vonuara</p>
-              <p className="text-base font-bold text-red-700">{fmt(overdueValue)}</p>
-            </div>
-            <div className="bg-red-50 rounded-lg p-3 border border-red-100 min-w-max">
-              <p className="text-xs text-red-500 font-medium">Papaguara Sellers</p>
-              <p className="text-base font-bold text-red-600">{fmt(totalUnpaidSellers)}</p>
-            </div>
-          </div>
-
-        {/* Action buttons */}
+          {/* Action buttons */}
           <div className="flex items-center gap-1.5 flex-wrap">
             {/* Export - Icon only - Hidden on mobile */}
             <button
               onClick={() => setExportOpen(true)}
-              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               title="Eksporto faturat"
             >
               <Download size={16}/>
@@ -1425,7 +1419,7 @@ export default function Invoices() {
 
             {/* Import - Icon only - Hidden on mobile */}
             <button
-              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setImportOpen(true)}
               title="Importo Excel"
             >
@@ -1435,7 +1429,7 @@ export default function Invoices() {
             {/* Delete selected - Show only when items selected */}
             {selected.size > 0 && (
               <button
-                className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                 onClick={() => setConfirmDelAll(true)}
                 title={`Fshi ${selected.size}`}
               >
@@ -1443,30 +1437,61 @@ export default function Invoices() {
               </button>
             )}
 
-            {/* New Invoice - Primary button with + icon - Hidden on mobile (see FAB below) */}
+            {/* New Invoice - Primary button - Hidden on mobile (see FAB below) */}
             <button
-              className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg"
+              className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-xs shadow-md shadow-red-500/20"
               onClick={() => navigateWithClearPreview('invoices:create')}
               title="Faturë e re"
             >
-              +
+              + Krijo Faturë
             </button>
           </div>
         </div>
 
-        {/* Mobile stats (show on small screens) */}
-        <div className="md:hidden flex gap-2">
-          <div className="flex-1 bg-amber-50 rounded-lg p-3 border border-amber-100">
-            <p className="text-xs text-amber-600 font-medium">Në pritje</p>
-            <p className="text-base font-bold text-amber-700">{fmt(pendingValue)}</p>
+        {/* KPI cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-amber-200/80 dark:border-amber-900/40 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Në pritje</span>
+              <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/40 whitespace-nowrap">
+                {pendingInvoicesCount} fatura
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{fmt(pendingValue)}</p>
+            <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-1">Presin arkëtim brenda afatit</p>
           </div>
-          <div className="flex-1 bg-red-50 rounded-lg p-3 border border-red-100">
-            <p className="text-xs text-red-600 font-medium">Të vonuara</p>
-            <p className="text-base font-bold text-red-700">{fmt(overdueValue)}</p>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-red-200/80 dark:border-red-900/40 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Të vonuara</span>
+              <span className="text-[11px] font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-900/40 whitespace-nowrap">
+                {overdueInvoicesCount} fatura
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{fmt(overdueValue)}</p>
+            <p className="text-[11px] text-red-700 dark:text-red-400 mt-1">Kërkojnë ndjekje urgjente</p>
           </div>
-          <div className="flex-1 bg-red-50 rounded-lg p-3 border border-red-100">
-            <p className="text-xs text-red-500 font-medium">Papaguara Sellers</p>
-            <p className="text-base font-bold text-red-600">{fmt(totalUnpaidSellers)}</p>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-indigo-200/80 dark:border-indigo-900/40 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Papaguara Sellers</span>
+              <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-900/40 whitespace-nowrap">
+                {sellerInvoices.length} seller
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{fmt(totalUnpaidSellers)}</p>
+            <p className="text-[11px] text-indigo-700 dark:text-indigo-400 mt-1">Bilanci i rishitësve</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-emerald-200/80 dark:border-emerald-900/40 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Të paguara</span>
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 whitespace-nowrap">
+                {paidInvoicesList.length.toLocaleString('de-DE')} fatura
+              </span>
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{fmt(paidValue)}</p>
+            <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-1">Likuiduar me sukses</p>
           </div>
         </div>
       </div>
@@ -1566,59 +1591,78 @@ export default function Invoices() {
       )}
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px] dark:bg-gray-800 dark:border-gray-700">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
-            placeholder="Kërko fatura..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPaginationPage(1) }}
-          />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              className="text-gray-400 hover:text-gray-600 flex-shrink-0 cursor-pointer p-0.5 rounded hover:bg-gray-100 transition-colors dark:text-gray-500 dark:hover:text-gray-300"
-              title="Fshi kërkimin"
-            >
-              <X size={14}/>
-            </button>
-          )}
-        </div>
-        <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={statusFilter}
-          onChange={e => { setStatus(e.target.value); setPaginationPage(1) }}
-        >
-          <option value="all">Të gjitha</option>
-          <option value="paid">Paguar</option>
-          <option value="pending">Pritje</option>
-          <option value="overdue">Vonuar</option>
-          <option value="draft">Draft</option>
-          <option value="void">Void</option>
-        </select>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 mb-4 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 
-        <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={typeFilter}
-          onChange={e => { setTypeFilter(e.target.value); setPaginationPage(1) }}
-        >
-          <option value="all">Të gjithë</option>
-          <option value="individual">👤 Klientë</option>
-          <option value="reseller">🔄 Reseller</option>
-        </select>
-        <select
-          className="hidden sm:block bg-white border border-gray-200 rounded-lg px-2.5 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={perPage}
-          onChange={e => { setPerPage(Number(e.target.value)); setPaginationPage(1) }}
-        >
-          <option value={25}>25/faqe</option>
-          <option value={50}>50/faqe</option>
-          <option value={100}>100/faqe</option>
-          <option value={200}>200/faqe</option>
-        </select>
+          {/* Status tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+            {[
+              { key: 'all',     label: 'Të gjitha' },
+              { key: 'paid',    label: 'Paguar' },
+              { key: 'pending', label: 'Pritje' },
+              { key: 'overdue', label: 'Vonuar' },
+              { key: 'draft',   label: 'Draft' },
+              { key: 'void',    label: 'Void' },
+            ].map(s => (
+              <button
+                key={s.key}
+                onClick={() => { setStatus(s.key); setPaginationPage(1) }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap ${
+                  statusFilter === s.key
+                    ? 'bg-gray-900 dark:bg-red-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="w-full sm:w-72 flex items-center gap-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 dark:focus-within:ring-red-900/20 transition-all">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              className="bg-transparent border-none outline-none text-xs text-gray-600 dark:text-gray-300 w-full placeholder-gray-400"
+              placeholder="Kërko me Emër, ID apo Referent..."
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPaginationPage(1) }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0 cursor-pointer p-0.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="Fshi kërkimin"
+              >
+                <X size={14}/>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Type + per-page */}
+        <div className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
+          <select
+            className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+            value={typeFilter}
+            onChange={e => { setTypeFilter(e.target.value); setPaginationPage(1) }}
+          >
+            <option value="all">Të gjithë</option>
+            <option value="individual">👤 Klientë</option>
+            <option value="reseller">🔄 Reseller</option>
+          </select>
+          <select
+            className="hidden sm:block bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+            value={perPage}
+            onChange={e => { setPerPage(Number(e.target.value)); setPaginationPage(1) }}
+          >
+            <option value={25}>25/faqe</option>
+            <option value={50}>50/faqe</option>
+            <option value={100}>100/faqe</option>
+            <option value={200}>200/faqe</option>
+          </select>
+        </div>
       </div>
 
       {/* Mobile Card View - Hidden on sm+ */}
@@ -1674,7 +1718,7 @@ export default function Invoices() {
       )}
 
       {/* Table - Hidden on Mobile */}
-      <div className="card hidden sm:block">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
         {paged.length === 0 ? (
           <EmptyState
             icon={FileText}
@@ -1687,7 +1731,7 @@ export default function Invoices() {
             <div className="overflow-y-auto overflow-x-visible" style={{ maxHeight: 'calc(100vh - 270px)' }}>
               <table className="w-full min-w-[500px]" style={{ position: 'relative' }}>
                 <thead className="sticky top-0 z-10">
-                  <tr className="border-b-2 border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
                     <th className="table-th hidden sm:table-cell">Data</th>
                     {[
                       { key: 'id',       label: 'ID',     cls: 'hidden sm:table-cell' },
@@ -1698,16 +1742,16 @@ export default function Invoices() {
                           onClick={() => toggleSort(col.key)}>
                         <span className="flex items-center gap-1">
                           {col.label}
-                          <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                          <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                         </span>
                       </th>
                     ))}
                     <th className="table-th sm:table-cell lg:table-cell">Skadimi Abonimit</th>
-                    <th className="table-th cursor-pointer select-none hover:text-red-500"
+                    <th className="table-th cursor-pointer select-none hover:text-red-500 text-right"
                         onClick={() => toggleSort('amount')}>
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center justify-end gap-1">
                         Shuma
-                        <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                        <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                       </span>
                     </th>
                     <th className="table-th hidden lg:table-cell">Afati</th>
@@ -1715,7 +1759,7 @@ export default function Invoices() {
                         onClick={() => toggleSort('status')}>
                       <span className="flex items-center gap-1">
                         Statusi
-                        <span className="text-[10px]">{sortField === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                        <span className="text-[10px]">{sortField === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                       </span>
                     </th>
                     <th className="table-th text-right">Veprimet</th>
@@ -1738,10 +1782,12 @@ export default function Invoices() {
                     return (
                       <tr
                         key={inv.id}
-                        className={`hover:bg-red-50/30 transition-colors group ${selected.has(inv.id) ? 'bg-red-100' : ''}`}
+                        className={`hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group ${selected.has(inv.id) ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
                       >
-                        <td className="table-td text-gray-400 hidden sm:table-cell dark:text-gray-500">{formatDate(inv.date)}</td>
-                        <td className="table-td text-gray-700 dark:text-gray-300 text-sm hidden sm:table-cell cursor-pointer dark:text-gray-200" onClick={() => setPreview(inv.id)}>{inv.id}</td>
+                        <td className="table-td font-mono text-gray-400 hidden sm:table-cell dark:text-gray-500">{formatDate(inv.date)}</td>
+                        <td className="table-td hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>
+                          <span className="font-mono font-bold text-xs text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600">{inv.id}</span>
+                        </td>
                         <td className="table-td font-medium text-gray-800 cursor-pointer dark:text-gray-100" onClick={() => setPreview(inv.id)}>
                           <div className="flex items-center gap-1.5">
                             {inv.customer}
@@ -1753,26 +1799,26 @@ export default function Invoices() {
                             )}
                           </div>
                         </td>
-                        <td className="table-td text-gray-600 hidden sm:table-cell text-sm dark:text-gray-300">
+                        <td className="table-td hidden sm:table-cell text-sm">
                           {inv.referent ? (
-                            <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium">
+                            <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-full text-xs font-medium">
                               {inv.referent}
                             </span>
                           ) : (
-                            <span className="text-gray-300 italic text-xs">-</span>
+                            <span className="text-gray-300 dark:text-gray-600 italic text-xs">—</span>
                           )}
                         </td>
-                        <td className="table-td text-red-500 sm:table-cell lg:table-cell text-sm font-medium">
+                        <td className="table-td sm:table-cell lg:table-cell text-sm font-medium">
                           {inv.subscriptionExpiry ? (
-                            <span className="px-2 py-1 bg-red-50 rounded-full text-xs">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded font-mono text-xs">
                               {formatDate(inv.subscriptionExpiry)}
                             </span>
                           ) : (
-                            <span className="text-gray-300 italic text-xs">-</span>
+                            <span className="text-gray-300 dark:text-gray-600 italic text-xs">—</span>
                           )}
                         </td>
-                        <td className="table-td font-bold text-gray-800 dark:text-gray-100">{fmt(inv.amount)}</td>
-                        <td className={`table-td hidden lg:table-cell ${isOverdue ? 'text-red-500 font-semibold' : 'text-gray-400 dark:text-gray-500'}`}>
+                        <td className="table-td font-mono font-bold text-right text-gray-800 dark:text-gray-100">{fmt(inv.amount)}</td>
+                        <td className={`table-td font-mono hidden lg:table-cell ${isOverdue ? 'text-red-500 font-semibold' : 'text-gray-400 dark:text-gray-500'}`}>
                           {formatDate(inv.due)}
                         </td>
                         <td className="table-td"><StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/></td>
