@@ -660,32 +660,51 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
           </div>
 
           <div className="px-6 pb-5">
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden overflow-x-auto">
-              <table className="w-full text-sm border-collapse min-w-[380px]">
-                <thead>
-                  <tr className="bg-red-500 text-white">
-                    <th className="text-center px-3 py-3 w-8 font-bold uppercase text-xs tracking-wide">#</th>
-                    <th className="text-left px-3 py-3 font-bold uppercase text-xs tracking-wide">Artikulli &amp; Përshkrimi</th>
-                    <th className="text-right px-3 py-3 w-16 font-bold uppercase text-xs tracking-wide">Sasia</th>
-                    <th className="text-right px-3 py-3 w-20 font-bold uppercase text-xs tracking-wide">Çmimi</th>
-                    <th className="text-right px-3 py-3 w-24 font-bold uppercase text-xs tracking-wide">Shuma</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inv.items.map((item, i) => (
-                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50/50 dark:border-gray-700 dark:hover:bg-gray-900/40">
-                      <td className="px-3 py-3.5 text-center text-gray-400 text-sm font-mono dark:text-gray-500">{i + 1}</td>
-                      <td className="px-3 py-3.5">
-                        <p className="text-gray-800 font-semibold text-sm dark:text-gray-200">{item.desc}</p>
-                        {item.note && <p className="text-xs text-gray-400 italic mt-0.5 dark:text-gray-500">{item.note}</p>}
-                      </td>
-                      <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{item.qty}</td>
-                      <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{fmt(item.price)}</td>
-                      <td className="px-3 py-3.5 text-right font-bold text-gray-900 text-sm font-mono dark:text-gray-50">{fmt(item.qty * item.price)}</td>
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+              {/* Desktop/tablet: full table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-sm border-collapse min-w-[380px]">
+                  <thead>
+                    <tr className="bg-red-500 text-white">
+                      <th className="text-center px-3 py-3 w-8 font-bold uppercase text-xs tracking-wide">#</th>
+                      <th className="text-left px-3 py-3 font-bold uppercase text-xs tracking-wide">Artikulli &amp; Përshkrimi</th>
+                      <th className="text-right px-3 py-3 w-16 font-bold uppercase text-xs tracking-wide">Sasia</th>
+                      <th className="text-right px-3 py-3 w-20 font-bold uppercase text-xs tracking-wide">Çmimi</th>
+                      <th className="text-right px-3 py-3 w-24 font-bold uppercase text-xs tracking-wide">Shuma</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {inv.items.map((item, i) => (
+                      <tr key={i} className="border-t border-gray-100 hover:bg-gray-50/50 dark:border-gray-700 dark:hover:bg-gray-900/40">
+                        <td className="px-3 py-3.5 text-center text-gray-400 text-sm font-mono dark:text-gray-500">{i + 1}</td>
+                        <td className="px-3 py-3.5">
+                          <p className="text-gray-800 font-semibold text-sm dark:text-gray-200">{item.desc}</p>
+                          {item.note && <p className="text-xs text-gray-400 italic mt-0.5 dark:text-gray-500">{item.note}</p>}
+                        </td>
+                        <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{item.qty}</td>
+                        <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{fmt(item.price)}</td>
+                        <td className="px-3 py-3.5 text-right font-bold text-gray-900 text-sm font-mono dark:text-gray-50">{fmt(item.qty * item.price)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile: stacked cards -- no horizontal scroll needed */}
+              <div className="sm:hidden divide-y divide-gray-100 dark:divide-gray-700">
+                {inv.items.map((item, i) => (
+                  <div key={i} className="px-4 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-900/40">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-gray-800 font-semibold text-sm dark:text-gray-200 min-w-0">{item.desc}</p>
+                      <p className="font-bold text-gray-900 text-sm font-mono dark:text-gray-50 flex-shrink-0">{fmt(item.qty * item.price)}</p>
+                    </div>
+                    {item.note && <p className="text-xs text-gray-400 italic mt-0.5 dark:text-gray-500">{item.note}</p>}
+                    <p className="text-xs text-gray-400 dark:text-gray-500 font-mono mt-1">{item.qty} × {fmt(item.price)}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between">
                 <span className="font-bold text-red-500 dark:text-red-400 uppercase tracking-wide text-sm">Totali</span>
                 <span className="font-black text-gray-900 text-base font-mono dark:text-gray-50">{fmt(inv.amount)}</span>
