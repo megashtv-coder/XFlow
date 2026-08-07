@@ -49,8 +49,8 @@ export function LoadingSkeleton() {
 export function EmptyState({ icon: Icon, title, sub, action }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        <Icon size={28} className="text-gray-300" />
+      <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
+        <Icon size={28} className="text-gray-300 dark:text-gray-500" />
       </div>
       <p className="text-base font-semibold text-gray-500 mb-1 dark:text-gray-400">{title}</p>
       {sub && <p className="text-sm text-gray-400 mb-4 dark:text-gray-500">{sub}</p>}

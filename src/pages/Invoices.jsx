@@ -1615,12 +1615,12 @@ export default function Invoices() {
         </div>
       )}
 
-      {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 mb-4 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Filters — status + tipi + kërkimi, gjithçka në një rresht */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 mb-4">
+        <div className="flex flex-wrap items-center gap-2">
 
           {/* Status tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {[
               { key: 'all',     label: 'Të gjitha' },
               { key: 'paid',    label: 'Paguar' },
@@ -1643,8 +1643,31 @@ export default function Invoices() {
             ))}
           </div>
 
-          {/* Search */}
-          <div className="w-full sm:w-72 flex items-center gap-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 dark:focus-within:ring-red-900/20 transition-all">
+          <div className="w-px self-stretch bg-gray-100 dark:bg-gray-700 hidden sm:block" />
+
+          {/* Type tabs (klientë / reseller) */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {[
+              { key: 'all',        label: 'Të gjithë' },
+              { key: 'individual', label: '👤 Klientë' },
+              { key: 'reseller',   label: '🔄 Reseller' },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => { setTypeFilter(t.key); setPaginationPage(1) }}
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-colors whitespace-nowrap ${
+                  typeFilter === t.key
+                    ? 'bg-gray-900 dark:bg-red-500 text-white'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search — shtyhet në skaj, merr hapësirën e mbetur */}
+          <div className="flex-1 min-w-[180px] flex items-center gap-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 dark:focus-within:ring-red-900/20 transition-all">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
@@ -1664,19 +1687,7 @@ export default function Invoices() {
               </button>
             )}
           </div>
-        </div>
 
-        {/* Type + per-page */}
-        <div className="flex items-center gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
-          <select
-            className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
-            value={typeFilter}
-            onChange={e => { setTypeFilter(e.target.value); setPaginationPage(1) }}
-          >
-            <option value="all">Të gjithë</option>
-            <option value="individual">👤 Klientë</option>
-            <option value="reseller">🔄 Reseller</option>
-          </select>
           <select
             className="hidden sm:block bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
             value={perPage}
