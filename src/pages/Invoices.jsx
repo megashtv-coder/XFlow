@@ -216,8 +216,8 @@ const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onC
     ? Math.round((new Date(inv.due) - Date.now()) / 86_400_000)
     : null
 
-  let dueLabel, dueCls
-  if      (inv.status === 'paid')  { dueLabel = 'PAGUAR';         dueCls = 'text-emerald-600' }
+  let dueLabel, duePillCls
+  if      (inv.status === 'paid')  { dueLabel = 'PAGUAR';         duePillCls = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' }
   else if (inv.status === 'partial') {
     // Shfaq shumin e paguar dhe të mbetur për faturat e paguara pjesërisht
     const paid = inv.paidAmount || 0
@@ -225,38 +225,40 @@ const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onC
     const paidFormatted = Math.round(paid * 100) / 100
     const remainingFormatted = Math.round(remaining * 100) / 100
     dueLabel = `€${paidFormatted} / €${remainingFormatted}`
-    dueCls = 'text-red-500 font-semibold'
+    duePillCls = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
   }
-  else if (inv.status === 'void')  { dueLabel = 'VOID';           dueCls = 'text-gray-400 dark:text-gray-500 line-through' }
-  else if (inv.status === 'draft') { dueLabel = 'DRAFT';          dueCls = 'text-gray-400 dark:text-gray-500' }
-  else if (diff === null)          { dueLabel = '—';              dueCls = 'text-gray-400 dark:text-gray-500' }
-  else if (diff < 0)               { dueLabel = 'VONUAR';         dueCls = 'text-red-500' }
-  else if (diff === 0)             { dueLabel = 'SOT SKADON';     dueCls = 'text-orange-500 font-black' }
-  else if (diff === 1)             { dueLabel = 'NGA 1 DITË';     dueCls = 'text-amber-500' }
-  else                             { dueLabel = `NGA ${diff} DITË`; dueCls = 'text-amber-500' }
+  else if (inv.status === 'void')  { dueLabel = 'VOID';           duePillCls = 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 line-through' }
+  else if (inv.status === 'draft') { dueLabel = 'DRAFT';          duePillCls = 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400' }
+  else if (diff === null)          { dueLabel = '—';              duePillCls = 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500' }
+  else if (diff < 0)               { dueLabel = 'VONUAR';         duePillCls = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' }
+  else if (diff === 0)             { dueLabel = 'SOT SKADON';     duePillCls = 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' }
+  else if (diff === 1)             { dueLabel = 'NGA 1 DITË';     duePillCls = 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' }
+  else                             { dueLabel = `NGA ${diff} DITË`; duePillCls = 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' }
 
   return (
-    <div
-      className={`px-4 py-4 cursor-pointer border-b border-gray-100 transition-all dark:border-gray-700 ${
-        selected
-          ? 'bg-red-50 border-l-[3px] border-l-red-500'
-          : 'hover:bg-gray-50 border-l-[3px] border-l-transparent dark:hover:bg-gray-900/50'
-      }`}
-      onClick={onClick}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <p className="font-semibold text-gray-800 text-base md:text-sm truncate dark:text-gray-100">{inv.customer}</p>
-            {isReseller && (
-              <span className="text-[9px] font-bold px-1 py-0.5 bg-purple-100 text-purple-600 rounded flex-shrink-0">R</span>
-            )}
+    <div className="px-2 pt-1.5">
+      <div
+        className={`p-3 rounded-xl border cursor-pointer transition-colors ${
+          selected
+            ? 'bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-800'
+            : 'bg-gray-50/50 dark:bg-gray-900/30 border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900/60'
+        }`}
+        onClick={onClick}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <p className="font-bold text-gray-900 text-sm truncate dark:text-gray-100">{inv.customer}</p>
+              {isReseller && (
+                <span className="text-[9px] font-bold px-1 py-0.5 bg-purple-100 text-purple-600 rounded flex-shrink-0">R</span>
+              )}
+            </div>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 font-mono">{inv.id} · {formatDate(inv.date)}</p>
           </div>
-          <p className="text-sm md:text-xs text-black dark:text-white mt-0.5">{inv.id} · {formatDate(inv.date)}</p>
-        </div>
-        <div className="text-right flex-shrink-0">
-          <p className="font-bold text-gray-800 text-base md:text-sm dark:text-gray-100">{fmt(inv.amount)}</p>
-          <p className={`text-xs md:text-[10px] font-bold mt-0.5 ${dueCls}`}>{dueLabel}</p>
+          <div className="text-right flex-shrink-0">
+            <p className="font-extrabold text-gray-900 text-sm dark:text-gray-100 font-mono">{fmt(inv.amount)}</p>
+            <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded mt-1 uppercase ${duePillCls}`}>{dueLabel}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -461,19 +463,19 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
     setComment('')
   }
 
-  const TB = 'flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors'
+  const TB = 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-colors'
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
 
       {/* ── Action toolbar ── */}
-      <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-gray-100 bg-white flex-wrap lg:flex-nowrap dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex items-center gap-1.5 px-4 py-3 border-b border-gray-100 bg-white flex-wrap lg:flex-nowrap dark:border-gray-700 dark:bg-gray-800">
         {/* Mobile back button */}
         <button className="md:hidden icon-btn mr-1 text-red-500" onClick={onClose} title="Kthehu">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
-        <div className="flex items-center gap-2 mr-1">
-          <span className="font-bold text-gray-800 text-sm dark:text-gray-100">{inv.id}</span>
+        <div className="flex items-center gap-2.5 mr-1">
+          <span className="font-black text-gray-900 text-base font-mono dark:text-gray-100">{inv.id}</span>
           <StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/>
         </div>
 
@@ -486,7 +488,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
 
         {inv.status === 'draft' && (
           <button
-            className={`${TB} border-blue-200 text-red-500 hover:bg-red-50`}
+            className={`${TB} border-blue-200 text-red-500 hover:bg-red-50 dark:border-blue-900/40 dark:hover:bg-red-900/20`}
             onClick={() => {
               setInvoices(prev => prev.map(i => i.id === inv.id ? { ...i, status: 'pending' } : i))
               showToast('Fatura kaloi në pritje ✓')
@@ -500,7 +502,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
           <a
             href={`https://wa.me/${rawPhone}?text=${msgEncoded}`}
             target="_blank" rel="noopener noreferrer"
-            className={`${TB} ${isOverdue ? 'border-orange-200 text-orange-600 hover:bg-orange-50' : 'border-green-200 text-green-600 hover:bg-green-50'}`}
+            className={`${TB} ${isOverdue ? 'border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-900/40 dark:hover:bg-orange-900/20' : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/40'}`}
           >
             <MessageCircle size={13}/> WhatsApp{isOverdue ? ' 🔔' : ''}
           </a>
@@ -510,7 +512,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
           <a
             href={`https://t.me/+${rawPhone}`}
             target="_blank" rel="noopener noreferrer"
-            className={`${TB} border-sky-200 text-sky-600 hover:bg-sky-50`}
+            className={`${TB} border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 dark:border-sky-900/40 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:bg-sky-900/40`}
           >
             <Send size={13}/> Telegram
           </a>
@@ -518,7 +520,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
 
         {canPay && (
           <button
-            className={`${TB} border-emerald-200 text-emerald-600 hover:bg-emerald-50`}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
             onClick={() => setModal(<PaymentModal invoice={inv} onClose={closeModal}/>)}
           >
             <CreditCard size={13}/> Regjistro Pagesën
@@ -527,7 +529,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
 
         {canVoid && (
           <button
-            className={`${TB} border-amber-200 text-amber-600 hover:bg-amber-50`}
+            className={`${TB} border-gray-200 text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-amber-900/20 dark:hover:text-amber-400`}
             onClick={() => setConfirmVoid(true)}
           >
             <XCircle size={13}/> Void
@@ -535,7 +537,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
         )}
 
         <button
-          className={`${TB} border-red-200 text-red-500 hover:bg-red-50`}
+          className={`${TB} border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900/40 dark:text-red-400 dark:hover:bg-red-900/20`}
           onClick={() => setConfirmDel(true)}
         >
           <Trash2 size={13}/> Fshi
@@ -545,26 +547,26 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
       </div>
 
       {confirmVoid && (
-        <div className="flex items-center gap-3 bg-amber-50 border-b border-amber-100 px-4 py-2 text-xs">
-          <span className="text-amber-700 font-semibold">Dëshiron ta anulosh (Void) këtë faturë?</span>
+        <div className="flex items-center gap-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-900/40 px-4 py-2 text-xs">
+          <span className="text-amber-700 dark:text-amber-400 font-semibold">Dëshiron ta anulosh (Void) këtë faturë?</span>
           <button className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg" onClick={doVoid}>Po</button>
           <button className="px-3 py-1 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50" onClick={() => setConfirmVoid(false)}>Jo</button>
         </div>
       )}
 
       {confirmDel && (
-        <div className="flex items-center gap-3 bg-red-50 border-b border-red-100 px-4 py-2 text-xs">
-          <span className="text-red-700 font-semibold">Fshij përgjithmonë faturën {inv.id}?</span>
+        <div className="flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-900/40 px-4 py-2 text-xs">
+          <span className="text-red-700 dark:text-red-400 font-semibold">Fshij përgjithmonë faturën {inv.id}?</span>
           <button className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg" onClick={doDelete}>Po, fshij</button>
           <button className="px-3 py-1 border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50" onClick={() => setConfirmDel(false)}>Jo</button>
         </div>
       )}
 
       {isOverdue && canContact && (
-        <div className="flex items-center justify-between gap-3 bg-red-50 border-b border-red-100 px-4 py-2">
+        <div className="flex items-center justify-between gap-3 bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-900/40 px-4 py-2">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-red-600">⚠ Fatura ka kaluar afatin e pagesës — {formatDate(inv.due)}</p>
-            <p className="text-[11px] text-red-400 mt-0.5 truncate italic">"{buildReminderMsg(inv).slice(0, 90)}…"</p>
+            <p className="text-xs font-semibold text-red-600 dark:text-red-400">⚠ Fatura ka kaluar afatin e pagesës — {formatDate(inv.due)}</p>
+            <p className="text-[11px] text-red-400 dark:text-red-500 mt-0.5 truncate italic">"{buildReminderMsg(inv).slice(0, 90)}…"</p>
           </div>
           <a
             href={`https://wa.me/${rawPhone}?text=${msgEncoded}`}
@@ -577,48 +579,52 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
       )}
 
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4 dark:bg-gray-900/50">
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-          <div className="text-right px-6 pt-4 pb-2">
-            <h2 className="text-2xl font-light tracking-[0.22em] text-red-600 uppercase">Faturë</h2>
-            <p className="text-xs font-bold text-gray-500 mt-0.5 dark:text-gray-400">Numri i faturës {inv.id}</p>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex justify-end px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700">
+            <div className="text-right">
+              <h2 className="text-3xl font-black tracking-wider text-red-500 font-mono dark:text-red-400">Faturë</h2>
+              <p className="text-xs font-semibold text-gray-500 mt-0.5 font-mono dark:text-gray-400">Numri i faturës {inv.id}</p>
+            </div>
           </div>
 
           {/* Top section: Customer info and Total */}
-          <div className="flex flex-row justify-between gap-2.5 sm:gap-3 px-6 pb-1.5">
-            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-1.5 dark:bg-gray-900/50 dark:border-gray-700">
-              <p className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 dark:text-gray-500">Fatura për</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 pt-5">
+            <div className="flex-1 bg-gray-50 rounded-xl border border-gray-100 p-4 dark:bg-gray-900/50 dark:border-gray-700">
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1 dark:text-gray-500">Fatura për</p>
               <button
                 onClick={() => setSelectedCustomer(custObj)}
-                className="font-bold text-red-600 text-base leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left"
+                className="font-black text-red-600 text-lg leading-tight hover:text-red-800 hover:underline cursor-pointer transition-colors text-left dark:text-red-400 dark:hover:text-red-300"
               >
                 {inv.customer}
               </button>
-              {inv.country && <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{inv.country}</p>}
+              {inv.country && <p className="text-xs text-gray-600 mt-1 dark:text-gray-300">📍 {inv.country}</p>}
               {inv.email   && <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{inv.email}</p>}
-              {custObj?.phone && <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">📞 {custObj.phone}</p>}
-              {custObj?.referredBy && <p className="text-xs text-emerald-600 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
+              {custObj?.phone && <p className="text-xs text-gray-600 font-mono mt-0.5 dark:text-gray-300">📞 {custObj.phone}</p>}
+              {custObj?.referredBy && <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5 font-semibold">👤 Referent: {custObj.referredBy}</p>}
             </div>
-            <div className="flex-1 bg-gray-50 rounded-lg border border-gray-100 p-1.5 dark:bg-gray-900/50 dark:border-gray-700">
-              <p className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 dark:text-gray-500">Totali për pagesë</p>
-              <p className="text-xl font-bold text-gray-800 leading-tight mb-1 dark:text-gray-100">{fmt(inv.amount)}</p>
+            <div className="flex-1 bg-gray-50 rounded-xl border border-gray-100 p-4 flex flex-col justify-between gap-2 dark:bg-gray-900/50 dark:border-gray-700">
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1 dark:text-gray-500">Totali për pagesë</p>
+                <p className="text-3xl font-black text-gray-900 leading-tight mt-1 font-mono dark:text-gray-100">{fmt(inv.amount)}</p>
+              </div>
               <div className="flex items-center gap-2">
                 <StatusBadge status={isOverdue && inv.status !== 'paid' && inv.status !== 'void' ? 'overdue' : inv.status}/>
               </div>
 
               {/* Shfaq shumin e paguar dhe balancën për faturat e paguara pjesërisht */}
               {inv.status === 'partial' && inv.paidAmount > 0 && (
-                <div className="mt-1 p-1 bg-red-50 rounded-lg border border-red-100">
+                <div className="p-2 bg-red-50 rounded-lg border border-red-100 dark:bg-red-900/20 dark:border-red-900/40">
                   <div className="flex items-center justify-between gap-2 text-xs mb-0.5">
-                    <span className="text-red-500 font-semibold text-[11px]">Paguar:</span>
-                    <span className="font-bold text-red-600 text-[11px]">{fmt(inv.paidAmount)}</span>
+                    <span className="text-red-500 dark:text-red-400 font-semibold text-[11px]">Paguar:</span>
+                    <span className="font-bold text-red-600 dark:text-red-400 text-[11px] font-mono">{fmt(inv.paidAmount)}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-amber-600 font-semibold text-[11px]">Mbetur:</span>
-                    <span className="font-bold text-amber-700 text-[11px]">{fmt(inv.amount - inv.paidAmount)}</span>
+                    <span className="text-amber-600 dark:text-amber-400 font-semibold text-[11px]">Mbetur:</span>
+                    <span className="font-bold text-amber-700 dark:text-amber-400 text-[11px] font-mono">{fmt(inv.amount - inv.paidAmount)}</span>
                   </div>
-                  <div className="mt-0.5 w-full bg-gray-200 rounded-full h-0.5">
+                  <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
                     <div
-                      className="bg-red-500 h-0.5 rounded-full transition-all"
+                      className="bg-red-500 h-1 rounded-full transition-all"
                       style={{ width: `${(inv.paidAmount / inv.amount) * 100}%` }}
                     ></div>
                   </div>
@@ -628,79 +634,79 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
           </div>
 
           {/* Bottom section: Dates in grid (2 cols on mobile, 2 rows on desktop) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 px-6 pb-3">
-            <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5 dark:bg-gray-900/50 dark:border-gray-700">
-              <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block dark:text-gray-500">Data e faturës:</span>
-              <span className="font-semibold text-gray-700 text-sm block dark:text-gray-200">{formatDate(inv.date)}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 px-6 py-5">
+            <div className="bg-gray-50 rounded-xl border border-gray-100 p-3 dark:bg-gray-900/50 dark:border-gray-700">
+              <span className="text-gray-400 text-[10px] mb-1 font-bold uppercase tracking-wide block dark:text-gray-500">Data e faturës:</span>
+              <span className="font-bold text-gray-900 text-sm block font-mono dark:text-gray-100">{formatDate(inv.date)}</span>
             </div>
-            <div className={`rounded-lg border p-1.5 ${isOverdue ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-100 dark:bg-gray-900/50 dark:border-gray-700'}`}>
-              <span className={`text-[11px] mb-0.5 font-semibold uppercase tracking-wide block ${isOverdue ? 'text-red-600' : 'text-gray-400 dark:text-gray-500'}`}>Afati i pagesës:</span>
-              <span className={`font-semibold text-sm block ${isOverdue ? 'text-red-600 font-bold' : 'text-gray-700 dark:text-gray-200'}`}>
+            <div className={`rounded-xl border p-3 ${isOverdue ? 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900/40' : 'bg-gray-50 border-gray-100 dark:bg-gray-900/50 dark:border-gray-700'}`}>
+              <span className={`text-[10px] mb-1 font-bold uppercase tracking-wide block ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-400 dark:text-gray-500'}`}>Afati i pagesës:</span>
+              <span className={`font-bold text-sm block font-mono ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'}`}>
                 {formatDate(inv.due)}
               </span>
             </div>
             {inv.subscriptionExpiry && (
-              <div className="bg-red-50 rounded-lg border border-red-100 p-1.5 dark:bg-red-900/20 dark:border-red-900/40">
-                <span className="text-red-600 font-semibold text-[11px] mb-0.5 uppercase tracking-wide block dark:text-red-400">⏰ Skadimi:</span>
-                <span className="font-semibold text-red-700 text-sm block dark:text-red-300">{formatDate(inv.subscriptionExpiry)}</span>
+              <div className="bg-red-50 rounded-xl border border-red-100 p-3 dark:bg-red-900/20 dark:border-red-900/40">
+                <span className="text-red-500 font-bold text-[10px] mb-1 uppercase tracking-wide block dark:text-red-400">⏰ Skadimi:</span>
+                <span className="font-bold text-red-600 text-sm block font-mono dark:text-red-400">{formatDate(inv.subscriptionExpiry)}</span>
               </div>
             )}
             {inv.notifyDate && (
-              <div className="bg-gray-50 rounded-lg border border-gray-100 p-1.5 dark:bg-gray-900/50 dark:border-gray-700">
-                <span className="text-gray-400 text-[11px] mb-0.5 font-semibold uppercase tracking-wide block dark:text-gray-500">🔔 Njoftim:</span>
-                <span className="font-semibold text-orange-600 text-sm block">{inv.notifyDate}</span>
+              <div className="bg-amber-50 rounded-xl border border-amber-100 p-3 dark:bg-amber-900/20 dark:border-amber-900/40">
+                <span className="text-amber-600 text-[10px] mb-1 font-bold uppercase tracking-wide block dark:text-amber-400">🔔 Njoftim:</span>
+                <span className="font-bold text-amber-700 text-sm block font-mono dark:text-amber-400">{inv.notifyDate}</span>
               </div>
             )}
           </div>
 
-          <div className="px-6 pb-4 overflow-x-auto">
-            <table className="w-full text-sm border-collapse min-w-[380px]">
-              <thead>
-                <tr className="bg-red-500 text-white">
-                  <th className="text-center px-3 py-3 rounded-tl-lg w-8 font-semibold">#</th>
-                  <th className="text-left px-3 py-3 font-semibold">Artikulli &amp; Përshkrimi</th>
-                  <th className="text-right px-3 py-3 w-16 font-semibold">Sasia</th>
-                  <th className="text-right px-3 py-3 w-20 font-semibold">Çmimi</th>
-                  <th className="text-right px-3 py-3 rounded-tr-lg w-24 font-semibold">Shuma</th>
-                </tr>
-              </thead>
-              <tbody>
-                {inv.items.map((item, i) => (
-                  <tr key={i} className="border-b border-gray-100 hover:bg-gray-50/50 dark:border-gray-700">
-                    <td className="px-3 py-3 text-center text-gray-500 text-sm dark:text-gray-400">{i + 1}</td>
-                    <td className="px-3 py-3">
-                      <p className="text-gray-700 font-medium text-sm dark:text-gray-200">{item.desc}</p>
-                      {item.note && <p className="text-xs text-gray-400 italic mt-0.5 dark:text-gray-500">{item.note}</p>}
-                    </td>
-                    <td className="px-3 py-3 text-right text-gray-700 text-sm dark:text-gray-200">{item.qty}</td>
-                    <td className="px-3 py-3 text-right text-gray-700 text-sm dark:text-gray-200">{fmt(item.price)}</td>
-                    <td className="px-3 py-3 text-right font-bold text-gray-900 text-sm dark:text-gray-50">{fmt(item.qty * item.price)}</td>
+          <div className="px-6 pb-5">
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden overflow-x-auto">
+              <table className="w-full text-sm border-collapse min-w-[380px]">
+                <thead>
+                  <tr className="bg-red-500 text-white">
+                    <th className="text-center px-3 py-3 w-8 font-bold uppercase text-xs tracking-wide">#</th>
+                    <th className="text-left px-3 py-3 font-bold uppercase text-xs tracking-wide">Artikulli &amp; Përshkrimi</th>
+                    <th className="text-right px-3 py-3 w-16 font-bold uppercase text-xs tracking-wide">Sasia</th>
+                    <th className="text-right px-3 py-3 w-20 font-bold uppercase text-xs tracking-wide">Çmimi</th>
+                    <th className="text-right px-3 py-3 w-24 font-bold uppercase text-xs tracking-wide">Shuma</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="flex justify-end mt-4 pt-4 border-t-2 border-blue-200">
-              <div className="flex items-center gap-12">
-                <span className="font-bold text-red-600 text-lg">Totali</span>
-                <span className="font-bold text-gray-900 text-xl dark:text-gray-50">{fmt(inv.amount)}</span>
+                </thead>
+                <tbody>
+                  {inv.items.map((item, i) => (
+                    <tr key={i} className="border-t border-gray-100 hover:bg-gray-50/50 dark:border-gray-700 dark:hover:bg-gray-900/40">
+                      <td className="px-3 py-3.5 text-center text-gray-400 text-sm font-mono dark:text-gray-500">{i + 1}</td>
+                      <td className="px-3 py-3.5">
+                        <p className="text-gray-800 font-semibold text-sm dark:text-gray-200">{item.desc}</p>
+                        {item.note && <p className="text-xs text-gray-400 italic mt-0.5 dark:text-gray-500">{item.note}</p>}
+                      </td>
+                      <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{item.qty}</td>
+                      <td className="px-3 py-3.5 text-right text-gray-700 text-sm font-mono dark:text-gray-200">{fmt(item.price)}</td>
+                      <td className="px-3 py-3.5 text-right font-bold text-gray-900 text-sm font-mono dark:text-gray-50">{fmt(item.qty * item.price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 px-5 py-3 flex items-center justify-between">
+                <span className="font-bold text-red-500 dark:text-red-400 uppercase tracking-wide text-sm">Totali</span>
+                <span className="font-black text-gray-900 text-base font-mono dark:text-gray-50">{fmt(inv.amount)}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-red-50 px-6 py-4 text-center">
-            <p className="text-sm text-red-500 font-medium">Faleminderit për besimin tuaj!</p>
+          <div className="mx-6 mb-6 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/40 rounded-xl py-3 px-4 text-center">
+            <p className="text-xs font-bold text-red-600 dark:text-red-400">Faleminderit për besimin tuaj!</p>
           </div>
         </div>
 
         {linkedPayment && (
-          <div className="bg-emerald-50 rounded-xl border border-emerald-100 p-5">
+          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 p-5">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm font-bold text-emerald-700 flex items-center gap-1.5">
+              <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
                 <CreditCard size={15}/> Pagesa e regjistruar
               </p>
               <div className="flex items-center gap-1">
                 <button
-                  className="icon-btn text-red-400 hover:bg-red-50"
+                  className="icon-btn text-emerald-500 hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
                   title="Ndrysho pagesën"
                   onClick={() => setModal(<PaymentModal payment={linkedPayment} onClose={closeModal}/>)}
                 >
@@ -708,12 +714,12 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
                 </button>
                 {confirmDelPayment ? (
                   <div className="flex items-center gap-1">
-                    <button className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded" onClick={doDeletePayment}>Po</button>
-                    <button className="px-2 py-1 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50" onClick={() => setConfirmDelPayment(false)}>Jo</button>
+                    <button className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-lg" onClick={doDeletePayment}>Po</button>
+                    <button className="px-2 py-1 border border-gray-200 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50" onClick={() => setConfirmDelPayment(false)}>Jo</button>
                   </div>
                 ) : (
                   <button
-                    className="icon-btn text-red-400 hover:bg-red-50"
+                    className="icon-btn text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                     title="Fshij pagesën"
                     onClick={() => setConfirmDelPayment(true)}
                   >
@@ -723,41 +729,41 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-sm">
-              <div><p className="text-gray-500 mb-1 font-semibold text-xs dark:text-gray-400">Data</p><p className="font-semibold text-gray-800 dark:text-gray-100">{formatDate(linkedPayment.date)}</p></div>
-              <div><p className="text-gray-500 mb-1 font-semibold text-xs dark:text-gray-400">Shuma</p><p className="font-bold text-emerald-700">{fmt(linkedPayment.amount)}</p></div>
-              <div><p className="text-gray-500 mb-1 font-semibold text-xs dark:text-gray-400">Metoda</p><p className="font-semibold text-gray-800 dark:text-gray-100">{linkedPayment.method}</p></div>
+              <div><p className="text-gray-500 dark:text-gray-400 mb-1 font-semibold text-xs">Data</p><p className="font-semibold text-gray-800 dark:text-gray-100 font-mono">{formatDate(linkedPayment.date)}</p></div>
+              <div><p className="text-gray-500 dark:text-gray-400 mb-1 font-semibold text-xs">Shuma</p><p className="font-bold text-emerald-700 dark:text-emerald-400 font-mono">{fmt(linkedPayment.amount)}</p></div>
+              <div><p className="text-gray-500 dark:text-gray-400 mb-1 font-semibold text-xs">Metoda</p><p className="font-semibold text-gray-800 dark:text-gray-100">{linkedPayment.method}</p></div>
               <div>
-                <p className="text-gray-500 mb-1 font-semibold text-xs dark:text-gray-400">Tek</p>
-                <p className={`font-bold text-sm ${linkedPayment.depositedTo === 'Enndy' ? 'text-red-600' : 'text-purple-700'}`}>
+                <p className="text-gray-500 dark:text-gray-400 mb-1 font-semibold text-xs">Tek</p>
+                <p className={`font-bold text-sm ${linkedPayment.depositedTo === 'Enndy' ? 'text-red-600 dark:text-red-400' : 'text-purple-700 dark:text-purple-400'}`}>
                   {linkedPayment.depositedTo}
                 </p>
               </div>
             </div>
             {linkedPayment.fee > 0 && (
-              <p className="text-sm text-amber-700 mt-3 text-center font-medium">
+              <p className="text-sm text-amber-700 dark:text-amber-400 mt-3 text-center font-medium font-mono">
                 Fee: -{fmt(linkedPayment.fee)} · Neto: {fmt(linkedPayment.net)}
               </p>
             )}
           </div>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-100 p-5 dark:bg-gray-800 dark:border-gray-700">
-          <h4 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-1.5 dark:text-gray-400">
+        <div className="bg-white rounded-2xl border border-gray-200 p-5 dark:bg-gray-800 dark:border-gray-700">
+          <h4 className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-1.5 dark:text-gray-100">
             <MessageSquare size={14}/> Komentet e stafit
           </h4>
           {(inv.comments || []).length === 0 ? (
-            <p className="text-sm text-gray-400 italic mb-4 dark:text-gray-500">Nuk ka komente ende.</p>
+            <p className="text-xs text-gray-400 italic mb-4 dark:text-gray-500">Nuk ka komente ende.</p>
           ) : (
             <div className="space-y-3 mb-4">
               {(inv.comments || []).map((c, i) => (
                 <div key={i} className="flex gap-2">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600 flex-shrink-0 mt-0.5">
+                  <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-xs font-bold text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5">
                     {c.author[0]}
                   </div>
                   <div className="flex-1 bg-gray-50 rounded-xl px-3 py-2.5 dark:bg-gray-900/50">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">{c.author}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(c.date)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">{formatDate(c.date)}</span>
                     </div>
                     <p className="text-sm text-gray-700 leading-relaxed dark:text-gray-200">{c.text}</p>
                   </div>
@@ -766,18 +772,18 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
             </div>
           )}
           <div className="flex gap-2">
-            <textarea
-              className="form-control text-sm resize-none flex-1"
-              rows={2}
+            <input
+              type="text"
+              className="flex-1 px-3.5 py-2 text-xs rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 dark:bg-gray-900/50 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
               placeholder="Shto koment rreth kësaj fature… (Enter = dërgo)"
               value={comment}
               onChange={e => setComment(e.target.value)}
               onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); addComment() }
+                if (e.key === 'Enter') { e.preventDefault(); addComment() }
               }}
             />
             <button
-              className="self-end btn btn-primary btn-sm text-sm px-3 py-2 flex items-center gap-1"
+              className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-xs flex items-center gap-1.5 transition-colors flex-shrink-0"
               onClick={addComment}
               disabled={!comment.trim()}
             >
@@ -1211,21 +1217,21 @@ export default function Invoices() {
       >
         {/* Left: invoice list — hidden on mobile (show only detail panel) */}
         <div className="hidden md:flex w-[340px] flex-shrink-0 border-r border-gray-200 flex-col overflow-hidden bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <div>
-              <p className="font-bold text-sm text-gray-800 dark:text-gray-100">Të gjitha faturat</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500">{filtered.length} rezultate</p>
+              <p className="font-extrabold text-sm text-gray-900 dark:text-gray-100">Të gjitha faturat</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">{filtered.length.toLocaleString('de-DE')} rezultate</p>
             </div>
             <button
-              className="flex items-center gap-1 btn btn-primary btn-sm text-xs px-2.5 py-1.5"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors"
               onClick={() => navigateWithClearPreview('invoices:create')}
             >
               <Plus size={12}/> Faturë
             </button>
           </div>
 
-          <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 focus-within:border-red-400 focus-within:bg-white transition-all dark:bg-gray-900/50 dark:border-gray-700 dark:focus-within:bg-gray-800">
+          <div className="px-3 pt-3">
+            <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1.5 focus-within:border-red-400 focus-within:bg-white transition-all dark:bg-gray-900/50 dark:border-gray-700 dark:focus-within:bg-gray-800">
               <Search size={12} className="text-gray-400 flex-shrink-0 dark:text-gray-500"/>
               <input
                 className="bg-transparent border-none outline-none text-xs text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
@@ -1249,7 +1255,7 @@ export default function Invoices() {
             <select
               value={statusFilter}
               onChange={(e) => setStatus(e.target.value)}
-              className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-700 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+              className="flex-1 text-[11px] font-semibold bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-900/50 dark:border-gray-700 dark:text-gray-200"
             >
               <option value="all">Të gjitha</option>
               <option value="pending">Pritje</option>
@@ -1262,7 +1268,7 @@ export default function Invoices() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-700 outline-none focus:border-purple-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+              className="flex-1 text-[11px] font-semibold bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-900/50 dark:border-gray-700 dark:text-gray-200"
             >
               <option value="all">Të gjithë</option>
               <option value="individual">👤 Klientë</option>
@@ -1270,7 +1276,7 @@ export default function Invoices() {
             </select>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto pb-1.5">
             {paged.length === 0 ? (
               <p className="text-xs text-gray-400 text-center py-8 dark:text-gray-500">Asnjë faturë nuk u gjet</p>
             ) : (
