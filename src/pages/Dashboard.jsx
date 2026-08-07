@@ -282,7 +282,24 @@ export default function Dashboard() {
     }
   }, [pendingInvoices, customerTypeMap])
 
-  /* ── Grafikët vit-për-vit: Të ardhura & Shpenzime, 12 muaj, muajt e ardhshëm = null ── */
+  /* ── Grafikët vit-për-vit: Shitje, Të ardhura & Shpenzime, 12 muaj, muajt e ardhshëm = null ──
+     Shitjet bazohen te faturat (data e faturës), jo te pagesat e pranuara —
+     e njëjta logjikë si grafiku ekzistues i mëparshëm "Shitje sipas muajit". ── */
+  const salesYoY = useMemo(() =>
+    MONTH_LBL.map((label, mo) => {
+      const key  = `${thisYear}-${String(mo + 1).padStart(2, '0')}`
+      const prev = `${prevYear}-${String(mo + 1).padStart(2, '0')}`
+      return {
+        month:     label,
+        sales:     mo <= curMonthIdx
+          ? invoices.filter(i => i.date?.startsWith(key) && i.status !== 'void').reduce((s, i) => s + (i.amount || 0), 0)
+          : null,
+        salesPrev: invoices.filter(i => i.date?.startsWith(prev) && i.status !== 'void').reduce((s, i) => s + (i.amount || 0), 0),
+      }
+    }),
+    [invoices, thisYear, prevYear, curMonthIdx]
+  )
+
   const revenueYoY = useMemo(() =>
     MONTH_LBL.map((label, mo) => {
       const key  = `${thisYear}-${String(mo + 1).padStart(2, '0')}`
@@ -467,6 +484,12 @@ export default function Dashboard() {
           onClick={() => navigate('invoices?filter=pending')}
         />
       </div>
+
+      {/* ── Shitje sipas muajit (bazuar në fatura, jo në pagesat e pranuara) ── */}
+      <YoYChart title="Shitje sipas muajit" sub={`${thisYear} vs. ${prevYear}`}
+        data={salesYoY} curKey="sales" prevKey="salesPrev"
+        color="#6366f1" softColor="#c7d2fe" gradId="yoy-sales"
+        curLabel={thisYear} prevLabel={prevYear} fmt={fmt} />
 
       {/* ── Krahasimi vjetor: Të ardhura & Shpenzime ── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
