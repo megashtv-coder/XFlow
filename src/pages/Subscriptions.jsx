@@ -1,5 +1,5 @@
 import { useState, memo, useMemo, useCallback } from 'react'
-import { Bell, MessageCircle, Send, Calendar, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Bell, MessageCircle, Send, Calendar, CheckCircle2, ChevronDown, ChevronUp, AlertTriangle, Clock, Search, RefreshCw, PhoneOff } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 
@@ -34,33 +34,33 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, onMarkSent }) 
     : null
 
   return (
-    <tr className="border-b border-gray-50 hover:bg-gray-50/60 transition-colors dark:border-gray-700">
+    <tr className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors dark:border-gray-700 dark:hover:bg-gray-700/40">
       {/* Klienti */}
       <td className="table-td">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-xs font-bold text-red-500 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-xs font-bold text-red-600 dark:text-red-400 flex-shrink-0">
             {inv.customer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-gray-800 text-sm dark:text-gray-100">{inv.customer}</p>
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">{inv.id}</p>
+            <p className="font-bold text-gray-900 text-sm dark:text-white">{inv.customer}</p>
+            <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500">{inv.id}</p>
           </div>
         </div>
       </td>
 
       {/* Data skadimit */}
       <td className="table-td">
-        <span className="font-semibold text-red-600 text-sm">{formatDate(inv.subscriptionExpiry)}</span>
+        <span className="font-mono font-bold text-red-600 dark:text-red-400 text-sm">{formatDate(inv.subscriptionExpiry)}</span>
       </td>
 
       {/* Data njoftimit */}
       <td className="table-td">
-        <div>
-          <span className={`text-sm ${dateCls}`}>{formatDate(inv.notifyDate)}</span>
+        <div className="font-mono">
+          <span className={`text-sm font-bold ${dateCls}`}>{formatDate(inv.notifyDate)}</span>
           {daysLeft !== null && (
-            <p className={`text-[11px] mt-0.5 ${
+            <p className={`text-[10px] font-extrabold uppercase tracking-wide mt-0.5 ${
               daysLeft < 0  ? 'text-red-400' :
-              daysLeft === 0 ? 'text-red-500 font-bold' :
+              daysLeft === 0 ? 'text-red-600 dark:text-red-400' :
               'text-gray-400 dark:text-gray-500'
             }`}>
               {daysLeft < 0  ? `${Math.abs(daysLeft)} ditë e kaluar` :
@@ -73,36 +73,38 @@ const SubRow = memo(function SubRow({ inv, phone, urgency, today, onMarkSent }) 
 
       {/* Vlera */}
       <td className="table-td">
-        <span className="font-bold text-gray-800 dark:text-gray-100">{fmt(inv.amount)}</span>
+        <span className="font-mono font-bold text-gray-900 dark:text-white">{fmt(inv.amount)}</span>
       </td>
 
       {/* Veprime */}
       <td className="table-td">
-        <div className="flex items-center justify-end gap-1.5 flex-wrap">
+        <div className="flex items-center justify-end gap-2 flex-wrap">
           {phone ? (
             <>
               <a
                 href={`https://wa.me/${phone}?text=${msg}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900/40 text-green-700 dark:text-green-400 text-xs font-semibold rounded-lg hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1 px-2.5 py-1 bg-green-50 dark:bg-green-900/30 border border-green-200/60 dark:border-green-800/50 text-green-600 dark:text-green-400 text-[11px] font-bold rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors whitespace-nowrap"
               >
                 <MessageCircle size={13} /> WA
               </a>
               <a
                 href={`https://t.me/+${phone}`}
                 target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-900/40 text-sky-700 dark:text-sky-400 text-xs font-semibold rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors whitespace-nowrap"
+                className="flex items-center gap-1 px-2.5 py-1 bg-sky-50 dark:bg-sky-900/30 border border-sky-200/60 dark:border-sky-800/50 text-sky-600 dark:text-sky-400 text-[11px] font-bold rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors whitespace-nowrap"
               >
                 <Send size={13} /> TG
               </a>
             </>
           ) : (
-            <span className="text-xs text-gray-300 dark:text-gray-600 italic">Pa numër</span>
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 dark:text-gray-500 italic">
+              <PhoneOff size={12} /> Pa numër
+            </span>
           )}
           <button
             onClick={() => onMarkSent(inv.id)}
             title="Hiqe nga lista — e keni njoftuar tashmë këtë klient"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/40 transition-colors whitespace-nowrap"
+            className="flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-[11px] font-bold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/40 transition-colors whitespace-nowrap"
           >
             <CheckCircle2 size={13} /> Njoftuar
           </button>
@@ -131,17 +133,17 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-3">
-        <span className={`w-2.5 h-2.5 rounded-full ${
-          color === 'red'   ? 'bg-red-500' :
-          color === 'amber' ? 'bg-amber-400' : 'bg-red-400'
+        <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+          color === 'red'   ? 'bg-red-500 animate-ping' :
+          color === 'amber' ? 'bg-amber-400' : 'bg-gray-400 dark:bg-gray-600'
         }`} />
-        <h3 className={`text-sm font-bold ${
-          color === 'red'   ? 'text-red-700' :
-          color === 'amber' ? 'text-amber-700' : 'text-gray-600 dark:text-gray-300'
+        <h3 className={`text-sm font-bold tracking-tight ${
+          color === 'red'   ? 'text-red-600 dark:text-red-400' :
+          color === 'amber' ? 'text-amber-600 dark:text-amber-400' : 'text-gray-600 dark:text-gray-300'
         }`}>{title}</h3>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-          color === 'red'   ? 'bg-red-50 text-red-500' :
-          color === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-red-50 text-red-500'
+        <span className={`text-[11px] px-2 py-0.5 rounded-full font-extrabold ${
+          color === 'red'   ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400' :
+          color === 'amber' ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
         }`}>{items.length}</span>
       </div>
 
@@ -156,18 +158,23 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
               : null
 
             return (
-              <div key={inv.id} className="bg-white border border-gray-200 rounded-lg p-3 dark:bg-gray-800 dark:border-gray-700">
+              <div key={inv.id} className="bg-white border border-gray-200 rounded-2xl p-3 dark:bg-gray-800 dark:border-gray-700 shadow-sm">
                 <div className="flex justify-between items-start gap-2">
-                  {/* Col 1: Customer + Expiry + Notify */}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-800 text-sm truncate dark:text-gray-100">{inv.customer}</p>
-                    <p className="text-xs font-bold text-red-500 mt-0.5">{formatDate(inv.subscriptionExpiry)}</p>
-                    <p className="text-xs font-bold text-red-600 mt-0.5">{formatDate(inv.notifyDate)}</p>
+                  {/* Col 1: Avatar + Customer + Expiry + Notify */}
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-xs font-bold text-red-600 dark:text-red-400 flex-shrink-0">
+                      {inv.customer.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-gray-900 text-sm truncate dark:text-white">{inv.customer}</p>
+                      <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500">{inv.id}</p>
+                      <p className="text-xs font-mono font-bold text-red-600 dark:text-red-400 mt-1">{formatDate(inv.subscriptionExpiry)}</p>
+                    </div>
                   </div>
 
                   {/* Col 2: Amount + Product */}
-                  <div className="text-right">
-                    <p className="font-bold text-gray-800 text-sm dark:text-gray-100">{fmt(inv.amount)}</p>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-mono font-bold text-gray-900 text-sm dark:text-white">{fmt(inv.amount)}</p>
                     <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{inv.type || inv.product || '—'}</p>
                   </div>
 
@@ -182,7 +189,7 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
 
                     {/* Dropdown Menu */}
                     {openDropdown === inv.id && (
-                      <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
+                      <div className="absolute right-0 top-full mt-1 w-44 bg-white border border-gray-200 rounded-xl shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
                         {phone && (
                           <>
                             <a
@@ -240,16 +247,16 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
         </div>
       )}
 
-      <div className="card overflow-hidden hidden sm:block">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
         <div className="overflow-auto">
           <table className="w-full">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b-2 border-gray-50 bg-white dark:bg-gray-800 dark:border-gray-700">
-                <th className="table-th">Klienti</th>
-                <th className="table-th">Skadon</th>
-                <th className="table-th">Njoftim</th>
-                <th className="table-th">Vlera</th>
-                <th className="table-th text-right">Veprime</th>
+              <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                <th className="py-3 px-4 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-left">Klienti</th>
+                <th className="py-3 px-4 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-left">Skadon</th>
+                <th className="py-3 px-4 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-left">Njoftim</th>
+                <th className="py-3 px-4 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-left">Vlera</th>
+                <th className="py-3 px-4 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Veprime</th>
               </tr>
             </thead>
             <tbody>
@@ -298,6 +305,7 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
 export default function Subscriptions() {
   const { invoices, customers, setInvoices, showToast } = useApp()
   const [showInfo, setShowInfo] = useState(false)
+  const [search, setSearch] = useState('')
 
   const today  = new Date().toISOString().slice(0, 10)
   const week7  = addDays(today, 7)
@@ -326,6 +334,17 @@ export default function Subscriptions() {
 
   const totalPending = urgent.length
 
+  /* Filtrimi sipas kërkimit — vetëm shfaqja, nuk prek listat/kalkulimet burimore */
+  const searchLower = search.trim().toLowerCase()
+  const matchesSearch = useCallback(inv =>
+    !searchLower || inv.customer.toLowerCase().includes(searchLower) || inv.id.toLowerCase().includes(searchLower),
+  [searchLower])
+  const urgentFiltered   = useMemo(() => urgent.filter(matchesSearch),   [urgent, matchesSearch])
+  const thisWeekFiltered = useMemo(() => thisWeek.filter(matchesSearch), [thisWeek, matchesSearch])
+  const futureFiltered   = useMemo(() => future.filter(matchesSearch),   [future, matchesSearch])
+  const noSearchResults  = withNotify.length > 0 && searchLower &&
+    !urgentFiltered.length && !thisWeekFiltered.length && !futureFiltered.length
+
   /* Shëno një njoftim si të dërguar/kryer -- e heq nga lista përgjithmonë
      (deri sa fatura tjetër e rinovimit të krijojë datë të re njoftimi) */
   const handleMarkSent = useCallback((invId) => {
@@ -340,45 +359,50 @@ export default function Subscriptions() {
   }, [setInvoices, showToast])
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2 dark:text-gray-100">
-            <Bell size={20} className="text-red-500" />
+          <h2 className="text-xl font-black text-gray-900 flex items-center gap-2 tracking-tight dark:text-white">
+            <Bell size={20} className="text-red-500 animate-bounce" />
             Njoftimet e Abonimit
           </h2>
-          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">
-            {withNotify.length} abonim ·{' '}
-            {totalPending > 0
-              ? <span className="text-red-500 font-semibold">{totalPending} kërkon vëmendje sot</span>
-              : <span className="text-emerald-500 font-semibold">Gjithçka është e rregullt</span>
-            }
-          </p>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="text-xs text-gray-400 flex items-center gap-1.5 dark:text-gray-500">
-            <Calendar size={13} />
-            Sot: <span className="font-semibold text-gray-600 dark:text-gray-300">{today}</span>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-gray-500 font-medium dark:text-gray-400">{withNotify.length} abonim gjithsej</span>
+            {totalPending > 0 && (
+              <>
+                <span className="text-gray-300 dark:text-gray-700">•</span>
+                <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md border border-red-200/60 dark:border-red-900/50">
+                  {totalPending} kërkojnë vëmendje sot
+                </span>
+              </>
+            )}
           </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <Calendar size={14} className="text-red-500" />
+          <span>Sot: {today}</span>
         </div>
       </div>
 
       {/* Info: automation runs server-side now, not from this page -- collapsible, off by default */}
-      <div className="mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900/40 rounded-xl overflow-hidden">
+      <div className="bg-sky-50 dark:bg-sky-900/20 border border-sky-200/80 dark:border-sky-900/50 rounded-2xl overflow-hidden shadow-sm">
         <button
           onClick={() => setShowInfo(v => !v)}
-          className="w-full flex items-center justify-between gap-2 p-4 text-left"
+          className="w-full flex items-center gap-3 p-3.5 text-left"
         >
-          <p className="text-sm font-bold text-blue-800 dark:text-blue-300">🔔 Njoftimet dërgohen automatikisht çdo ditë</p>
-          {showInfo ? <ChevronUp size={16} className="text-blue-500 flex-shrink-0" /> : <ChevronDown size={16} className="text-blue-500 flex-shrink-0" />}
+          <div className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <Bell size={16} />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-bold text-sky-900 dark:text-sky-200">Njoftimet dërgohen automatikisht çdo ditë në orën 09:00</p>
+            <p className="text-[11px] text-sky-700 dark:text-sky-300/80 mt-0.5">Sistemi dërgon njoftime automatike në WhatsApp dhe Telegram për të gjitha faturat që skadojnë së shpejti.</p>
+          </div>
+          {showInfo ? <ChevronUp size={16} className="text-sky-500 flex-shrink-0" /> : <ChevronDown size={16} className="text-sky-500 flex-shrink-0" />}
         </button>
         {showInfo && (
           <div className="px-4 pb-4">
-            <p className="text-xs text-blue-700 dark:text-blue-300/80">
-              Një herë në ditë sistemi dërgon vetë një mesazh WhatsApp për abonimet që skadojnë pas 7 ditësh (vetëm ditën kur bie data e njoftimit — jo për faturat e vjetra në listën më poshtë). Nga kjo faqe mund të dërgosh edhe manualisht me butonat WA/TG te çdo rresht, ose ta shënosh si "Njoftuar" që të hiqet nga lista.
-            </p>
-            <div className="mt-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2.5 text-xs text-blue-900 dark:text-blue-200">
+            <div className="bg-sky-100 dark:bg-sky-900/30 rounded-lg p-2.5 text-xs text-sky-900 dark:text-sky-200">
               <p className="font-semibold mb-1">Konfigurimi (WhatsApp Cloud API, nëse s'është bërë ende):</p>
               <ol className="space-y-0.5 list-decimal list-inside">
                 <li>Shko te <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">developers.facebook.com</a>, krijo një Business App, shto produktin "WhatsApp" dhe lidh numrin</li>
@@ -392,24 +416,53 @@ export default function Subscriptions() {
       </div>
 
       {/* Summary stat cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="stat-card !border-l-4 !border-l-red-400">
-          <p className="text-3xl font-bold text-red-600">{urgent.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Duhen kontaktuar sot</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 p-5 shadow-sm">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-red-500" />
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-3xl font-black text-red-600 dark:text-red-400 font-mono tracking-tight">{urgent.length}</span>
+              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1">Duhen kontaktuar sot</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Abonime me njoftim aktiv për sot</p>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 flex items-center justify-center shrink-0">
+              <AlertTriangle size={18} />
+            </div>
+          </div>
         </div>
-        <div className="stat-card !border-l-4 !border-l-amber-400">
-          <p className="text-3xl font-bold text-amber-500">{thisWeek.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Këtë javë (7 ditë)</p>
+
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 p-5 shadow-sm">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-400" />
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-3xl font-black text-amber-500 dark:text-amber-400 font-mono tracking-tight">{thisWeek.length}</span>
+              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1">Këtë javë (7 ditë)</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Njoftime në radhë për përpunim</p>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-500 flex items-center justify-center shrink-0">
+              <Clock size={18} />
+            </div>
+          </div>
         </div>
-        <div className="stat-card !border-l-4 !border-l-red-400">
-          <p className="text-3xl font-bold text-red-500">{future.length}</p>
-          <p className="text-xs text-gray-400 mt-1 font-medium dark:text-gray-500">Ardhshme</p>
+
+        <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 p-5 shadow-sm">
+          <div className="absolute top-0 left-0 w-1.5 h-full bg-gray-300 dark:bg-gray-600" />
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-3xl font-black text-gray-800 dark:text-gray-100 font-mono tracking-tight">{future.length}</span>
+              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 mt-1">Ardhshme</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Abonime aktive pa skadencë të afërt</p>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center shrink-0">
+              <Calendar size={18} />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Empty state */}
       {withNotify.length === 0 ? (
-        <div className="card flex flex-col items-center justify-center py-20 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4">
             <CheckCircle2 size={28} className="text-emerald-400" />
           </div>
@@ -420,9 +473,39 @@ export default function Subscriptions() {
         </div>
       ) : (
         <>
-          <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgent}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
-          <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeek} today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
-          <Section title="Ardhshme"                             color="blue"  items={future}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+          {/* Filter bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="relative w-full sm:w-80">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Kërko klientin ose ID e faturës..."
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
+              />
+            </div>
+            <button
+              onClick={() => setSearch('')}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <RefreshCw size={14} className="text-gray-400 dark:text-gray-500" />
+              <span>Rifresko</span>
+            </button>
+          </div>
+
+          {noSearchResults ? (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Nuk u gjet asnjë abonim</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Provo një kërkim tjetër</p>
+            </div>
+          ) : (
+            <>
+              <Section title="Sot & Të kaluara — Kërkon vëmendje!" color="red"   items={urgentFiltered}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+              <Section title="Kjo javë (7 ditët e ardhshme)"        color="amber" items={thisWeekFiltered} today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+              <Section title="Ardhshme"                             color="blue"  items={futureFiltered}   today={today} onMarkSent={handleMarkSent} customerMap={customerMap} />
+            </>
+          )}
         </>
       )}
     </div>
