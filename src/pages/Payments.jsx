@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react'
 import {
-  CreditCard, Download, Search, X, Filter,
-  Pencil, Trash2, FileSpreadsheet, Plus,
+  CreditCard, Download, Search, X,
+  Pencil, Trash2, FileSpreadsheet, Plus, Users,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
@@ -15,14 +15,14 @@ const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 
 /* ── method badge colour ── */
 const METHOD_COLOR = {
-  'PayPal':          'bg-red-50 text-red-500',
-  'Transfer Bankar': 'bg-slate-50 text-slate-600',
-  'Kesh':            'bg-green-50 text-green-700',
-  'Western Union':   'bg-yellow-50 text-yellow-700',
-  'Ria':             'bg-purple-50 text-purple-600',
-  'Money Gram':      'bg-pink-50 text-pink-600',
-  'Crypto':          'bg-orange-50 text-orange-600',
-  'Stripe':          'bg-indigo-50 text-indigo-600',
+  'PayPal':          'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400',
+  'Transfer Bankar': 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+  'Kesh':            'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-400',
+  'Western Union':   'bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400',
+  'Ria':             'bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
+  'Money Gram':      'bg-pink-50 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400',
+  'Crypto':          'bg-orange-50 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400',
+  'Stripe':          'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400',
 }
 const METHOD_ICON = {
   'PayPal': '🅿️', 'Transfer Bankar': '🏦', 'Kesh': '💵',
@@ -376,15 +376,18 @@ export default function Payments() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-6 border-b border-gray-200 dark:border-gray-700">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Pagesat e Marra</h2>
-          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{payments.length} pagesa gjithsej</p>
+          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
+            <CreditCard size={20} className="text-red-500" />
+            Pagesat e Marra
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{payments.length} pagesa gjithsej</p>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Export - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setExportOpen(true)}
             title="Eksporto"
           >
@@ -393,7 +396,7 @@ export default function Payments() {
 
           {/* Import - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
@@ -402,11 +405,11 @@ export default function Payments() {
 
           {/* New Payment - Hidden on mobile (see FAB below) */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 font-bold text-xs shadow-sm"
             onClick={openNewPayment}
             title="Regjistro Pagesë"
           >
-            +
+            <Plus size={14}/> Regjistro Pagesë
           </button>
         </div>
       </div>
@@ -422,88 +425,90 @@ export default function Payments() {
       )}
 
       {/* Filtrat */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px] dark:bg-gray-800 dark:border-gray-700">
-          <Search size={14} className="text-gray-400 flex-shrink-0 dark:text-gray-500" />
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
+        <div className="relative flex-1 min-w-[160px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
-            className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
+            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
             placeholder="Kërko klient, faturë..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPg(1) }}
           />
           {search && (
-            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
+            <button onClick={() => { setSearch(''); setPg(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
               <X size={13} />
             </button>
           )}
         </div>
 
-        <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={monthFilt}
-          onChange={e => { setMonthFilt(e.target.value); setPg(1) }}
-        >
-          <option value="all">Të gjitha muajt</option>
-          {months.map(m => <option key={m} value={m}>{m}</option>)}
-        </select>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={monthFilt}
+            onChange={e => { setMonthFilt(e.target.value); setPg(1) }}
+          >
+            <option value="all">Të gjitha muajt</option>
+            {months.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
 
-        <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={partnerFilt}
-          onChange={e => { setPartner(e.target.value); setPg(1) }}
-        >
-          <option value="all">Të dy partnerët</option>
-          <option value="Enndy">Tek Enndy</option>
-          <option value="Samki">Tek Samki</option>
-        </select>
+          <select
+            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={partnerFilt}
+            onChange={e => { setPartner(e.target.value); setPg(1) }}
+          >
+            <option value="all">Të dy partnerët</option>
+            <option value="Enndy">Tek Enndy</option>
+            <option value="Samki">Tek Samki</option>
+          </select>
 
-        <select
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={methodFilt}
-          onChange={e => { setMethod(e.target.value); setPg(1) }}
-        >
-          <option value="all">Të gjitha metodat</option>
-          {methods.map(m => <option key={m} value={m}>{m}</option>)}
-        </select>
+          <select
+            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={methodFilt}
+            onChange={e => { setMethod(e.target.value); setPg(1) }}
+          >
+            <option value="all">Të gjitha metodat</option>
+            {methods.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
 
-        <select
-          className="hidden sm:block bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={perPage}
-          onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}
-        >
-          <option value={25}>25 / faqe</option>
-          <option value={50}>50 / faqe</option>
-          <option value={100}>100 / faqe</option>
-          <option value={200}>200 / faqe</option>
-          <option value={300}>300 / faqe</option>
-        </select>
+          <select
+            className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={perPage}
+            onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}
+          >
+            <option value={25}>25 / faqe</option>
+            <option value={50}>50 / faqe</option>
+            <option value={100}>100 / faqe</option>
+            <option value={200}>200 / faqe</option>
+            <option value={300}>300 / faqe</option>
+          </select>
 
-        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto dark:text-gray-500">
-          <Filter size={12} /> {filtered.length}
-        </span>
+          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono px-2">
+            {filtered.length}
+          </span>
+        </div>
       </div>
 
       {/* Mobile Card View - Hidden on sm+ */}
       {paged.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
           {paged.map(p => (
-            <div key={p.id} className="bg-white border border-gray-200 rounded-lg p-3 dark:bg-gray-800 dark:border-gray-700">
+            <div key={p.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
               <div className="flex justify-between items-start gap-2">
                 {/* Col 1: Customer + Payment Date + Invoice */}
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openEditPayment(p)}>
-                  <p className="font-bold text-gray-800 text-sm truncate hover:text-red-500 transition-colors dark:text-gray-100">{p.customer}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{formatDate(p.date)}</p>
-                  <p className="text-xs font-semibold text-red-500">{p.invoiceId}</p>
+                  <p className="font-bold text-gray-900 dark:text-white text-sm truncate hover:text-red-500 dark:hover:text-red-400 transition-colors">{p.customer}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-mono">{formatDate(p.date)}</p>
+                  <p className="text-xs font-mono font-semibold text-red-600 dark:text-red-400">{p.invoiceId}</p>
                 </div>
 
                 {/* Col 2: Amount + Fee + Partner */}
                 <div className="text-right">
-                  <p className="font-bold text-gray-800 text-sm dark:text-gray-100">{fmt(p.amount)}</p>
-                  <p className="text-xs text-amber-500 mt-0.5">{p.fee > 0 ? `- ${fmt(p.fee)}` : '—'}</p>
-                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
+                  <p className="font-mono font-bold text-gray-900 dark:text-white text-sm">{fmt(p.amount)}</p>
+                  <p className="text-xs font-mono text-amber-600 dark:text-amber-400 mt-0.5">{p.fee > 0 ? `- ${fmt(p.fee)}` : '—'}</p>
+                  <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold mt-0.5 ${
                     p.depositedTo === 'Enndy'
-                      ? 'bg-red-50 text-red-500'
-                      : 'bg-purple-50 text-purple-600'
+                      ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                      : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
                   }`}>
                     {p.depositedTo}
                   </span>
@@ -512,14 +517,14 @@ export default function Payments() {
                 {/* Col 3: Actions - Larger Button */}
                 <div className="relative flex-shrink-0 flex gap-1">
                   <button
-                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     title="Ndrysho"
                     onClick={() => openEditPayment(p)}
                   >
                     <Pencil size={16}/>
                   </button>
                   <button
-                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all"
+                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
                     title="Fshij"
                     onClick={() => setDeletingId(p.id)}
                   >
@@ -530,15 +535,15 @@ export default function Payments() {
 
               {/* Delete confirmation inline */}
               {deletingId === p.id && (
-                <div className="mt-3 pt-3 border-t border-gray-200 flex gap-2 justify-end dark:border-gray-700">
+                <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 flex gap-2 justify-end">
                   <button
-                    className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-semibold"
+                    className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold"
                     onClick={() => deletePayment(p)}
                   >
                     Po, fshi
                   </button>
                   <button
-                    className="px-3 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
+                    className="px-3 py-1 text-xs border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-semibold"
                     onClick={() => setDeletingId(null)}
                   >
                     Anulo
@@ -572,119 +577,119 @@ export default function Payments() {
           }
         />
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
           <table className="w-full text-sm min-w-[560px]">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50">
+              <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
                 {[
                   { key: 'date',        label: 'Data',    cls: '' },
                   { key: 'invoiceId',   label: 'Fatura',  cls: '' },
                   { key: 'customer',    label: 'Klienti', cls: '' },
                 ].map(col => (
-                  <th key={col.key} className={`table-th cursor-pointer select-none hover:text-red-500 ${col.cls}`}
+                  <th key={col.key} className={`px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 ${col.cls}`}
                       onClick={() => toggleSort(col.key)}>
                     <span className="flex items-center gap-1">
                       {col.label}
-                      <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                      <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                     </span>
                   </th>
                 ))}
-                <th className="table-th text-right cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-right text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('amount')}>
                   <span className="flex items-center justify-end gap-1">
                     Shuma
-                    <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th text-right hidden md:table-cell">Fee</th>
-                <th className="table-th text-right cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-right text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden md:table-cell">Fee</th>
+                <th className="px-4 py-3 text-right text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('net')}>
                   <span className="flex items-center justify-end gap-1">
                     Neto
-                    <span className="text-[10px]">{sortField === 'net' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'net' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th hidden lg:table-cell cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden lg:table-cell cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('method')}>
                   <span className="flex items-center gap-1">
                     Metoda
-                    <span className="text-[10px]">{sortField === 'method' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'method' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th hidden lg:table-cell">Llogaria</th>
-                <th className="table-th hidden md:table-cell">Referenca</th>
-                <th className="table-th cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden lg:table-cell">Llogaria</th>
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden md:table-cell">Referenca</th>
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('depositedTo')}>
                   <span className="flex items-center gap-1">
                     Partneri
-                    <span className="text-[10px]">{sortField === 'depositedTo' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'depositedTo' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th text-right">Veprimet</th>
+                <th className="px-4 py-3 text-right text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Veprimet</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
               {paged.map(p => (
-                <tr key={p.id} className="hover:bg-red-50/20 transition-colors group">
-                  <td className="table-td text-gray-400 text-xs dark:text-gray-500">{formatDate(p.date)}</td>
-                  <td className="table-td font-bold text-red-500 text-xs">{p.invoiceId}</td>
-                  <td className="table-td font-medium text-gray-800 text-xs max-w-[140px] truncate dark:text-gray-100">{p.customer}</td>
-                  <td className="table-td text-right font-semibold text-gray-700 dark:text-gray-200">{fmt(p.amount)}</td>
-                  <td className="table-td text-right text-amber-500 text-xs hidden md:table-cell">
-                    {p.fee > 0 ? `- ${fmt(p.fee)}` : <span className="text-gray-300">—</span>}
+                <tr key={p.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors">
+                  <td className="px-4 py-3 font-mono text-gray-400 dark:text-gray-500 text-xs">{formatDate(p.date)}</td>
+                  <td className="px-4 py-3 font-mono font-bold text-red-600 dark:text-red-400 text-xs">{p.invoiceId}</td>
+                  <td className="px-4 py-3 font-bold text-gray-900 dark:text-white text-xs max-w-[140px] truncate">{p.customer}</td>
+                  <td className="px-4 py-3 text-right font-mono font-bold text-gray-900 dark:text-white">{fmt(p.amount)}</td>
+                  <td className="px-4 py-3 text-right font-mono text-amber-600 dark:text-amber-400 text-xs hidden md:table-cell">
+                    {p.fee > 0 ? `- ${fmt(p.fee)}` : <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td text-right font-bold text-emerald-600">{fmt(p.net)}</td>
-                  <td className="table-td hidden lg:table-cell">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${METHOD_COLOR[p.method] || 'bg-gray-50 text-gray-600 dark:bg-gray-900/50 dark:text-gray-300'}`}>
+                  <td className="px-4 py-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">{fmt(p.net)}</td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold ${METHOD_COLOR[p.method] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-300'}`}>
                       {METHOD_ICON[p.method] || '💳'} {p.method}
                     </span>
                   </td>
-                  <td className="table-td text-xs text-gray-500 hidden lg:table-cell max-w-[130px] truncate dark:text-gray-400">
-                    {p.depositAccount || <span className="text-gray-300">—</span>}
+                  <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 hidden lg:table-cell max-w-[130px] truncate">
+                    {p.depositAccount || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td text-xs text-gray-500 hidden md:table-cell dark:text-gray-400">
-                    {p.reference || <span className="text-gray-300">—</span>}
+                  <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                    {p.reference || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       p.depositedTo === 'Enndy'
-                        ? 'bg-red-50 text-red-500'
-                        : 'bg-purple-50 text-purple-600'
+                        ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                        : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
                     }`}>
                       {p.depositedTo}
                     </span>
                   </td>
 
                   {/* ── Actions cell ── */}
-                  <td className="table-td text-right">
+                  <td className="px-4 py-3 text-right">
                     {deletingId === p.id ? (
                       <div className="flex items-center justify-end gap-1.5">
-                        <span className="text-xs text-red-500 font-semibold whitespace-nowrap">Fshij?</span>
+                        <span className="text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">Fshij?</span>
                         <button
-                          className="px-2 py-0.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded transition-colors"
+                          className="px-2 py-0.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors"
                           onClick={() => deletePayment(p)}
                         >
                           Po
                         </button>
                         <button
-                          className="px-2 py-0.5 border border-gray-200 text-gray-600 text-xs font-bold rounded hover:bg-gray-50 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900/50"
+                          className="px-2 py-0.5 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                           onClick={() => setDeletingId(null)}
                         >
                           Jo
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
-                          className="icon-btn text-red-400 hover:bg-red-50 hover:text-red-500"
+                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                           title="Ndrysho pagesën"
                           onClick={() => openEditPayment(p)}
                         >
                           <Pencil size={14} />
                         </button>
                         <button
-                          className="icon-btn text-red-400 hover:bg-red-50 hover:text-red-600"
+                          className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
                           title="Fshij pagesën"
                           onClick={() => setDeletingId(p.id)}
                         >
@@ -701,10 +706,10 @@ export default function Payments() {
 
           {/* Totals row - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2 border-t border-gray-100 bg-gray-50/40 text-xs font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400">
-              <span>Bruto: <span className="text-gray-700 dark:text-gray-200">{fmt(totalGross)}</span></span>
-              <span>Fee: <span className="text-amber-500">- {fmt(totalFee)}</span></span>
-              <span>Neto: <span className="text-emerald-600 text-sm font-bold">{fmt(totalNet)}</span></span>
+            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2.5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs font-bold text-gray-400 dark:text-gray-500">
+              <span>Bruto: <span className="font-mono text-gray-900 dark:text-white">{fmt(totalGross)}</span></span>
+              <span>Fee: <span className="font-mono text-amber-600 dark:text-amber-400">- {fmt(totalFee)}</span></span>
+              <span>Neto: <span className="font-mono text-emerald-600 dark:text-emerald-400 text-sm">{fmt(totalNet)}</span></span>
             </div>
           )}
 
@@ -716,29 +721,29 @@ export default function Payments() {
 
       {/* Profit split box (kur filtrohet muaj) */}
       {monthFilt !== 'all' && filtered.length > 0 && (
-        <div className="mt-4 bg-white rounded-xl border border-gray-100 p-5 dark:bg-gray-800 dark:border-gray-700">
-          <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2 dark:text-gray-200">
+        <div className="mt-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm p-5">
+          <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Users size={15} className="text-red-500" />
             Ndarja e Fitimit — {monthFilt}
           </h3>
           <div className="grid grid-cols-3 gap-4 text-center">
-            <div className="bg-emerald-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">Neto Totale</p>
-              <p className="text-lg font-bold text-emerald-600">{fmt(totalNet)}</p>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl py-4">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">Neto Totale</p>
+              <p className="text-lg font-black font-mono text-emerald-600 dark:text-emerald-400">{fmt(totalNet)}</p>
             </div>
-            <div className="bg-red-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">👤 Enndy</p>
-              <p className="text-lg font-bold text-red-500">{fmt(enndiNet)}</p>
-              <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">Pritshme 50%: {fmt(totalNet / 2)}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-2xl py-4">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">👤 Enndy</p>
+              <p className="text-lg font-black font-mono text-red-600 dark:text-red-400">{fmt(enndiNet)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Pritshme 50%: {fmt(totalNet / 2)}</p>
             </div>
-            <div className="bg-purple-50 rounded-xl py-4">
-              <p className="text-xs text-gray-400 mb-1 dark:text-gray-500">👤 Samki</p>
-              <p className="text-lg font-bold text-purple-600">{fmt(samkiNet)}</p>
-              <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">Pritshme 50%: {fmt(totalNet / 2)}</p>
+            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-2xl py-4">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">👤 Samki</p>
+              <p className="text-lg font-black font-mono text-purple-600 dark:text-purple-400">{fmt(samkiNet)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Pritshme 50%: {fmt(totalNet / 2)}</p>
             </div>
           </div>
           {Math.abs(enndiNet - samkiNet) > 0.01 && (
-            <div className="mt-3 text-xs text-amber-600 bg-amber-50 rounded-lg px-4 py-2.5">
+            <div className="mt-3 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-2.5">
               ⚖️ Diferenca mes partnerëve: <strong>{fmt(Math.abs(enndiNet - samkiNet))}</strong> —{' '}
               {enndiNet > samkiNet ? 'Enndy' : 'Samki'} ka marrë më shumë këtë muaj.
             </div>
