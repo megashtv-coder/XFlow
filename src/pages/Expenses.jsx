@@ -17,10 +17,10 @@ const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 const FREQ_OPTIONS = ['Ditore', 'Javore', 'Mujore', 'Vjetore']
 
 const FREQ_COLOR = {
-  Ditore:  'bg-amber-50 text-amber-600',
-  Javore:  'bg-blue-50 text-blue-500',
-  Mujore:  'bg-red-50 text-red-500',
-  Vjetore: 'bg-purple-50 text-purple-600',
+  Ditore:  'bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400',
+  Javore:  'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400',
+  Mujore:  'bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400',
+  Vjetore: 'bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
 }
 
 /* ── Slide-select për llogaritë ── */
@@ -679,15 +679,18 @@ export default function ExpensesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-6 border-b border-gray-200 dark:border-gray-700">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Shpenzimet</h2>
-          <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">Totali: {fmt(allTotal)}</p>
+          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
+            <Receipt size={20} className="text-red-500" />
+            Shpenzimet
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{expenses.length} shpenzime gjithsej në sistem</p>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Export - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setExportOpen(true)}
             title="Eksporto"
           >
@@ -696,7 +699,7 @@ export default function ExpensesPage() {
 
           {/* Import - Hidden on mobile */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300"
+            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setImportOpen(true)}
             title="Importo Excel"
           >
@@ -705,11 +708,11 @@ export default function ExpensesPage() {
 
           {/* New Expense - Hidden on mobile (see FAB below) */}
           <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors font-bold text-lg"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 font-bold text-xs shadow-sm"
             onClick={openAdd}
             title="Shpenzim i ri"
           >
-            +
+            <Plus size={14}/> Shpenzim i ri
           </button>
         </div>
       </div>
@@ -724,35 +727,35 @@ export default function ExpensesPage() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
-          <p className="text-xs text-gray-400 font-medium mb-1 dark:text-gray-500">Totali</p>
-          <p className="text-xl font-bold text-red-500">- {fmt(allTotal)}</p>
-          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{expenses.length} shpenzime</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-bold mb-1">Totali</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-red-400">- {fmt(allTotal)}</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{expenses.length} shpenzime</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <Users size={13} className="text-red-400" />
-            <p className="text-xs text-gray-400 font-medium dark:text-gray-500">Enndy</p>
+            <Users size={12} className="text-red-400" />
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Enndy</p>
           </div>
-          <p className="text-xl font-bold text-red-500">- {fmt(enndiTotal)}</p>
-          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{Math.round(enndiTotal/allTotal*100)||0}% e totalit</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-red-400">- {fmt(enndiTotal)}</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{Math.round(enndiTotal/allTotal*100)||0}% e totalit</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <Users size={13} className="text-purple-400" />
-            <p className="text-xs text-gray-400 font-medium dark:text-gray-500">Samki</p>
+            <Users size={12} className="text-purple-400" />
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Samki</p>
           </div>
-          <p className="text-xl font-bold text-purple-600">- {fmt(samkiTotal)}</p>
-          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{Math.round(samkiTotal/allTotal*100)||0}% e totalit</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-purple-600 dark:text-purple-400">- {fmt(samkiTotal)}</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{Math.round(samkiTotal/allTotal*100)||0}% e totalit</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-100 px-5 py-4 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
-            <RefreshCw size={13} className="text-emerald-400" />
-            <p className="text-xs text-gray-400 font-medium dark:text-gray-500">Të Rregullta</p>
+            <RefreshCw size={12} className="text-emerald-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Të Rregullta</p>
           </div>
-          <p className="text-xl font-bold text-gray-700 dark:text-gray-200">- {fmt(recurTotal)}</p>
-          <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{recurringItems.length} shpenzime aktive</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-gray-900 dark:text-white">- {fmt(recurTotal)}</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{recurringItems.length} shpenzime aktive</p>
         </div>
       </div>
 
@@ -760,23 +763,25 @@ export default function ExpensesPage() {
       {recurringItems.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <RefreshCw size={14} className="text-red-500" />
-            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200">Shpenzime të Rregullta</h3>
-            <span className="bg-red-50 text-red-500 text-xs font-bold px-2 py-0.5 rounded-full">{recurringItems.length} aktive</span>
+            <RefreshCw size={16} className="text-red-500" />
+            <h3 className="text-sm font-bold text-red-600 dark:text-red-400 tracking-tight">Shpenzime të Rregullta</h3>
+            <span className="bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 text-[11px] font-extrabold px-2 py-0.5 rounded-full">{recurringItems.length} aktive</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {recurringItems.map(e => (
-              <button key={e.id} onClick={() => navigate(`expenses:${e.id}:edit`)} className="text-left bg-white border border-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 hover:border-red-400 hover:shadow-md transition-all cursor-pointer dark:bg-gray-800 dark:border-gray-700">
-                <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
-                  <RefreshCw size={15} className="text-red-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate dark:text-gray-100">{e.type}</p>
-                  <p className="text-xs text-gray-400 truncate dark:text-gray-500">{e.vendor || '—'}</p>
+              <button key={e.id} onClick={() => navigate(`expenses:${e.id}:edit`)} className="text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-3.5 py-3 flex items-center justify-between gap-3 hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 flex items-center justify-center flex-shrink-0">
+                    <RefreshCw size={15} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-gray-900 dark:text-white truncate">{e.type}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{e.vendor || '—'}</p>
+                  </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-sm font-bold text-red-500">- {fmt(e.amount)}</p>
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400 dark:bg-gray-900/50 dark:text-gray-500'}`}>
+                  <span className="text-sm font-black font-mono text-red-600 dark:text-red-400 block">- {fmt(e.amount)}</span>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
                     {e.recurringFreq}
                   </span>
                 </div>
@@ -787,79 +792,81 @@ export default function ExpensesPage() {
       )}
 
       {/* Filtrat */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 transition-all flex-1 min-w-[160px] dark:bg-gray-800 dark:border-gray-700">
-          <Search size={14} className="text-gray-400 dark:text-gray-500" />
-          <input className="bg-transparent border-none outline-none text-sm text-gray-600 w-full placeholder-gray-400 dark:text-gray-300"
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
+        <div className="relative flex-1 min-w-[160px]">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+          <input className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
             placeholder="Kërko shpenzime..."
             value={search} onChange={e => { setSearch(e.target.value); setPg(1) }} />
           {search && (
-            <button onClick={() => { setSearch(''); setPg(1) }} className="text-gray-300 hover:text-gray-500 dark:hover:text-gray-400">
+            <button onClick={() => { setSearch(''); setPg(1) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
               <X size={13} />
             </button>
           )}
         </div>
 
-        <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={partnerFilt} onChange={e => { setPartner(e.target.value); setPg(1) }}>
-          <option value="all">Të dy partnerët</option>
-          <option value="Enndy">Enndy</option>
-          <option value="Samki">Samki</option>
-        </select>
+        <div className="flex flex-wrap items-center gap-2">
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={partnerFilt} onChange={e => { setPartner(e.target.value); setPg(1) }}>
+            <option value="all">Të dy partnerët</option>
+            <option value="Enndy">Enndy</option>
+            <option value="Samki">Samki</option>
+          </select>
 
-        <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer max-w-[200px] dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={typeFilt} onChange={e => { setType(e.target.value); setPg(1) }}>
-          <option value="all">Të gjitha llojet</option>
-          {usedTypes.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer max-w-[200px]"
+            value={typeFilt} onChange={e => { setType(e.target.value); setPg(1) }}>
+            <option value="all">Të gjitha llojet</option>
+            {usedTypes.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
 
-        <select className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={recurFilt} onChange={e => { setRecurFilt(e.target.value); setPg(1) }}>
-          <option value="all">Të gjitha</option>
-          <option value="recurring">Vetëm të rregullta</option>
-          <option value="once">Vetëm njëherësh</option>
-        </select>
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={recurFilt} onChange={e => { setRecurFilt(e.target.value); setPg(1) }}>
+            <option value="all">Të gjitha</option>
+            <option value="recurring">Vetëm të rregullta</option>
+            <option value="once">Vetëm njëherësh</option>
+          </select>
 
-        <select className="hidden sm:block bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 outline-none focus:border-red-400 cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-          value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}>
-          <option value={25}>25 / faqe</option>
-          <option value={50}>50 / faqe</option>
-          <option value={100}>100 / faqe</option>
-          <option value={200}>200 / faqe</option>
-        </select>
+          <select className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}>
+            <option value={25}>25 / faqe</option>
+            <option value={50}>50 / faqe</option>
+            <option value={100}>100 / faqe</option>
+            <option value={200}>200 / faqe</option>
+          </select>
 
-        <span className="text-xs text-gray-400 flex items-center gap-1 ml-auto dark:text-gray-500">
-          <Filter size={12} /> {filtered.length}
-          {partnerFilt !== 'all' && <span className="font-semibold text-gray-600 ml-1 dark:text-gray-300">· {fmt(total)}</span>}
-        </span>
+          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono px-2 flex items-center gap-1">
+            {filtered.length}
+            {partnerFilt !== 'all' && <span className="text-gray-600 dark:text-gray-300">· {fmt(total)}</span>}
+          </span>
+        </div>
       </div>
 
       {/* Mobile Card View - Hidden on sm+ */}
       {paged.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
           {paged.map(e => (
-              <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-3 dark:bg-gray-800 dark:border-gray-700">
+              <div key={e.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
                 <div className="flex justify-between items-start gap-2">
                   {/* Col 1: Type + Date + Vendor */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <p className="font-bold text-gray-800 text-sm dark:text-gray-100">{e.type}</p>
+                      <p className="font-bold text-gray-900 dark:text-white text-sm">{e.type}</p>
                       {e.recurring && (
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400 dark:bg-gray-900/50 dark:text-gray-500'}`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
                           {e.recurringFreq}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{formatDate(e.date)}</p>
-                    <p className="text-xs text-gray-600 mt-0.5 dark:text-gray-300">{e.vendor || '—'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-mono">{formatDate(e.date)}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{e.vendor || '—'}</p>
                   </div>
 
                   {/* Col 2: Amount + Account + Partner */}
                   <div className="text-right">
-                    <p className="font-bold text-red-500 text-sm">- {fmt(e.amount)}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">{e.paidFrom || '—'}</p>
-                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold mt-0.5 ${
-                      e.paidBy === 'Enndy' ? 'bg-red-50 text-red-500' : 'bg-purple-50 text-purple-600'
+                    <p className="font-mono font-bold text-red-600 dark:text-red-400 text-sm">- {fmt(e.amount)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{e.paidFrom || '—'}</p>
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold mt-0.5 ${
+                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
                     }`}>
                       {e.paidBy || '—'}
                     </span>
@@ -868,7 +875,7 @@ export default function ExpensesPage() {
                   {/* Col 3: Actions - Dropdown */}
                   <div className="relative flex-shrink-0">
                     <button
-                      className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-red-500 hover:text-white transition-all dark:text-gray-300"
+                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
                       onClick={() => setOpenDropdown(openDropdown === e.id ? null : e.id)}
                     >
                       ⋮
@@ -876,9 +883,9 @@ export default function ExpensesPage() {
 
                     {/* Dropdown Menu */}
                     {openDropdown === e.id && (
-                      <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-50 dark:bg-gray-800 dark:border-gray-700">
+                      <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 overflow-hidden">
                         <button
-                          className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-red-50 flex items-center gap-2 border-b dark:text-gray-200"
+                          className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
                           onClick={() => {
                             openEdit(e)
                             setOpenDropdown(null)
@@ -887,7 +894,7 @@ export default function ExpensesPage() {
                           ✏ Edito
                         </button>
                         <button
-                          className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                           onClick={() => {
                             openDelete(e)
                             setOpenDropdown(null)
@@ -917,88 +924,88 @@ export default function ExpensesPage() {
           sub="Regjistro shpenzimin e parë"
           action={<button className="btn btn-primary mt-2" onClick={openAdd}><Plus size={14}/>Shpenzim i ri</button>}/>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hidden sm:block dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 420px)' }}>
           <table className="w-full text-sm min-w-[480px]">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-100 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50">
+              <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
                 {[
                   { key: 'date',   label: 'Data',     cls: '' },
                   { key: 'type',   label: 'Për çfarë',cls: '' },
                 ].map(col => (
-                  <th key={col.key} className={`table-th cursor-pointer select-none hover:text-red-500 ${col.cls}`}
+                  <th key={col.key} className={`px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 ${col.cls}`}
                       onClick={() => toggleSort(col.key)}>
                     <span className="flex items-center gap-1">
                       {col.label}
-                      <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                      <span className="text-[10px]">{sortField === col.key ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                     </span>
                   </th>
                 ))}
-                <th className="table-th hidden md:table-cell cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden md:table-cell cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('vendor')}>
                   <span className="flex items-center gap-1">
                     Furnitori
-                    <span className="text-[10px]">{sortField === 'vendor' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'vendor' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th hidden lg:table-cell">Llogaria</th>
-                <th className="table-th hidden md:table-cell">Referenca</th>
-                <th className="table-th cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden lg:table-cell">Llogaria</th>
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider hidden md:table-cell">Referenca</th>
+                <th className="px-4 py-3 text-left text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('paidBy')}>
                   <span className="flex items-center gap-1">
                     Partneri
-                    <span className="text-[10px]">{sortField === 'paidBy' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'paidBy' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th text-right cursor-pointer select-none hover:text-red-500"
+                <th className="px-4 py-3 text-right text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('amount')}>
                   <span className="flex items-center justify-end gap-1">
                     Shuma
-                    <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300">↕</span>}</span>
+                    <span className="text-[10px]">{sortField === 'amount' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th w-16 bg-gray-50 dark:bg-gray-900/50"/>
+                <th className="px-4 py-3 w-16 bg-gray-50/50 dark:bg-gray-900/50"/>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
               {paged.map(e => (
-                <tr key={e.id} className="hover:bg-red-50/20 transition-colors group">
-                  <td className="table-td text-gray-400 text-xs dark:text-gray-500">{formatDate(e.date)}</td>
-                  <td className="table-td">
+                <tr key={e.id} className="hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors">
+                  <td className="px-4 py-3 font-mono text-gray-400 dark:text-gray-500 text-xs">{formatDate(e.date)}</td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-gray-800 text-xs dark:text-gray-100">{e.type}</span>
+                      <span className="font-bold text-gray-900 dark:text-white text-xs">{e.type}</span>
                       {e.recurring && (
-                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 text-gray-400 dark:bg-gray-900/50 dark:text-gray-500'}`}>
+                        <span className={`inline-flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
                           <RefreshCw size={8}/> {e.recurringFreq}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="table-td text-gray-500 text-xs hidden md:table-cell dark:text-gray-400">
-                    {e.vendor || <span className="text-gray-300">—</span>}
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs hidden md:table-cell">
+                    {e.vendor || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td text-gray-500 text-xs hidden lg:table-cell max-w-[130px] truncate dark:text-gray-400">
-                    {e.paidFrom || <span className="text-gray-300">—</span>}
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs hidden lg:table-cell max-w-[130px] truncate">
+                    {e.paidFrom || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td text-gray-400 text-xs hidden md:table-cell dark:text-gray-500">
-                    {e.reference || <span className="text-gray-300">—</span>}
+                  <td className="px-4 py-3 text-gray-400 dark:text-gray-500 text-xs hidden md:table-cell">
+                    {e.reference || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
-                  <td className="table-td">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                      e.paidBy === 'Enndy' ? 'bg-red-50 text-red-500' : 'bg-purple-50 text-purple-600'
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
                     }`}>
                       {e.paidBy || '—'}
                     </span>
                   </td>
-                  <td className="table-td text-right font-bold text-red-500">
+                  <td className="px-4 py-3 text-right font-mono font-bold text-red-600 dark:text-red-400">
                     - {fmt(e.amount)}
                   </td>
-                  <td className="table-td">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="icon-btn text-red-400 hover:bg-red-50" onClick={() => openEdit(e)} title="Edito">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => openEdit(e)} title="Edito">
                         ✏
                       </button>
-                      <button className="icon-btn text-red-300 hover:bg-red-50 hover:text-red-500" onClick={() => openDelete(e)} title="Fshi">
+                      <button className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors" onClick={() => openDelete(e)} title="Fshi">
                         <Trash2 size={14}/>
                       </button>
                     </div>
@@ -1011,13 +1018,13 @@ export default function ExpensesPage() {
 
           {/* Footer totals - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="hidden sm:flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50/40 text-xs dark:border-gray-700">
-              <div className="flex gap-4 text-gray-400 dark:text-gray-500">
-                <span>Enndy: <span className="font-bold text-red-500">- {fmt(filteredEnndiTotal)}</span></span>
-                <span>Samki: <span className="font-bold text-purple-600">- {fmt(filteredSamkiTotal)}</span></span>
+            <div className="hidden sm:flex items-center justify-between px-5 py-2.5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs">
+              <div className="flex gap-4 text-gray-400 dark:text-gray-500 font-bold">
+                <span>Enndy: <span className="font-mono text-red-600 dark:text-red-400">- {fmt(filteredEnndiTotal)}</span></span>
+                <span>Samki: <span className="font-mono text-purple-600 dark:text-purple-400">- {fmt(filteredSamkiTotal)}</span></span>
               </div>
-              <span className="font-semibold text-gray-500 dark:text-gray-400">
-                Total: <span className="text-red-500 font-bold">{fmt(total)}</span>
+              <span className="font-bold text-gray-400 dark:text-gray-500">
+                Total: <span className="font-mono text-red-600 dark:text-red-400 text-sm">{fmt(total)}</span>
               </span>
             </div>
           )}
