@@ -591,6 +591,97 @@ const CustomerCard = memo(function CustomerCard({ c, onEdit, fmt, isLatePayer, o
 })
 
 /* ══════════════════════════════════════════════════════════
+   Tabela e klientëve — vetëm desktop (sm:hidden në mobile)
+══════════════════════════════════════════════════════════ */
+const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onDelete, checked, onToggleSelect }) {
+  const isReseller = c.type === 'reseller'
+
+  return (
+    <tr
+      className="border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors cursor-pointer"
+      onClick={() => onEdit(c)}
+    >
+      <td className="p-3" onClick={e => e.stopPropagation()}>
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={onToggleSelect}
+          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-red-500 cursor-pointer"
+        />
+      </td>
+      <td className="p-3">
+        <div className="flex items-center gap-3">
+          <Avatar name={c.name || c.firstName || '?'} color={c.color} size={34} />
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-bold text-gray-900 dark:text-white text-sm truncate">{c.name || `${c.firstName} ${c.lastName}`}</span>
+              {isLatePayer && (
+                <span className="flex items-center gap-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400 border border-orange-100 dark:border-orange-900/50 text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0" title="Ky klient ka shfaqur vonesa pagese">
+                  <AlertTriangle size={9}/> Vonues
+                </span>
+              )}
+            </div>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+              <Globe size={10}/> {c.country}
+            </span>
+          </div>
+        </div>
+      </td>
+      <td className="p-3 text-xs">
+        {c.email && <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300"><Mail size={11} className="text-gray-400 dark:text-gray-500"/>{c.email}</div>}
+        {c.phone && <div className="flex items-center gap-1.5 font-mono text-gray-400 dark:text-gray-500 mt-0.5">{c.phone}</div>}
+      </td>
+      <td className="p-3 text-xs">
+        {isReseller ? (
+          <>
+            {c.username && <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{c.username}</span>}
+            {c.panel && <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">{c.panel}</span>}
+          </>
+        ) : (
+          <>
+            {c.app && <span className="font-semibold text-gray-800 dark:text-gray-200 block">{c.app}</span>}
+            {c.macAddress && <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">{c.macAddress}</span>}
+          </>
+        )}
+      </td>
+      <td className="p-3">
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+          isReseller ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+        }`}>
+          {isReseller ? 'Reseller' : 'Individual'}
+        </span>
+      </td>
+      <td className="p-3 text-right font-mono font-bold text-red-600 dark:text-red-400 text-xs">{fmt(c.total)}</td>
+      <td className="p-3 text-right font-mono font-bold text-gray-800 dark:text-gray-200 text-xs">{c.invoices}</td>
+      <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-end gap-1.5">
+          <button
+            onClick={() => onEdit(c)}
+            className="px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold text-[11px] hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+          >
+            Detajet
+          </button>
+          <button
+            onClick={() => onEdit(c)}
+            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            title="Edito"
+          >
+            <Pencil size={13}/>
+          </button>
+          <button
+            onClick={() => onDelete(c.id)}
+            className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+            title="Fshi klientin"
+          >
+            <Trash2 size={13}/>
+          </button>
+        </div>
+      </td>
+    </tr>
+  )
+})
+
+/* ══════════════════════════════════════════════════════════
    Faqja kryesore
 ══════════════════════════════════════════════════════════ */
 export default function Customers() {
@@ -931,7 +1022,42 @@ export default function Customers() {
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden mb-6">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left" style={{ minWidth: 760 }}>
+                <thead>
+                  <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                    <th className="p-3 w-10"></th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Klienti</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Kontaktet</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Aplikacioni / Panel</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Tipi</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Totali</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Fatura</th>
+                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Veprime</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedCustomers.map(c => (
+                    <CustomerRow
+                      key={c.id}
+                      c={c}
+                      onEdit={setSelectedCustomer}
+                      fmt={fmt}
+                      isLatePayer={latePayerNames.has(c.name)}
+                      onDelete={handleDeleteCustomer}
+                      checked={selected.has(c.id)}
+                      onToggleSelect={() => toggleSelectCustomer(c.id)}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile: cards */}
+          <div className="sm:hidden grid grid-cols-1 gap-4 mb-6">
             {paginatedCustomers.map(c => (
               <CustomerCard
                 key={c.id}
