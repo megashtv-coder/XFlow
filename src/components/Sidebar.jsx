@@ -89,7 +89,10 @@ export default function Sidebar() {
   const renderNavItem = ({ id, icon: Icon, label, badge, badgeColor }) => {
     const isActive = page === id
     return (
-      <div key={id} className="relative">
+      // -mr-2 anulon padding-un e djathtë të <nav> (px-2), që artikulli/kthesa
+      // të arrijë saktësisht te buza e sidebar-it — përndryshe mbetej një
+      // shirit i hollë me ngjyrën e sidebar-it të pazëvendësuar në cep.
+      <div key={id} className={`relative ${!sidebarCollapsed ? '-mr-2' : ''}`}>
         {isActive && !sidebarCollapsed && (
           <div className="absolute -top-[18px] right-0 w-[18px] h-[18px] bg-gray-50 dark:bg-gray-900 pointer-events-none overflow-hidden z-10">
             <div className="w-full h-full bg-red-50 dark:bg-gray-800 rounded-br-[18px]" />
@@ -135,7 +138,7 @@ export default function Sidebar() {
 
       <aside className={`
         fixed top-0 left-0 h-full bg-red-50 dark:bg-gray-800 border-r border-red-100 dark:border-gray-700 flex flex-col z-50 transition-all duration-300
-        rounded-tr-[28px] rounded-br-[28px] overflow-hidden
+        rounded-br-[28px] overflow-hidden
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:z-auto
         ${w}
