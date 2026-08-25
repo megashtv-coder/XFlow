@@ -1239,7 +1239,7 @@ export default function Invoices() {
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <div>
               <p className="font-extrabold text-sm text-gray-900 dark:text-gray-100">Të gjitha faturat</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">{filtered.length.toLocaleString('de-DE')} rezultate</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">{filtered.length.toLocaleString('en-US')} rezultate</p>
             </div>
             <button
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors"
@@ -1427,7 +1427,7 @@ export default function Invoices() {
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Faturat</h2>
             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-              {invoices.length.toLocaleString('de-DE')} fatura
+              {invoices.length.toLocaleString('en-US')} fatura
             </span>
           </div>
 
@@ -1512,7 +1512,7 @@ export default function Invoices() {
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Të paguara</span>
               <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 whitespace-nowrap">
-                {paidInvoicesList.length.toLocaleString('de-DE')} fatura
+                {paidInvoicesList.length.toLocaleString('en-US')} fatura
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{fmt(paidValue)}</p>

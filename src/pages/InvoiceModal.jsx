@@ -342,7 +342,7 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
 ───────────────────────────────────────────────────────────── */
 function ItemRow({ item, products, onUpdate, onRemove, canRemove }) {
   const lineTotal = (Number(item.qty) || 0) * (Number(item.unitPrice) || 0)
-  const fmtN = v => new Intl.NumberFormat('de-DE').format(v)
+  const fmtN = v => new Intl.NumberFormat('en-US').format(v)
   const isMobile = useIsMobile()
 
   return (

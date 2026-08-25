@@ -118,7 +118,7 @@ function FinanciareTab({ invoices, expenses, fmt }) {
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false}/>
               <XAxis dataKey="month" tick={{ fontSize:11, fill:'#9ca3af' }} axisLine={false} tickLine={false}/>
               <YAxis tick={{ fontSize:11, fill:'#9ca3af' }} axisLine={false} tickLine={false} tickFormatter={v => v/1000+'k'}/>
-              <Tooltip formatter={v => [`€${v.toLocaleString()}`, activeTab.label]} contentStyle={{ border:'1px solid #f3f4f6', borderRadius:10, fontSize:12 }}/>
+              <Tooltip formatter={v => [`€${v.toLocaleString('en-US')}`, activeTab.label]} contentStyle={{ border:'1px solid #f3f4f6', borderRadius:10, fontSize:12 }}/>
               <Bar dataKey={activeTab.key} fill={activeTab.color} radius={[6,6,0,0]}/>
             </BarChart>
           </ResponsiveContainer>
