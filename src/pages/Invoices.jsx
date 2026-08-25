@@ -3,7 +3,7 @@ import {
   FileText, Download, Pencil, Trash2, CreditCard,
   MessageCircle, Send, XCircle, X, MessageSquare,
   Search, Plus, LayoutList, Columns, AlertTriangle, FileSpreadsheet,
-  MoreVertical, Edit3,
+  MoreVertical, Edit3, Eye, EyeOff,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
@@ -209,8 +209,9 @@ function exportToJSON(invoices) {
 }
 
 /* ── compact invoice card (left panel list) ─────────── */
-const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onClick, customerMap }) {
-  const { fmt } = useApp()
+const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onClick, customerMap, hidden }) {
+  const { fmt: rawFmt } = useApp()
+  const fmt = hidden ? () => '••••••' : rawFmt
   const isReseller = customerMap.get(inv.customer)?.type === 'reseller'
   const diff = inv.due
     ? Math.round((new Date(inv.due) - Date.now()) / 86_400_000)
@@ -387,14 +388,15 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
 })
 
 /* ── invoice side panel (right panel) ───────────────── */
-function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) {
+function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hidden }) {
   const {
     invoices, setInvoices,
     customers,
     payments, setPayments,
     setModal, closeModal,
-    showToast, fmt, logActivity, navigate,
+    showToast, fmt: rawFmt, logActivity, navigate,
   } = useApp()
+  const fmt = hidden ? () => '••••••' : rawFmt
 
   const inv = invoices.find(i => i.id === invId)
   if (!inv) return null
@@ -818,8 +820,9 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap }) 
 /* ══════════════════════════════════════════════════════════
    Kanban Board
 ══════════════════════════════════════════════════════════ */
-function KanbanCard({ inv, onOpen, customerMap }) {
-  const { fmt, customers, setModal, closeModal } = useApp()
+function KanbanCard({ inv, onOpen, customerMap, hidden }) {
+  const { fmt: rawFmt, customers, setModal, closeModal } = useApp()
+  const fmt = hidden ? () => '••••••' : rawFmt
   const custObj  = customerMap ? customerMap.get(inv.customer) : customers.find(c => c.name === inv.customer)
   const rawPhone = cleanPhone(custObj?.phone || '')
   const today    = new Date().toISOString().slice(0, 10)
@@ -909,7 +912,7 @@ function KanbanCard({ inv, onOpen, customerMap }) {
   )
 }
 
-function KanbanBoard({ invoices, setPreview, customerMap }) {
+function KanbanBoard({ invoices, setPreview, customerMap, hidden }) {
   const today = new Date().toISOString().slice(0, 10)
 
   const pending = invoices.filter(i => i.status === 'pending')
@@ -967,7 +970,7 @@ function KanbanBoard({ invoices, setPreview, customerMap }) {
               <p className="text-xs text-gray-300 italic text-center py-6">{col.empty}</p>
             ) : (
               col.items.map(inv => (
-                <KanbanCard key={inv.id} inv={inv} onOpen={id => setPreview(id)} customerMap={customerMap} />
+                <KanbanCard key={inv.id} inv={inv} onOpen={id => setPreview(id)} customerMap={customerMap} hidden={hidden} />
               ))
             )}
           </div>
@@ -988,10 +991,12 @@ export default function Invoices() {
     invoices, setInvoices,
     customers,
     setModal, closeModal,
-    showToast, fmt,
+    showToast, fmt: rawFmt,
     currentOrgId, currentOrg,
     page, navigate, logActivity,
   } = useApp()
+  const [hideAmounts, setHideAmounts] = useState(true) // fshehur si parazgjedhje — mbrojtje privatësie
+  const fmt = hideAmounts ? () => '••••••' : rawFmt
 
   // Detect if we're in form mode (page like "invoices:create" or "invoices:ID:edit")
   const pageMatch = page.split(':')
@@ -1241,12 +1246,21 @@ export default function Invoices() {
               <p className="font-extrabold text-sm text-gray-900 dark:text-gray-100">Të gjitha faturat</p>
               <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">{filtered.length.toLocaleString('en-US')} rezultate</p>
             </div>
-            <button
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors"
-              onClick={() => navigateWithClearPreview('invoices:create')}
-            >
-              <Plus size={12}/> Faturë
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setHideAmounts(h => !h)}
+                title={hideAmounts ? 'Shfaq shumat' : 'Fshih shumat'}
+                className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors flex-shrink-0"
+              >
+                {hideAmounts ? <EyeOff size={13}/> : <Eye size={13}/>}
+              </button>
+              <button
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-xl bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors"
+                onClick={() => navigateWithClearPreview('invoices:create')}
+              >
+                <Plus size={12}/> Faturë
+              </button>
+            </div>
           </div>
 
           <div className="px-3 pt-3">
@@ -1306,6 +1320,7 @@ export default function Invoices() {
                   selected={preview === inv.id}
                   onClick={() => setPreview(inv.id)}
                   customerMap={customerMap}
+                  hidden={hideAmounts}
                 />
               ))
             )}
@@ -1322,6 +1337,7 @@ export default function Invoices() {
             onClose={() => setPreview(null)}
             setSelectedCustomer={setSelectedCustomer}
             customerMap={customerMap}
+            hidden={hideAmounts}
           />
         </div>
 
@@ -1347,6 +1363,15 @@ export default function Invoices() {
             <p className="text-sm text-gray-400 mt-0.5 dark:text-gray-500">{invoices.length} fatura gjithsej</p>
           </div>
           <div className="flex items-center gap-1.5">
+            {/* Hide/show amounts */}
+            <button
+              onClick={() => setHideAmounts(h => !h)}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700"
+              title={hideAmounts ? 'Shfaq shumat' : 'Fshih shumat'}
+            >
+              {hideAmounts ? <EyeOff size={16}/> : <Eye size={16}/>}
+            </button>
+
             {/* Switch to table view */}
             <button
               onClick={() => setViewMode('table')}
@@ -1376,7 +1401,7 @@ export default function Invoices() {
           </div>
         </div>
 
-        <KanbanBoard invoices={invoices} setPreview={setPreview} customerMap={customerMap} />
+        <KanbanBoard invoices={invoices} setPreview={setPreview} customerMap={customerMap} hidden={hideAmounts} />
 
         {/* Customer Details Modal */}
         {selectedCustomer && (
@@ -1433,6 +1458,15 @@ export default function Invoices() {
 
           {/* Action buttons */}
           <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Hide/show amounts */}
+            <button
+              onClick={() => setHideAmounts(h => !h)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              title={hideAmounts ? 'Shfaq shumat' : 'Fshih shumat'}
+            >
+              {hideAmounts ? <EyeOff size={16}/> : <Eye size={16}/>}
+            </button>
+
             {/* Export - Icon only - Hidden on mobile */}
             <button
               onClick={() => setExportOpen(true)}
