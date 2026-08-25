@@ -16,10 +16,10 @@
     @apply flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-500 text-sm font-medium transition-all duration-150 select-none;
   }
   .sidebar-item:hover {
-    @apply bg-gray-200/70 text-gray-700;
+    @apply bg-red-100/70 text-gray-700;
   }
   .sidebar-item.active {
-    @apply bg-red-50 text-red-500 font-semibold;
+    @apply bg-red-500 text-white font-semibold shadow-sm;
   }
   .card {
     @apply bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden;

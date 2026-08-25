@@ -87,13 +87,13 @@ export default function Sidebar() {
       )}
 
       <aside className={`
-        fixed top-0 left-0 h-full bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col z-50 transition-all duration-300
+        fixed top-0 left-0 h-full bg-red-50 dark:bg-gray-800 border-r border-red-100 dark:border-gray-700 flex flex-col z-50 transition-all duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:z-auto
         ${w}
       `}>
         {/* Logo + Collapse Button */}
-        <div className={`flex items-center border-b border-gray-100 dark:border-gray-800 h-12 sm:h-14 flex-shrink-0 dark:border-gray-700 ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2 sm:gap-3 px-3 sm:px-4'}`}>
+        <div className={`flex items-center border-b border-red-100 dark:border-gray-800 h-12 sm:h-14 flex-shrink-0 dark:border-gray-700 ${sidebarCollapsed ? 'justify-center px-2' : 'gap-2 sm:gap-3 px-3 sm:px-4'}`}>
           <img src="/logo.png" alt="X-Flow" className="w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0 object-contain" />
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ export default function Sidebar() {
                 <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mt-4 mb-2">AI</p>
               )}
               {separator && sidebarCollapsed && (
-                <div className="my-2 border-t border-gray-100 dark:border-gray-700" />
+                <div className="my-2 border-t border-red-100 dark:border-gray-700" />
               )}
               <div
                 title={sidebarCollapsed ? label : undefined}
@@ -156,7 +156,7 @@ export default function Sidebar() {
           {!sidebarCollapsed && (
             <p className="text-[10px] font-bold text-gray-300 tracking-widest uppercase px-3 mt-4 mb-2">Sistemi</p>
           )}
-          {sidebarCollapsed && <div className="my-2 border-t border-gray-100 dark:border-gray-700" />}
+          {sidebarCollapsed && <div className="my-2 border-t border-red-100 dark:border-gray-700" />}
 
           <div
             title={sidebarCollapsed ? 'Përdoruesit' : undefined}
@@ -179,9 +179,9 @@ export default function Sidebar() {
 
         {/* User card */}
         {!sidebarCollapsed && (
-          <div className="px-2 py-2 border-t border-gray-100 dark:border-gray-700">
+          <div className="px-2 py-2 border-t border-red-100 dark:border-gray-700">
             <div
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-gray-200/70 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+              className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-red-100/70 dark:hover:bg-gray-700 cursor-pointer transition-colors"
               onClick={() => navigate('settings')}
             >
               <div
@@ -203,10 +203,10 @@ export default function Sidebar() {
         )}
 
         {/* Logout button */}
-        <div className={`px-2 py-3 border-t border-gray-100 dark:border-gray-800 mt-auto dark:border-gray-700`}>
+        <div className={`px-2 py-3 border-t border-red-100 dark:border-gray-800 mt-auto dark:border-gray-700`}>
           <button
             type="button"
-            className={`sidebar-item w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 cursor-pointer transition-all ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
+            className={`sidebar-item w-full text-red-500 hover:bg-red-200/70 dark:hover:bg-red-900/20 hover:text-red-600 cursor-pointer transition-all ${sidebarCollapsed ? 'justify-center px-2' : ''}`}
             onClick={() => {
               console.log('Logging out...')
               logout()
