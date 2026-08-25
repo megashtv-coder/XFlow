@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import {
   TrendingUp, TrendingDown, Clock, FilePlus,
   UserPlus, ReceiptText, AlertCircle, UserCheck, Layers,
-  ArrowUp, ArrowDown, PieChart as PieIcon, CalendarDays,
+  ArrowUp, ArrowDown, PieChart as PieIcon, CalendarDays, Eye, EyeOff,
 } from 'lucide-react'
 import {
   ComposedChart, Area, Line, PieChart, Pie, Cell,
@@ -72,7 +72,7 @@ const DELTA_TONE = {
   neutral: 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',
 }
 
-function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, deltaTone = 'neutral', ctx, onClick }) {
+function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, deltaTone = 'neutral', ctx, onClick, hidden }) {
   const base = 'bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 flex flex-col h-full transition-all duration-200'
   const interactive = onClick
     ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-black/20 hover:border-red-100 dark:hover:border-red-900/40'
@@ -83,6 +83,10 @@ function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, 
   // duhet të tregojë lart, përndryshe duket sikur shpenzimet po bien.
   const Arrow = deltaUp === true ? ArrowUp : deltaUp === false ? ArrowDown : null
 
+  const displayValue = hidden ? '••••••' : value
+  const displayDelta = hidden ? null : delta
+  const displayCtx   = hidden ? '••• •••' : ctx
+
   return (
     <div className={`${base} ${interactive}`} onClick={onClick}>
       <div className="flex items-start justify-between gap-3">
@@ -91,21 +95,21 @@ function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, 
           <Icon size={17} style={{ color: iconColor }} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2 truncate">{value}</p>
+      <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2 truncate">{displayValue}</p>
       <div className="flex items-center gap-2 mt-auto pt-3 flex-wrap">
-        {delta && (
+        {displayDelta && (
           <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${DELTA_TONE[deltaTone]}`}>
-            {Arrow && <Arrow size={11} strokeWidth={3} />}{delta}
+            {Arrow && <Arrow size={11} strokeWidth={3} />}{displayDelta}
           </span>
         )}
-        {ctx && <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{ctx}</span>}
+        {displayCtx && <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{displayCtx}</span>}
       </div>
     </div>
   )
 }
 
 /* ── Grafik krahasues vit-për-vit (fushë me gradient + vija e vitit paraprak) ── */
-function YoYChart({ title, sub, data, curKey, prevKey, color, softColor, gradId, curLabel, prevLabel, fmt }) {
+function YoYChart({ title, sub, data, curKey, prevKey, color, softColor, gradId, curLabel, prevLabel, fmt, hidden }) {
   const rows      = data.filter(d => d[curKey] !== null && d[curKey] !== undefined)
   const curTotal  = rows.reduce((s, d) => s + (d[curKey]  || 0), 0)
   const prevTotal = rows.reduce((s, d) => s + (d[prevKey] || 0), 0)
@@ -158,7 +162,7 @@ function YoYChart({ title, sub, data, curKey, prevKey, color, softColor, gradId,
         </div>
       </div>
 
-      <div className="px-2 py-4">
+      <div className={`px-2 py-4 transition-all duration-200 ${hidden ? 'blur-md select-none pointer-events-none' : ''}`}>
         <ResponsiveContainer width="100%" height={220}>
           <ComposedChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
             <defs>
@@ -185,16 +189,16 @@ function YoYChart({ title, sub, data, curKey, prevKey, color, softColor, gradId,
       <div className="flex items-center justify-around gap-2 px-4 py-3 border-t border-gray-50 dark:border-gray-700 mt-auto">
         <div className="text-center">
           <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{curLabel}</p>
-          <p className="text-sm font-bold mt-0.5" style={{ color }}>{fmt(curTotal)}</p>
+          <p className="text-sm font-bold mt-0.5" style={{ color }}>{hidden ? '••••••' : fmt(curTotal)}</p>
         </div>
         <div className="text-center">
           <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">{prevLabel}</p>
-          <p className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">{fmt(prevTotal)}</p>
+          <p className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">{hidden ? '••••••' : fmt(prevTotal)}</p>
         </div>
         <div className="text-center">
           <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">Ndryshimi</p>
           <p className={`text-sm font-bold mt-0.5 ${up ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
-            {delta === null ? '—' : `${up ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`}
+            {hidden ? '•••' : delta === null ? '—' : `${up ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}%`}
           </p>
         </div>
       </div>
@@ -205,6 +209,7 @@ function YoYChart({ title, sub, data, curKey, prevKey, color, softColor, gradId,
 export default function Dashboard() {
   const { invoices, customers, expenses, payments, navigate, fmt, currentUser } = useApp()
   const [activeCat, setActiveCat] = useState(null)
+  const [hideData, setHideData] = useState(true) // fshehur si parazgjedhje — mbrojtje privatësie kur ekrani është i dukshëm
 
   const today             = new Date().toISOString().slice(0, 10)
   const actualCurrentYear = new Date().getFullYear().toString()
@@ -466,6 +471,13 @@ export default function Dashboard() {
               {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
+          <button
+            onClick={() => setHideData(h => !h)}
+            title={hideData ? 'Shfaq të dhënat' : 'Fshih të dhënat'}
+            className="flex items-center justify-center w-9 h-9 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/50 transition-colors flex-shrink-0"
+          >
+            {hideData ? <EyeOff size={15}/> : <Eye size={15}/>}
+          </button>
         </div>
       </div>
 
@@ -502,6 +514,7 @@ export default function Dashboard() {
           deltaUp={clientDelta === 0 ? undefined : clientDelta > 0}
           deltaTone={clientTone}
           ctx={`${activeClientsPrev} ${precLabel}`}
+          hidden={hideData}
         />
         <KpiCard
           icon={revIcon} iconBg={revBg} iconColor={revFg}
@@ -512,6 +525,7 @@ export default function Dashboard() {
           deltaTone={revDelta === null ? 'neutral' : revUp ? 'up' : 'down'}
           ctx={`vs. ${fmt(revPrevYTD)} ${ytdCtx}`}
           onClick={() => navigate(`payments?filter=year&year=${filterYear}`)}
+          hidden={hideData}
         />
         <KpiCard
           icon={expIcon} iconBg={expBg} iconColor={expFg}
@@ -522,6 +536,7 @@ export default function Dashboard() {
           deltaTone={expDelta === null ? 'neutral' : expUp ? 'down' : 'up'}
           ctx={`vs. ${fmt(expPrevYTD)} ${ytdCtx}`}
           onClick={() => navigate(`expenses?filter=year&year=${filterYear}`)}
+          hidden={hideData}
         />
         <KpiCard
           icon={Clock} iconBg="#fffbeb" iconColor="#d97706"
@@ -529,6 +544,7 @@ export default function Dashboard() {
           value={fmt(pendingKlientAmt)}
           ctx={`${pendingKlient.length} fatur${pendingKlient.length !== 1 ? 'a' : 'ë'} individuale`}
           onClick={() => navigate('invoices?filter=pending&type=individual')}
+          hidden={hideData}
         />
         <KpiCard
           icon={Layers} iconBg="#f5f3ff" iconColor="#7c3aed"
@@ -536,6 +552,7 @@ export default function Dashboard() {
           value={fmt(pendingResellerAmt)}
           ctx={`${pendingReseller.length} fatur${pendingReseller.length !== 1 ? 'a' : 'ë'} reseller`}
           onClick={() => navigate('invoices?filter=pending&type=reseller')}
+          hidden={hideData}
         />
         <KpiCard
           icon={AlertCircle} iconBg="#fff7ed" iconColor="#ea580c"
@@ -543,6 +560,7 @@ export default function Dashboard() {
           value={fmt(pendingTotalAmt)}
           ctx={`${pendingInvoices.length} fatura gjithsej`}
           onClick={() => navigate('invoices?filter=pending')}
+          hidden={hideData}
         />
       </div>
 
@@ -550,18 +568,18 @@ export default function Dashboard() {
       <YoYChart title="Shitje sipas muajit" sub={`${filterYear} vs. ${chartPrevYear}`}
         data={salesYoY} curKey="sales" prevKey="salesPrev"
         color="#6366f1" softColor="#c7d2fe" gradId="yoy-sales"
-        curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} />
+        curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} hidden={hideData} />
 
       {/* ── Krahasimi vjetor: Të ardhura & Shpenzime ── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch">
         <YoYChart title="Të ardhura sipas muajit" sub={`${filterYear} vs. ${chartPrevYear}`}
           data={revenueYoY} curKey="revenue" prevKey="revenuePrev"
           color="#dc2626" softColor="#fca5a5" gradId="yoy-revenue"
-          curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} />
+          curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} hidden={hideData} />
         <YoYChart title="Shpenzime sipas muajit" sub={`${filterYear} vs. ${chartPrevYear}`}
           data={expensesYoY} curKey="expenses" prevKey="expensesPrev"
           color="#ef4444" softColor="#fecaca" gradId="yoy-expenses"
-          curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} />
+          curLabel={filterYear} prevLabel={chartPrevYear} fmt={fmt} hidden={hideData} />
       </div>
 
       {/* ── Paneli i shpenzimeve ── */}
@@ -587,7 +605,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-[220px_1fr] gap-8 items-center">
 
             {/* Donut me total në qendër */}
-            <div className="relative h-[200px] flex items-center justify-center">
+            <div className={`relative h-[200px] flex items-center justify-center transition-all duration-200 ${hideData ? 'blur-md select-none pointer-events-none' : ''}`}>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie data={catData} cx="50%" cy="50%" innerRadius={62} outerRadius={80}
@@ -639,11 +657,11 @@ export default function Dashboard() {
                         <span className="truncate">{t.name}</span>
                       </span>
                       <span className="font-bold text-gray-900 dark:text-gray-100 flex-shrink-0">
-                        {fmt(t.value)}
-                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium ml-1.5">{pct.toFixed(1)}%</span>
+                        {hideData ? '••••••' : fmt(t.value)}
+                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium ml-1.5">{hideData ? '••%' : `${pct.toFixed(1)}%`}</span>
                       </span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className={`h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden ${hideData ? 'blur-sm' : ''}`}>
                       <div className="h-full rounded-full transition-all duration-500"
                            style={{ width: `${pct}%`, background: t.color }} />
                     </div>
@@ -653,7 +671,7 @@ export default function Dashboard() {
 
               <div className="flex items-center justify-between pt-3 mt-2 border-t border-gray-200 dark:border-gray-700">
                 <span className="text-[13px] font-semibold text-gray-500 dark:text-gray-400">Gjithsej Shpenzime</span>
-                <span className="text-[17px] font-bold text-red-600 dark:text-red-400">{fmt(catTotal)}</span>
+                <span className="text-[17px] font-bold text-red-600 dark:text-red-400">{hideData ? '••••••' : fmt(catTotal)}</span>
               </div>
             </div>
           </div>
