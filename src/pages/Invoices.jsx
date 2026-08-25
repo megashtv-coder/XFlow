@@ -1183,7 +1183,7 @@ export default function Invoices() {
       window.history.replaceState({}, '', url.toString())
     }
   }, [])
-  const [perPage,      setPerPage]  = useState(50)
+  const [perPage,      setPerPage]  = useState(10)
   const [sortField,    setSortField]= useState('id')
   const [sortDir,      setSortDir]  = useState('desc')
   const [preview,      setPreview]  = useState(null)
@@ -1836,6 +1836,7 @@ export default function Invoices() {
               value={perPage}
               onChange={e => { setPerPage(Number(e.target.value)); setPaginationPage(1) }}
             >
+              <option value={10}>10/faqe</option>
               <option value={25}>25/faqe</option>
               <option value={50}>50/faqe</option>
               <option value={100}>100/faqe</option>
