@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import {
   TrendingUp, TrendingDown, Clock, FilePlus,
   UserPlus, ReceiptText, AlertCircle, UserCheck, Layers,
-  ArrowUp, ArrowDown, PieChart as PieIcon, CalendarDays, Eye, EyeOff,
+  ArrowUp, ArrowDown, PieChart as PieIcon,
   ListTodo, CheckCircle2, Trash2,
 } from 'lucide-react'
 import {
@@ -300,9 +300,13 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
 }
 
 export default function Dashboard() {
-  const { invoices, customers, expenses, payments, navigate, fmt, currentUser, logActivity, showToast } = useApp()
+  const {
+    invoices, customers, expenses, payments, navigate, fmt, logActivity, showToast,
+    dashboardMonth: filterMonth, setDashboardMonth: setFilterMonth,
+    dashboardYear: filterYear, setDashboardYear: setFilterYear,
+    dashboardHidden: hideData, setDashboardHidden: setHideData,
+  } = useApp()
   const [activeCat, setActiveCat] = useState(null)
-  const [hideData, setHideData] = useState(true) // fshehur si parazgjedhje — mbrojtje privatësie kur ekrani është i dukshëm
 
   /* ── Detyra afër afatit — fetch i vetin nga Supabase, s'kalon nëpër AppContext ── */
   const [dashTasks, setDashTasks] = useState([])
@@ -362,10 +366,6 @@ export default function Dashboard() {
   const today             = new Date().toISOString().slice(0, 10)
   const actualCurrentYear = new Date().getFullYear().toString()
   const curMonthIdx       = new Date().getMonth()
-
-  /* ── Filteri global i Dashboard-it: muaj + vit — ndikon në çdo kartelë/grafik më poshtë ── */
-  const [filterYear,  setFilterYear]  = useState(actualCurrentYear)
-  const [filterMonth, setFilterMonth] = useState(null) // null = krejt vitin
 
   const availableYears = useMemo(() => {
     const set = new Set([actualCurrentYear])
@@ -589,45 +589,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 max-w-6xl">
 
-      {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Përshëndetje, {currentUser?.name?.split(' ')[0] || 'Mirë se erdhe'} 👋</h2>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5 hidden sm:block">Pasqyra financiare — {new Date().toLocaleDateString('sq-AL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5 sm:hidden">{new Date().toLocaleDateString('sq-AL', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-        </div>
-
-        {/* Filteri i periudhës — ndikon në krejt të dhënat e faqes */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1.5 shadow-sm">
-            <CalendarDays size={14} className="text-gray-400 dark:text-gray-500 flex-shrink-0" />
-            <select
-              value={filterMonth ?? 'all'}
-              onChange={e => setFilterMonth(e.target.value === 'all' ? null : parseInt(e.target.value))}
-              className="bg-transparent border-none outline-none text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer"
-            >
-              <option value="all">Krejt vitin</option>
-              {MONTH_FULL.map((m, i) => <option key={i} value={i}>{m}</option>)}
-            </select>
-          </div>
-          <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1.5 shadow-sm">
-            <select
-              value={filterYear}
-              onChange={e => setFilterYear(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer"
-            >
-              {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-          <button
-            onClick={() => setHideData(h => !h)}
-            title={hideData ? 'Shfaq të dhënat' : 'Fshih të dhënat'}
-            className="flex items-center justify-center w-9 h-9 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/50 transition-colors flex-shrink-0"
-          >
-            {hideData ? <EyeOff size={15}/> : <Eye size={15}/>}
-          </button>
-        </div>
-      </div>
+      {/* Përshëndetja, data dhe filtri i periudhës tani jetojnë te header-i global
+         (Header.jsx, kur page === 'dashboard'); logjika/të dhënat mbeten këtu. */}
 
       {/* ── Veprime të shpejta ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
