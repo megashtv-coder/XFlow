@@ -360,24 +360,19 @@ export default function Subscriptions() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Titulli "Njoftimet e Abonimit" tani jeton te header-i global (Header.jsx,
+         kur page === 'subscriptions'); numri i abonimeve/data mbeten këtu si informacion. */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h2 className="text-xl font-black text-gray-900 flex items-center gap-2 tracking-tight dark:text-white">
-            <Bell size={20} className="text-red-500 animate-bounce" />
-            Njoftimet e Abonimit
-          </h2>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-gray-500 font-medium dark:text-gray-400">{withNotify.length} abonim gjithsej</span>
-            {totalPending > 0 && (
-              <>
-                <span className="text-gray-300 dark:text-gray-700">•</span>
-                <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md border border-red-200/60 dark:border-red-900/50">
-                  {totalPending} kërkojnë vëmendje sot
-                </span>
-              </>
-            )}
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500 font-medium dark:text-gray-400">{withNotify.length} abonim gjithsej</span>
+          {totalPending > 0 && (
+            <>
+              <span className="text-gray-300 dark:text-gray-700">•</span>
+              <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md border border-red-200/60 dark:border-red-900/50">
+                {totalPending} kërkojnë vëmendje sot
+              </span>
+            </>
+          )}
         </div>
         <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <Calendar size={14} className="text-red-500" />

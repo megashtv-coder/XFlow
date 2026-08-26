@@ -517,7 +517,11 @@ function exportToJSON(expenses) {
 }
 
 export default function ExpensesPage() {
-  const { expenses, setExpenses, closeModal, fmt, showToast, page, navigate, logActivity } = useApp()
+  const {
+    expenses, setExpenses, closeModal, fmt, showToast, page, navigate, logActivity,
+    expensesExportOpen: exportOpen, setExpensesExportOpen: setExportOpen,
+    expensesImportOpen: importOpen, setExpensesImportOpen: setImportOpen,
+  } = useApp()
 
   const [search,         setSearch]        = useState('')
   const [partnerFilt,    setPartner]       = useState('all')
@@ -527,8 +531,6 @@ export default function ExpensesPage() {
   const [perPage,        setPerPage]       = useState(50)
   const [sortField,      setSortField]     = useState('date')
   const [sortDir,        setSortDir]       = useState('desc')
-  const [importOpen,     setImportOpen]    = useState(false)
-  const [exportOpen,     setExportOpen]    = useState(false)
   const [openDropdown,   setOpenDropdown]  = useState(null)
 
   // Read filters from URL parameters
@@ -678,44 +680,8 @@ export default function ExpensesPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-6 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
-            <Receipt size={20} className="text-red-500" />
-            Shpenzimet
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{expenses.length} shpenzime gjithsej në sistem</p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {/* Export - Hidden on mobile */}
-          <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            onClick={() => setExportOpen(true)}
-            title="Eksporto"
-          >
-            <Download size={16}/>
-          </button>
-
-          {/* Import - Hidden on mobile */}
-          <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            onClick={() => setImportOpen(true)}
-            title="Importo Excel"
-          >
-            <FileSpreadsheet size={16}/>
-          </button>
-
-          {/* New Expense - Hidden on mobile (see FAB below) */}
-          <button
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 font-bold text-xs shadow-sm"
-            onClick={openAdd}
-            title="Shpenzim i ri"
-          >
-            <Plus size={14}/> Shpenzim i ri
-          </button>
-        </div>
-      </div>
+      {/* Titulli, eksporti, importi dhe +Shpenzim i ri tani jetojnë te header-i global
+         (Header.jsx, kur page === 'expenses'); FAB-i mobil mbetet këtu. */}
       {importOpen && (
         <Suspense fallback={null}>
           <ImportExcelModal

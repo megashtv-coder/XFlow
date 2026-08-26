@@ -685,12 +685,14 @@ const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onD
    Faqja kryesore
 ══════════════════════════════════════════════════════════ */
 export default function Customers() {
-  const { customers, setCustomers, closeModal, fmt, invoices, showToast, page, navigate, logActivity } = useApp()
+  const {
+    customers, setCustomers, closeModal, fmt, invoices, showToast, page, navigate, logActivity,
+    customersImportOpen: importOpen, setCustomersImportOpen: setImportOpen,
+  } = useApp()
   const [search,        setSearch]        = useState('')
   const [typeFilt,      setTypeFilt]      = useState('all')
   const [countryFilt,   setCountryFilt]   = useState('all')
   const [sortBy,        setSortBy]        = useState('default')
-  const [importOpen,    setImportOpen]    = useState(false)
   const [selected,      setSelected]      = useState(new Set())
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null) // null | 'single' | 'multiple'
   const [selectedCustomer, setSelectedCustomer] = useState(null) // Customer for details modal
@@ -868,36 +870,8 @@ export default function Customers() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-6 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
-            <Users size={20} className="text-red-500" />
-            Klientët
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{customers.length} klientë aktiv në sistem</p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {/* Import - Hidden on mobile */}
-          <button
-            className="hidden sm:flex w-9 h-9 items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            onClick={() => setImportOpen(true)}
-            title="Importo Excel"
-          >
-            <FileSpreadsheet size={16}/>
-          </button>
-
-          {/* New Customer - Hidden on mobile (see FAB below) */}
-          <button
-            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 font-bold text-xs shadow-sm"
-            onClick={openAdd}
-            title="Shto klient"
-          >
-            <UserPlus size={14}/>
-            <span>Shto Klient</span>
-          </button>
-        </div>
-      </div>
+      {/* Titulli, importi dhe +Shto Klient tani jetojnë te header-i global (Header.jsx,
+         kur page === 'customers'); FAB-i mobil dhe modali i importit mbeten këtu. */}
       {importOpen && (
         <Suspense fallback={null}>
           <ImportExcelModal

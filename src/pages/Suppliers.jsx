@@ -171,22 +171,8 @@ export default function Suppliers() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 mb-6 border-b border-gray-200 dark:border-gray-700">
-        <div>
-          <h2 className="text-xl font-black text-gray-900 dark:text-white flex items-center gap-2 tracking-tight">
-            <Truck size={20} className="text-red-500" />
-            Furnitorët
-          </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-0.5">{vendors.length} furnitor{vendors.length !== 1 ? 'ë' : ''} gjithsej</p>
-        </div>
-        <button
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-all active:scale-95 font-bold text-xs shadow-sm self-start sm:self-auto"
-          onClick={openAdd}
-        >
-          <Plus size={14} /> Shto furnitor
-        </button>
-      </div>
+      {/* Titulli dhe +Shto furnitor tani jetojnë te header-i global (Header.jsx,
+         kur page === 'suppliers'). */}
 
       {/* Kërkimi */}
       <div className="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
