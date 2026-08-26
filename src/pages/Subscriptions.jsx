@@ -1,5 +1,5 @@
 import { useState, memo, useMemo, useCallback } from 'react'
-import { Bell, MessageCircle, Send, Calendar, CheckCircle2, ChevronDown, ChevronUp, AlertTriangle, Clock, Search, RefreshCw, PhoneOff } from 'lucide-react'
+import { MessageCircle, Send, Calendar, CheckCircle2, AlertTriangle, Clock, Search, RefreshCw, PhoneOff } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 
@@ -304,7 +304,6 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
 ══════════════════════════════════════════════════════════ */
 export default function Subscriptions() {
   const { invoices, customers, setInvoices, showToast } = useApp()
-  const [showInfo, setShowInfo] = useState(false)
   const [search, setSearch] = useState('')
 
   const today  = new Date().toISOString().slice(0, 10)
@@ -332,8 +331,6 @@ export default function Subscriptions() {
      nuk dërgon më vetë në hapje (ishte rrezik: do të kishte dërguar tërë
      "urgent" backlog-un e vjetër menjëherë sapo dikush ta hapte faqen). */
 
-  const totalPending = urgent.length
-
   /* Filtrimi sipas kërkimit — vetëm shfaqja, nuk prek listat/kalkulimet burimore */
   const searchLower = search.trim().toLowerCase()
   const matchesSearch = useCallback(inv =>
@@ -360,55 +357,9 @@ export default function Subscriptions() {
 
   return (
     <div className="space-y-6">
-      {/* Titulli "Njoftimet e Abonimit" tani jeton te header-i global (Header.jsx,
-         kur page === 'subscriptions'); numri i abonimeve/data mbeten këtu si informacion. */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 font-medium dark:text-gray-400">{withNotify.length} abonim gjithsej</span>
-          {totalPending > 0 && (
-            <>
-              <span className="text-gray-300 dark:text-gray-700">•</span>
-              <span className="text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md border border-red-200/60 dark:border-red-900/50">
-                {totalPending} kërkojnë vëmendje sot
-              </span>
-            </>
-          )}
-        </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          <Calendar size={14} className="text-red-500" />
-          <span>Sot: {today}</span>
-        </div>
-      </div>
-
-      {/* Info: automation runs server-side now, not from this page -- collapsible, off by default */}
-      <div className="bg-sky-50 dark:bg-sky-900/20 border border-sky-200/80 dark:border-sky-900/50 rounded-2xl overflow-hidden shadow-sm">
-        <button
-          onClick={() => setShowInfo(v => !v)}
-          className="w-full flex items-center gap-3 p-3.5 text-left"
-        >
-          <div className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-            <Bell size={16} />
-          </div>
-          <div className="flex-1">
-            <p className="text-xs font-bold text-sky-900 dark:text-sky-200">Njoftimet dërgohen automatikisht çdo ditë në orën 09:00</p>
-            <p className="text-[11px] text-sky-700 dark:text-sky-300/80 mt-0.5">Sistemi dërgon njoftime automatike në WhatsApp dhe Telegram për të gjitha faturat që skadojnë së shpejti.</p>
-          </div>
-          {showInfo ? <ChevronUp size={16} className="text-sky-500 flex-shrink-0" /> : <ChevronDown size={16} className="text-sky-500 flex-shrink-0" />}
-        </button>
-        {showInfo && (
-          <div className="px-4 pb-4">
-            <div className="bg-sky-100 dark:bg-sky-900/30 rounded-lg p-2.5 text-xs text-sky-900 dark:text-sky-200">
-              <p className="font-semibold mb-1">Konfigurimi (WhatsApp Cloud API, nëse s'është bërë ende):</p>
-              <ol className="space-y-0.5 list-decimal list-inside">
-                <li>Shko te <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">developers.facebook.com</a>, krijo një Business App, shto produktin "WhatsApp" dhe lidh numrin</li>
-                <li>Krijo një template mesazhi (kategoria "Utility", 2 parametra: emri dhe data e skadimit) dhe prit miratimin nga Meta</li>
-                <li>Merr <strong>Phone Number ID</strong> dhe një <strong>access token të përhershëm</strong> (Business Settings → System Users)</li>
-                <li>Shtoi te Vercel Dashboard → Settings → Environment Variables si <strong>WHATSAPP_PHONE_NUMBER_ID</strong>, <strong>WHATSAPP_ACCESS_TOKEN</strong>, <strong>WHATSAPP_TEMPLATE_NAME</strong>, pastaj redeploy</li>
-              </ol>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Titulli "Njoftimet e Abonimit" dhe data tani jetojnë te header-i global
+         (Header.jsx, kur page === 'subscriptions'). Numri/badge-i dhe kutia e
+         informacionit për dërgimin automatik u hoqën — s'kishte nevojë të mbeteshin. */}
 
       {/* Summary stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
