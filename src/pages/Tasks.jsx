@@ -255,7 +255,7 @@ export default function Tasks() {
     }
   }
 
-  const syncTaskToSupabase = async (taskData) => {
+  const syncTaskToSupabase = async (taskData, isEdit = false) => {
     try {
       const { reminderDate, createdAt, orgId, ...rest } = taskData
       // Only include columns that exist in Supabase schema
@@ -267,9 +267,9 @@ export default function Tasks() {
         reminderdate: reminderDate
       }
 
-      console.log('[Tasks] Syncing to Supabase:', { id: taskData.id, action: taskData.id?.startsWith('TSK-') ? 'INSERT' : 'UPDATE' })
+      console.log('[Tasks] Syncing to Supabase:', { id: taskData.id, action: isEdit ? 'UPDATE' : 'INSERT' })
 
-      if (taskData.id?.startsWith('TSK-')) {
+      if (!isEdit) {
         // New task - INSERT
         const { data, error: insertError } = await supabase
           .from('tasks')
@@ -343,7 +343,7 @@ export default function Tasks() {
         createdAt: formData.createdAt || new Date().toISOString(),
       }
 
-      const synced = await syncTaskToSupabase(taskWithOrg)
+      const synced = await syncTaskToSupabase(taskWithOrg, !!editingTask)
       if (synced) {
         if (editingTask) {
           const updated = tasks.map(t => t.id === editingTask.id ? taskWithOrg : t)
@@ -383,7 +383,7 @@ export default function Tasks() {
     if (!task) return
 
     const updatedTask = { ...task, completed: !task.completed }
-    const synced = await syncTaskToSupabase(updatedTask)
+    const synced = await syncTaskToSupabase(updatedTask, true)
     if (synced) {
       const updated = tasks.map(t => t.id === taskId ? updatedTask : t)
       saveTasks(updated)
