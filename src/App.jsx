@@ -22,7 +22,6 @@ const Settings = lazy(() => import('./pages/Settings'))
 const Subscriptions = lazy(() => import('./pages/Subscriptions'))
 const Suppliers = lazy(() => import('./pages/Suppliers'))
 const UsersPage = lazy(() => import('./pages/Users'))
-const CommunicationHistory = lazy(() => import('./pages/CommunicationHistory'))
 const Tasks = lazy(() => import('./pages/Tasks'))
 const AIChat = lazy(() => import('./components/AIChat'))
 
@@ -38,7 +37,6 @@ const ORG_PAGES = {
   subscriptions:         Subscriptions,
   suppliers:             Suppliers,
   users:                 UsersPage,
-  communicationHistory:  CommunicationHistory,
   tasks:                 Tasks,
   'ai-chat':             AIChat,
 }

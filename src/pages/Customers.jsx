@@ -598,10 +598,10 @@ const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onD
 
   return (
     <tr
-      className="border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors cursor-pointer"
+      className="hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors cursor-pointer group"
       onClick={() => onEdit(c)}
     >
-      <td className="p-3" onClick={e => e.stopPropagation()}>
+      <td className="table-td w-10" onClick={e => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={checked}
@@ -609,7 +609,7 @@ const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onD
           className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-red-500 cursor-pointer"
         />
       </td>
-      <td className="p-3">
+      <td className="table-td">
         <div className="flex items-center gap-3">
           <Avatar name={c.name || c.firstName || '?'} color={c.color} size={34} />
           <div className="min-w-0">
@@ -627,11 +627,11 @@ const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onD
           </div>
         </div>
       </td>
-      <td className="p-3 text-xs">
+      <td className="table-td">
         {c.email && <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300"><Mail size={11} className="text-gray-400 dark:text-gray-500"/>{c.email}</div>}
         {c.phone && <div className="flex items-center gap-1.5 font-mono text-gray-400 dark:text-gray-500 mt-0.5">{c.phone}</div>}
       </td>
-      <td className="p-3 text-xs">
+      <td className="table-td">
         {isReseller ? (
           <>
             {c.username && <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{c.username}</span>}
@@ -644,16 +644,16 @@ const CustomerRow = memo(function CustomerRow({ c, onEdit, fmt, isLatePayer, onD
           </>
         )}
       </td>
-      <td className="p-3">
+      <td className="table-td">
         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
           isReseller ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
         }`}>
           {isReseller ? 'Reseller' : 'Individual'}
         </span>
       </td>
-      <td className="p-3 text-right font-mono font-bold text-red-600 dark:text-red-400 text-xs">{fmt(c.total)}</td>
-      <td className="p-3 text-right font-mono font-bold text-gray-800 dark:text-gray-200 text-xs">{c.invoices}</td>
-      <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
+      <td className="table-td text-right font-mono font-bold text-red-600 dark:text-red-400">{fmt(c.total)}</td>
+      <td className="table-td text-right font-mono font-bold text-gray-800 dark:text-gray-200">{c.invoices}</td>
+      <td className="table-td text-right" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-end gap-1.5">
           <button
             onClick={() => onEdit(c)}
@@ -1000,16 +1000,16 @@ export default function Customers() {
           <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden mb-6">
             <div className="overflow-x-auto">
               <table className="w-full text-left" style={{ minWidth: 760 }}>
-                <thead>
-                  <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
-                    <th className="p-3 w-10"></th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Klienti</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Kontaktet</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Aplikacioni / Panel</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Tipi</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Totali</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Fatura</th>
-                    <th className="p-3 text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">Veprime</th>
+                <thead className="sticky top-0 z-10">
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+                    <th className="table-th w-10"></th>
+                    <th className="table-th">Klienti</th>
+                    <th className="table-th">Kontaktet</th>
+                    <th className="table-th">Aplikacioni / Panel</th>
+                    <th className="table-th">Tipi</th>
+                    <th className="table-th text-right">Totali</th>
+                    <th className="table-th text-right">Fatura</th>
+                    <th className="table-th text-right">Veprime</th>
                   </tr>
                 </thead>
                 <tbody>
