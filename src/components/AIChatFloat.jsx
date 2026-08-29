@@ -400,20 +400,17 @@ export default function AIChatFloat() {
     }
   }
 
-  // "📎" — ngarko screenshot i kontaktit WhatsApp, lexoje me OCR falas
-  // (Tesseract.js, në browser, pa API), nxirr fushat me rregulla teksti
-  // (ScreenshotParser.js), shfaqi si draft të editueshëm para regjistrimit.
+  // Screenshot i kontaktit WhatsApp → OCR falas (Tesseract.js, në browser,
+  // pa API) → fusha me rregulla teksti (ScreenshotParser.js) → draft i
+  // editueshëm para regjistrimit. E njëjta rrugë nga dy hyrje: butoni 📎
+  // (handleFileSelected) dhe copy-paste direkt në input (handlePaste).
   const handleAttachClick = () => fileInputRef.current?.click()
 
   const updatePhotoDraftField = (msgId, field, value) => {
     setPhotoDraft(prev => ({ ...prev, [msgId]: { ...prev[msgId], [field]: value } }))
   }
 
-  const handleFileSelected = async (e) => {
-    const file = e.target.files?.[0]
-    e.target.value = '' // lejo rizgjedhjen e të njëjtit file më vonë
-    if (!file) return
-
+  const processImageFile = async (file) => {
     const imageUrl = URL.createObjectURL(file)
     setMessages(prev => [...prev, {
       id: `img-${Date.now()}`, type: 'image', imageUrl, timestamp: new Date(),
@@ -449,6 +446,22 @@ export default function AIChatFloat() {
       setLoading(false)
       setOcrProgress('')
     }
+  }
+
+  const handleFileSelected = (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // lejo rizgjedhjen e të njëjtit file më vonë
+    if (file) processImageFile(file)
+  }
+
+  const handlePaste = (e) => {
+    const items = e.clipboardData?.items
+    if (!items) return
+    const imageItem = Array.from(items).find(item => item.type?.startsWith('image/'))
+    if (!imageItem) return // paste normal — tekst, jo screenshot
+    e.preventDefault()
+    const file = imageItem.getAsFile()
+    if (file) processImageFile(file)
   }
 
   const handleConfirmPhotoExtract = (msgId) => {
@@ -778,7 +791,8 @@ export default function AIChatFloat() {
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                placeholder="Shkruaj komandë (@Emri, shto klient, etj)..."
+                onPaste={handlePaste}
+                placeholder="Shkruaj komandë ose ngjit (Ctrl+V) një screenshot..."
                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-gray-50"
                 disabled={loading}
               />
