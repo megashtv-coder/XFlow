@@ -1,4 +1,5 @@
-import React, { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useRef, lazy, Suspense, useMemo, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import {
   FileText, Download, Pencil, Trash2, CreditCard,
   MessageCircle, Send, XCircle, X, MessageSquare,
@@ -381,10 +382,47 @@ const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onC
 /* ── Row actions dropdown (memoized to prevent list re-renders) ── */
 const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, closeModal, setDeletingInvoiceId, customers }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [menuPos, setMenuPos] = useState(null)
+  const btnRef = useRef(null)
+  const menuRef = useRef(null)
   const rawPhone = cleanPhone(getPhone(inv.customer))
   const isOverdue = inv.status === 'overdue' || (inv.due && inv.due < today && inv.status !== 'paid' && inv.status !== 'void')
   const canContact = (inv.status === 'pending' || inv.status === 'overdue' || inv.status === 'paid') && rawPhone
   const msg = canContact && isOpen ? encodeURIComponent(buildReminderMsg(inv)) : ''
+
+  const openMenu = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const spaceBelow = window.innerHeight - rect.bottom
+    const openUp = spaceBelow < 260 && rect.top > spaceBelow
+    setMenuPos({
+      left: Math.max(8, rect.right - 208),
+      top: openUp ? null : rect.bottom + 6,
+      bottom: openUp ? window.innerHeight - rect.top + 6 : null,
+    })
+    setIsOpen(true)
+  }
+
+  /* Menu-ja rendohet me portal jashtë tabelës (shih poshtë), prandaj mbyllja në
+     klikim jashtë duhet të kontrollojë edhe butonin edhe vetë menu-në përmes
+     ref-ave — përndryshe çdo klik brenda menu-së do të llogaritej "jashtë". */
+  useEffect(() => {
+    if (!isOpen) return
+    const handleClick = (e) => {
+      if (btnRef.current?.contains(e.target)) return
+      if (menuRef.current?.contains(e.target)) return
+      setIsOpen(false)
+    }
+    const handleKey = (e) => { if (e.key === 'Escape') setIsOpen(false) }
+    const handleScroll = () => setIsOpen(false)
+    document.addEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleKey)
+    window.addEventListener('scroll', handleScroll, true)
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('keydown', handleKey)
+      window.removeEventListener('scroll', handleScroll, true)
+    }
+  }, [isOpen])
 
   const handleWhatsAppReminder = (e) => {
     e.stopPropagation()
@@ -411,18 +449,24 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
   return (
     <div className="relative">
       <button
+        ref={btnRef}
         className="icon-btn text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-300"
         title="Veprimet"
         onClick={e => {
           e.stopPropagation()
-          setIsOpen(!isOpen)
+          if (isOpen) { setIsOpen(false); return }
+          openMenu(e)
         }}
       >
         <MoreVertical size={16}/>
       </button>
 
-      {isOpen && (
-        <div className="absolute w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] pointer-events-auto top-full right-0 mt-1.5 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+      {isOpen && menuPos && createPortal(
+        <div
+          ref={menuRef}
+          className="fixed w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden dark:bg-gray-800 dark:border-gray-700"
+          style={{ left: menuPos.left, ...(menuPos.top != null ? { top: menuPos.top } : { bottom: menuPos.bottom }) }}
+        >
           <button
             className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/40"
             onClick={e => {
@@ -493,7 +537,8 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
           >
             <Trash2 size={14}/> Fshi
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
