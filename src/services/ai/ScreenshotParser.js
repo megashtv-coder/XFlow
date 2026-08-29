@@ -61,7 +61,12 @@ export function parseContactFromText(rawText) {
     macAddress = macLine.match(MAC_RE)[0].toUpperCase().replace(/-/g, ':')
     const afterMac = macLine.slice(macLine.search(MAC_RE) + macAddress.length)
     const appMatch = afterMac.match(/[-–—]\s*(.+)/)
-    app = appMatch ? appMatch[1].trim() : ''
+    if (appMatch) {
+      app = appMatch[1]
+        .split(/\s{2,}/)[0]              // WhatsApp's emoji/✓ icons sit far to
+        .replace(/[^\p{L}\p{N}]+$/u, '') // the right — a wide gap, or (if OCR
+        .trim()                          // reads them tight) trailing symbols
+    }
   } else {
     warnings.push('S\'u gjet MAC adresa — kontrollo foton ose plotësoje dorazi.')
   }
