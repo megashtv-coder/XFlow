@@ -18,7 +18,7 @@ import { depositedToOptions } from '../data/mockData'
 // can match (e.g. "sa fitim kam" -> PROFIT_REPORT) without ever being wired
 // up to a real executor — those should fall back to the AI Q&A instead of
 // showing a confirm card that can only ever end in "not supported yet".
-const SUPPORTED_ACTIONS = ['create_invoice', 'create_customer', 'register_payment', 'register_expense']
+const SUPPORTED_ACTIONS = ['create_invoice', 'create_customer', 'create_task', 'register_payment', 'register_expense']
 
 export default function AIChatFloat() {
   const appContext = useApp()
@@ -275,7 +275,7 @@ export default function AIChatFloat() {
       // Auto-accept quick invoice commands
       if (result.autoAccept && result.action) {
         console.log('⚡ Auto-accepting quick invoice')
-        const execResult = executeAction(result.action, appContext)
+        const execResult = await executeAction(result.action, appContext)
         const successMsg = {
           id: `ai-${Date.now()}`,
           type: execResult.success ? 'success' : 'error',
@@ -375,7 +375,7 @@ export default function AIChatFloat() {
     if (!currentResult?.action) return
 
     try {
-      const execResult = executeAction(currentResult.action, appContext)
+      const execResult = await executeAction(currentResult.action, appContext)
       const resultMsg = {
         id: `ai-${Date.now()}`,
         type: execResult.success ? 'success' : 'error',
@@ -464,7 +464,7 @@ export default function AIChatFloat() {
     if (file) processImageFile(file)
   }
 
-  const handleConfirmPhotoExtract = (msgId) => {
+  const handleConfirmPhotoExtract = async (msgId) => {
     const fields = photoDraft[msgId] || {}
     if (!fields.name?.trim()) {
       setMessages(prev => [...prev, {
@@ -482,7 +482,7 @@ export default function AIChatFloat() {
         macAddress: fields.macAddress?.trim() || '',
       },
     }
-    const execResult = executeAction(action, appContext)
+    const execResult = await executeAction(action, appContext)
     setMessages(prev => [
       ...prev.filter(m => m.id !== msgId),
       {
