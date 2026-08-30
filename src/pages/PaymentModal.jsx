@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
 import { Modal, FormGroup } from '../components/UI'
 import { depositedToOptions } from '../data/mockData'
+import { round2 } from '../utils/money'
 
 /* ── horizontal chip-slider per deposit accounts ── */
 function SlideSelect({ value, onChange, options }) {
@@ -151,14 +152,15 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
       { setErr('Zgjidh te kush depozitohet.'); return }
 
     setIsSaving(true)
-    const fee = form.fee === '' ? 0 : Number(form.fee)
-    const net = Number(form.amount) - fee
+    const fee = form.fee === '' ? 0 : round2(Number(form.fee))
+    const amount = round2(Number(form.amount))
+    const net = round2(amount - fee)
 
     try {
       if (isEdit) {
         /* ── UPDATE existing payment ── */
         const payload = {
-          amount:         Number(form.amount),
+          amount,
           fee,
           net,
           date:           form.date,
@@ -172,7 +174,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         setPayments(prev => prev.map(p =>
           p.id === editPayment.id ? { ...p, ...payload } : p
         ))
-        logActivity(`Përditësoi pagesën ${editPayment.id} — ${editPayment.customer} €${Number(form.amount)}`, 'Pagesat')
+        logActivity(`Përditësoi pagesën ${editPayment.id} — ${editPayment.customer} €${amount}`, 'Pagesat')
         showToast(`Pagesa u përditësua! Neto: ${fmt(net)} ✓`)
         onClose()
         return
@@ -183,7 +185,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         id:             `PAY-${Date.now()}`,
         invoiceId:      selectedInv.id,
         customer:       selectedInv.customer,
-        amount:         Number(form.amount),
+        amount,
         fee,
         net,
         date:           form.date,
@@ -203,7 +205,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
       setInvoices(prev => prev.map(i => {
         if (i.id !== selectedInv.id) return i
 
-        const newPaidAmount = (i.paidAmount || 0) + Number(form.amount)
+        const newPaidAmount = round2((i.paidAmount || 0) + amount)
         const invoiceTotal = i.amount
 
         let status = 'pending'
@@ -240,7 +242,7 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
       showToast(`Pagesa u regjistrua! Neto: ${fmt(net)} ✓`)
       onClose()
 
-      logActivity(`Regjistroi pagesën ${payment.id} — ${selectedInv.customer} €${Number(form.amount)}`, 'Pagesat')
+      logActivity(`Regjistroi pagesën ${payment.id} — ${selectedInv.customer} €${amount}`, 'Pagesat')
     } finally {
       setIsSaving(false)
     }

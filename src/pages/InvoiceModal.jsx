@@ -6,6 +6,7 @@ import {
 import { useApp } from '../context/AppContext'
 import { Modal, FormGroup } from '../components/UI'
 import { countries } from '../data/mockData'
+import { round2 } from '../utils/money'
 import { ContactImportButton } from '../features/contacts'
 
 /* ─────────────────────────────────────────────────────────────
@@ -500,10 +501,10 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
   /* ── Computed totals ── */
-  const subTotal   = lineItems.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.unitPrice) || 0), 0)
+  const subTotal   = round2(lineItems.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.unitPrice) || 0), 0))
   const discVal    = Number(discount.value) || 0
-  const discAmount = discount.type === '%' ? subTotal * discVal / 100 : Math.min(discVal, subTotal)
-  const total      = Math.max(0, subTotal - discAmount)
+  const discAmount = round2(discount.type === '%' ? subTotal * discVal / 100 : Math.min(discVal, subTotal))
+  const total      = round2(Math.max(0, subTotal - discAmount))
   const fmtN       = v => new Intl.NumberFormat('de-DE').format(v)
 
   /* ── Line item actions ── */
