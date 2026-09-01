@@ -18,7 +18,7 @@ import { depositedToOptions } from '../data/mockData'
 // can match (e.g. "sa fitim kam" -> PROFIT_REPORT) without ever being wired
 // up to a real executor — those should fall back to the AI Q&A instead of
 // showing a confirm card that can only ever end in "not supported yet".
-const SUPPORTED_ACTIONS = ['create_invoice', 'create_customer', 'create_task', 'register_payment', 'register_expense']
+const SUPPORTED_ACTIONS = ['create_invoice', 'create_customer', 'create_task', 'register_payment', 'register_expense', 'void_invoice']
 
 export default function AIChatFloat() {
   const appContext = useApp()
