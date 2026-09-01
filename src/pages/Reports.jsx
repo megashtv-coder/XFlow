@@ -11,6 +11,7 @@ import {
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
 import { formatDate } from '../utils/dateFormat'
+import { normalizeReferenceName } from '../utils/paymentReferenceAliases'
 
 /* ─── konstante ─── */
 const MONTHS_SQ  = ['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','Nën','Dhj']
@@ -1122,7 +1123,7 @@ function ReferencatPagesaveTab({ payments }) {
 
     const nameTotals = {}
     filtered.forEach(p => {
-      const ref = p.reference.trim()
+      const ref = normalizeReferenceName(p.reference)
       nameTotals[ref] = (nameTotals[ref] || 0) + 1
     })
     const names = Object.keys(nameTotals).sort((a, b) => nameTotals[b] - nameTotals[a])
@@ -1135,7 +1136,7 @@ function ReferencatPagesaveTab({ payments }) {
       amounts[n] = 0
     })
     filtered.forEach(p => {
-      const ref = p.reference.trim()
+      const ref = normalizeReferenceName(p.reference)
       counts[ref][p.method]++
       amounts[ref] += (p.amount || 0)
     })
