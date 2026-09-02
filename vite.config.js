@@ -31,7 +31,7 @@ export default defineConfig({
         name: 'X-Flow — Menaxhimi Financiar',
         short_name: 'X-Flow',
         description: 'App moderne për menaxhimin e financave dhe faturave',
-        theme_color: '#2563eb',
+        theme_color: '#ef4444',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
