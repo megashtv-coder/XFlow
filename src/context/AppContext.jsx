@@ -259,7 +259,7 @@ export function AppProvider({ children }) {
   const [paymentModes,    setPaymentModes]    = useState(defaultPaymentModes)
   const [depositAccounts, setDepositAccounts] = useState(defaultDepositAccounts)
   // Linqet e gatshme të Stripe Payment Links — thjesht listë për kopjim (jo
-  // lidhje me fatura, jo webhook): { id, label, amount, url }[].
+  // lidhje me fatura, jo webhook): { id, amount, url }[].
   const [stripeLinks, setStripeLinks] = useState([])
 
   /* ── Tester sandbox ── */

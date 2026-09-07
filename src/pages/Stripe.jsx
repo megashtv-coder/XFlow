@@ -8,26 +8,23 @@ import { EmptyState, Modal, FormGroup } from '../components/UI'
 ══════════════════════════════════════════════════════════ */
 function StripeLinkModal({ link, onClose }) {
   const { setStripeLinks, showToast } = useApp()
-  const [label,  setLabel]  = useState(link?.label || '')
   const [amount, setAmount] = useState(link?.amount ?? '')
   const [url,    setUrl]    = useState(link?.url || '')
   const [err,    setErr]    = useState('')
 
   const save = () => {
-    if (!label.trim()) { setErr('Emri (paketa) është i domosdoshëm.'); return }
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { setErr('Shuma duhet të jetë numër pozitiv.'); return }
     if (!url.trim()) { setErr('Linku i Stripe është i domosdoshëm.'); return }
 
     if (link) {
       setStripeLinks(prev => prev.map(l => l.id === link.id
-        ? { ...l, label: label.trim(), amount: Number(amount), url: url.trim() }
+        ? { ...l, amount: Number(amount), url: url.trim() }
         : l
       ))
       showToast('Linku u përditësua ✓')
     } else {
       setStripeLinks(prev => [...prev, {
         id: `STL-${Date.now()}`,
-        label: label.trim(),
         amount: Number(amount),
         url: url.trim(),
       }])
@@ -48,15 +45,6 @@ function StripeLinkModal({ link, onClose }) {
       }
     >
       <div className="space-y-4">
-        <FormGroup label="Emri (paketa)">
-          <input
-            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            placeholder="p.sh. 12 Muaj Abonim"
-            value={label}
-            onChange={e => setLabel(e.target.value)}
-            autoFocus
-          />
-        </FormGroup>
         <FormGroup label="Shuma (€)">
           <input
             type="number"
@@ -65,6 +53,7 @@ function StripeLinkModal({ link, onClose }) {
             placeholder="25.00"
             value={amount}
             onChange={e => setAmount(e.target.value)}
+            autoFocus
           />
         </FormGroup>
         <FormGroup label="Link Stripe (Payment Link)">
@@ -90,7 +79,7 @@ function StripeLinkCard({ link, onEdit, onDelete, fmt }) {
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(link.url)
-      showToast(`Linku "${link.label}" u kopjua ✓`)
+      showToast(`Linku ${fmt(link.amount)} u kopjua ✓`)
     } catch {
       showToast('S\'mund ta kopjoj — kopjoje dorazi.', 'error')
     }
@@ -99,10 +88,7 @@ function StripeLinkCard({ link, onEdit, onDelete, fmt }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{link.label}</p>
-          <p className="text-lg font-black font-mono text-gray-900 dark:text-gray-100 mt-0.5">{fmt(link.amount)}</p>
-        </div>
+        <p className="text-lg font-black font-mono text-gray-900 dark:text-gray-100">{fmt(link.amount)}</p>
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             className="w-[26px] h-[26px] flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -150,7 +136,7 @@ export default function Stripe() {
   const openEdit = (l) => setModal(<StripeLinkModal link={l} onClose={closeModal} />)
 
   const handleDelete = (link) => {
-    if (!window.confirm(`A je i sigurt që dëshiron ta fshish "${link.label}"?`)) return
+    if (!window.confirm(`A je i sigurt që dëshiron ta fshish linkun ${fmt(link.amount)}?`)) return
     setStripeLinks(prev => prev.filter(l => l.id !== link.id))
   }
 
