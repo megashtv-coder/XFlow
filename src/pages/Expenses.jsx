@@ -8,7 +8,8 @@ import { formatDate } from '../utils/dateFormat'
 import { useFeatures } from '../features/useFeatures'
 import { EmptyState, Modal, FormGroup, Pagination } from '../components/UI'
 import FormPageWrapper from '../components/FormPageWrapper'
-import { expenseTypes, depositedToOptions, mockVendors } from '../data/mockData'
+import ExpenseTypeSelect from '../components/ExpenseTypeSelect'
+import { depositedToOptions, mockVendors } from '../data/mockData'
 import { downloadTemplate } from '../components/ImportExcelModal'
 const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 
@@ -66,7 +67,7 @@ function SlideSelect({ value, onChange, options, placeholder = 'Zgjidh llogarin�
 
 /* ── Modal shpenzimi ── */
 export function ExpenseModal({ expense, onClose, isFormPage }) {
-  const { setExpenses, depositAccounts, showToast, currentOrgId, logActivity, vendors, setVendors } = useApp()
+  const { setExpenses, depositAccounts, showToast, currentOrgId, logActivity, vendors, setVendors, expenseTypes } = useApp()
   const { canUsePartnerExpenseFields } = useFeatures()
   const isEdit = !!expense
   const today = new Date().toISOString().slice(0, 10)
@@ -88,8 +89,6 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
   const [err,  setErr]  = useState('')
   const [newVendor, setNewVendor] = useState('')
   const [showNewVendor, setShowNewVendor] = useState(false)
-  const [newType, setNewType] = useState('')
-  const [showNewType, setShowNewType] = useState(false)
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
 
   const addNewVendor = () => {
@@ -168,33 +167,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
 
       {/* Lloji i shpenzimit */}
       <FormGroup label="Për çfarë është bërë shpenzimi *">
-        {!showNewType ? (
-          <select className="form-control" value={form.type}
-            onChange={e => {
-              if (e.target.value === '__new__') {
-                setShowNewType(true)
-              } else {
-                set('type', e.target.value)
-              }
-            }}>
-            {expenseTypes.map(t => <option key={t} value={t}>{t}</option>)}
-            <option value="__new__" className="font-bold text-red-500">+ Shto lloj të ri</option>
-          </select>
-        ) : (
-          <div className="flex gap-2">
-            <input className="form-control flex-1" type="text" placeholder="Lloji i ri i shpenzimit"
-              value={newType} onChange={e => setNewType(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && (set('type', newType), setShowNewType(false), setNewType(''))} />
-            <button type="button" onClick={() => { set('type', newType); setShowNewType(false); setNewType('') }}
-              className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600">
-              Shto
-            </button>
-            <button type="button" onClick={() => { setShowNewType(false); setNewType('') }}
-              className="px-3 py-2 bg-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-300 dark:text-gray-300">
-              Anulo
-            </button>
-          </div>
-        )}
+        <ExpenseTypeSelect value={form.type} onChange={v => set('type', v)} />
       </FormGroup>
 
       {/* Furnitori */}
