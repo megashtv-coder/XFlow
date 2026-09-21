@@ -24,6 +24,7 @@ const PAGE_TITLES = {
   expenses:      'Shpenzimet',
   stripe:        'Stripe',
   hosts:         'Hostet',
+  settlement:    'Barazimi',
   suppliers:     'Furnitorët',
   reports:       'Raportet',
   users:         'Përdoruesit',
