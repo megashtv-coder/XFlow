@@ -9,7 +9,8 @@ import { useFeatures } from '../features/useFeatures'
 import { EmptyState, Modal, FormGroup, Pagination } from '../components/UI'
 import FormPageWrapper from '../components/FormPageWrapper'
 import ExpenseTypeSelect from '../components/ExpenseTypeSelect'
-import { depositedToOptions, mockVendors } from '../data/mockData'
+import VendorSelect from '../components/VendorSelect'
+import { depositedToOptions } from '../data/mockData'
 import { downloadTemplate } from '../components/ImportExcelModal'
 const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 
@@ -74,48 +75,19 @@ function SlideSelect({ value, onChange, options, placeholder = 'Zgjidh llogarin�
 
 /* ── Modal shpenzimi ── */
 export function ExpenseModal({ expense, onClose, isFormPage }) {
-  const { setExpenses, depositAccounts, showToast, currentOrgId, logActivity, vendors, setVendors, expenseTypes } = useApp()
+  const { setExpenses, showToast, currentOrgId, logActivity, expenseTypes } = useApp()
   const { canUsePartnerExpenseFields } = useFeatures()
   const isEdit = !!expense
   const today = new Date().toISOString().slice(0, 10)
 
-  // Get vendors list - use app vendors, fallback to mockVendors
-  const vendorsList = vendors && vendors.length > 0 ? vendors : mockVendors
-
-  // Force re-render when vendors from context change
-  useEffect(() => {
-    console.log('[ExpenseModal] Vendors updated from context:', vendors?.length || 0)
-  }, [vendors])
-
   const empty = {
     date: today, type: expenseTypes[0], vendor: '',
-    paidFrom: '', reference: '', paidBy: 'Enndy',
+    reference: '', paidBy: 'Enndy',
     recurring: false, recurringFreq: 'Mujore', amount: '',
   }
   const [form, setForm] = useState(isEdit ? { ...expense } : empty)
   const [err,  setErr]  = useState('')
-  const [newVendor, setNewVendor] = useState('')
-  const [showNewVendor, setShowNewVendor] = useState(false)
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }))
-
-  const addNewVendor = () => {
-    if (!newVendor.trim()) return
-    if (vendorsList.some(v => (typeof v === 'string' ? v : v.name) === newVendor)) {
-      showToast('Ky furnitor ekziston tashmë', 'warning')
-      return
-    }
-    const vendor = { id: `V-${Date.now()}`, name: newVendor }
-    console.log('[Vendor] Adding new vendor:', vendor, 'Current vendors count:', vendors?.length)
-    setVendors(prev => {
-      const updated = [...prev, vendor]
-      console.log('[Vendor] Vendors updated:', updated.length)
-      return updated
-    })
-    set('vendor', newVendor)
-    setNewVendor('')
-    setShowNewVendor(false)
-    showToast(`Furnitori "${newVendor}" u shtua! ✓`)
-  }
 
   const save = () => {
     if (!form.type)   { setErr('Zgjidh llojin e shpenzimit.'); return }
@@ -179,52 +151,8 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
 
       {/* Furnitori */}
       <FormGroup label="Furnitori">
-        {!showNewVendor ? (
-          <div className="flex gap-2">
-            <select className="form-control flex-1" value={form.vendor}
-              onChange={e => {
-                if (e.target.value === '__new__') {
-                  setShowNewVendor(true)
-                } else {
-                  set('vendor', e.target.value)
-                }
-              }}>
-              <option value="">Zgjidh furnitorin...</option>
-              {vendorsList && vendorsList.map && vendorsList.map(v => (
-                <option key={v.id || v.name} value={typeof v === 'string' ? v : v.name}>
-                  {typeof v === 'string' ? v : v.name}
-                </option>
-              ))}
-              <option value="__new__" className="font-bold text-red-500">+ Shto furnitor të ri</option>
-            </select>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <input className="form-control flex-1" type="text" placeholder="Emri i furnitorit të ri"
-              value={newVendor} onChange={e => setNewVendor(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && addNewVendor()} />
-            <button type="button" onClick={addNewVendor}
-              className="px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600">
-              Shto
-            </button>
-            <button type="button" onClick={() => { setShowNewVendor(false); setNewVendor('') }}
-              className="px-3 py-2 bg-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-300 dark:text-gray-300">
-              Anulo
-            </button>
-          </div>
-        )}
+        <VendorSelect value={form.vendor} onChange={v => set('vendor', v)} />
       </FormGroup>
-
-      {/* Nga cila llogari - Only for organizations with partner expense feature enabled */}
-      {canUsePartnerExpenseFields && (
-        <FormGroup label="Nga cila llogari u pagua">
-          <select className="form-control" value={form.paidFrom}
-            onChange={e => set('paidFrom', e.target.value)}>
-            <option value="">Zgjidh llogarinë...</option>
-            {depositAccounts.map(acc => <option key={acc} value={acc}>{acc}</option>)}
-          </select>
-        </FormGroup>
-      )}
 
       {/* Referenca */}
       <FormGroup label="Referenca / Shënime">
@@ -883,10 +811,9 @@ export default function ExpensesPage() {
                     <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">{e.vendor || '—'}</p>
                   </div>
 
-                  {/* Col 2: Amount + Account + Partner */}
+                  {/* Col 2: Amount + Partner */}
                   <div className="text-right">
                     <p className="font-mono font-bold text-red-600 dark:text-red-400 text-sm">- {fmt(e.amount)}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{e.paidFrom || '—'}</p>
                     <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold mt-0.5 ${
                       e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
                     }`}>
@@ -970,7 +897,6 @@ export default function ExpensesPage() {
                     <span className="text-[10px]">{sortField === 'vendor' ? (sortDir === 'asc' ? '↑' : '↓') : <span className="text-gray-300 dark:text-gray-600">↕</span>}</span>
                   </span>
                 </th>
-                <th className="table-th hidden lg:table-cell">Llogaria</th>
                 <th className="table-th hidden md:table-cell">Referenca</th>
                 <th className="table-th cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200"
                     onClick={() => toggleSort('paidBy')}>
@@ -1005,9 +931,6 @@ export default function ExpensesPage() {
                   </td>
                   <td className="table-td text-xs hidden md:table-cell">
                     {e.vendor || <span className="text-gray-300 dark:text-gray-600">—</span>}
-                  </td>
-                  <td className="table-td text-xs hidden lg:table-cell max-w-[130px] truncate">
-                    {e.paidFrom || <span className="text-gray-300 dark:text-gray-600">—</span>}
                   </td>
                   <td className="table-td text-xs hidden md:table-cell">
                     {e.reference || <span className="text-gray-300 dark:text-gray-600">—</span>}
