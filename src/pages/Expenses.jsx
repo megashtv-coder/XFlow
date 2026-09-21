@@ -538,7 +538,14 @@ export default function ExpensesPage() {
   const [sortField,      setSortField]     = useState('date')
   const [sortDir,        setSortDir]       = useState('desc')
   const [openDropdown,   setOpenDropdown]  = useState(null)
-  const [recurringOpen,  setRecurringOpen] = useState(false) // "Shpenzime të Rregullta" — mbyllur si default, që lista kryesore të ketë më shumë hapësirë
+  // "Shpenzime të Rregullta" — mbyllur si default, por ruaj në localStorage
+  // sapo përdoruesi e ndryshon, që të mos rimbyllet vetë pas refresh-it.
+  const [recurringOpen,  setRecurringOpen] = useState(() => {
+    try { return localStorage.getItem('xflow_expenses_recurring_open') === 'true' } catch { return false }
+  })
+  useEffect(() => {
+    try { localStorage.setItem('xflow_expenses_recurring_open', String(recurringOpen)) } catch {}
+  }, [recurringOpen])
 
   // Read filters from URL parameters (p.sh. klikim nga statistika e Dashboard-it)
   useEffect(() => {
@@ -755,7 +762,14 @@ export default function ExpensesPage() {
           {recurringOpen && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {recurringItems.map(e => (
-              <button key={e.id} onClick={() => navigate(`expenses:${e.id}:edit`)} className="text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-3.5 py-3 flex items-center justify-between gap-3 hover:shadow-md transition-all cursor-pointer">
+              <div
+                key={e.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`expenses:${e.id}:edit`)}
+                onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') navigate(`expenses:${e.id}:edit`) }}
+                className="text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-3.5 py-3 flex items-center justify-between gap-3 hover:shadow-md transition-all cursor-pointer"
+              >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 flex items-center justify-center flex-shrink-0">
                     <RefreshCw size={15} />
@@ -765,13 +779,22 @@ export default function ExpensesPage() {
                     <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{e.vendor || '—'}</p>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <span className="text-sm font-black font-mono text-red-600 dark:text-red-400 block">- {fmt(e.amount)}</span>
-                  <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
-                    {e.recurringFreq}
-                  </span>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="text-right">
+                    <span className="text-sm font-black font-mono text-red-600 dark:text-red-400 block">- {fmt(e.amount)}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
+                      {e.recurringFreq}
+                    </span>
+                  </div>
+                  <button
+                    onClick={ev => { ev.stopPropagation(); openDelete(e) }}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    title="Fshi"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
           )}
