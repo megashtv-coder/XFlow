@@ -223,7 +223,8 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
         return updates
       }))
 
-      /* 3 — krijo shpenzim automatikisht nëse ka fee */
+      /* 3 — krijo shpenzim automatikisht nëse ka fee — lidhur me faturën/pagesën
+         konkrete (vetëm për shpenzime të reja, nuk prek asnjë rresht ekzistues) */
       if (fee > 0) {
         setExpenses(prev => [{
           id:            `EXP-${Date.now() + 1}`,
@@ -236,6 +237,8 @@ export default function PaymentModal({ invoice, payment: editPayment, onClose, i
           recurring:     false,
           recurringFreq: '',
           amount:        fee,
+          invoiceId:     selectedInv.id,
+          paymentId:     payment.id,
         }, ...prev])
       }
 
