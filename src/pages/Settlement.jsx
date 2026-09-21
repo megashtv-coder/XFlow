@@ -4,9 +4,7 @@ import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 import { normalizeReferenceName } from '../utils/paymentReferenceAliases'
 import { EmptyState } from '../components/UI'
-
-// Metodat pa evidencë automatike tërheqjeje — vetëm këto shfaqen këtu.
-const WITHDRAWAL_METHODS = ['Western Union', 'Ria', 'Money Gram']
+import { trackingMethods as WITHDRAWAL_METHODS } from '../data/mockData'
 
 // Faqet zyrtare të gjurmimit — asnjëra s'ka API publik dhe as mbështet
 // parapopullim të numrit përmes URL-së, kështu që hapim faqen e thjeshtë;
