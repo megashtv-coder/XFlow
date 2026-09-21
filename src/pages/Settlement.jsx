@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Search, Scale } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Search, Scale, ExternalLink } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { formatDate } from '../utils/dateFormat'
 import { normalizeReferenceName } from '../utils/paymentReferenceAliases'
@@ -7,6 +7,15 @@ import { EmptyState } from '../components/UI'
 
 // Metodat pa evidencë automatike tërheqjeje — vetëm këto shfaqen këtu.
 const WITHDRAWAL_METHODS = ['Western Union', 'Ria', 'Money Gram']
+
+// Faqet zyrtare të gjurmimit — asnjëra s'ka API publik dhe as mbështet
+// parapopullim të numrit përmes URL-së, kështu që hapim faqen e thjeshtë;
+// numri kopjohet nga fusha ngjitur dhe ngjitet dorazi atje.
+const TRACK_URLS = {
+  'Western Union': 'https://www.westernunion.com/ca/en/web/track-transfer',
+  'Ria':            'https://www.riamoneytransfer.com/en-us/track-a-transfer/',
+  'Money Gram':     'https://www.moneygram.com/us/en/help-center/track-a-transfer',
+}
 
 // Gjurmimi fillon nga tetori 2026 — pagesat e mëparshme s'ishin duke u
 // përcjellë me këtë logjikë, kështu që s'na duhen këtu.
@@ -21,6 +30,26 @@ const STATUS_LABEL = Object.fromEntries(STATUS_OPTIONS.map(s => [s.id, s.label])
 
 function initials(name) {
   return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
+}
+
+/* ── Fusha e numrit të tërheqjes (MTCN etj.) — state lokale, ruhet
+   vetëm kur del fokusi (jo në çdo shkronjë), që të mos bëjë sync
+   në Supabase 10 herë ndërsa shkruhet numri ── */
+function TrackingInput({ payment, onCommit }) {
+  const [val, setVal] = useState(payment.trackingNumber || '')
+  useEffect(() => { setVal(payment.trackingNumber || '') }, [payment.trackingNumber])
+
+  return (
+    <input
+      type="text"
+      value={val}
+      onChange={e => setVal(e.target.value)}
+      onBlur={() => { if (val !== (payment.trackingNumber || '')) onCommit(payment.id, val.trim()) }}
+      onClick={e => e.target.select()}
+      placeholder="MTCN..."
+      className="w-24 px-2 py-1 text-[11px] font-mono rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
+    />
+  )
 }
 
 /* ── unique months from the relevant payments ── */
@@ -60,6 +89,10 @@ export default function Settlement() {
       // Nëse largohet nga "U tërhoq", statusi i barazimit s'ka më kuptim.
       return { ...p, withdrawalStatus: status, settled: status === 'withdrawn' ? p.settled : false }
     }))
+  }
+
+  const setTrackingNumber = (id, trackingNumber) => {
+    setPayments(prev => prev.map(p => p.id === id ? { ...p, trackingNumber } : p))
   }
 
   const settlePayment = (p) => {
@@ -204,13 +237,14 @@ export default function Settlement() {
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 420px)' }}>
-            <table className="w-full text-sm min-w-[720px]">
+            <table className="w-full text-sm min-w-[860px]">
               <thead className="sticky top-0 z-10">
                 <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
                   <th className="table-th">Data</th>
                   <th className="table-th">Klienti</th>
                   <th className="table-th text-right">Shuma</th>
                   <th className="table-th">Metoda</th>
+                  <th className="table-th">Nr. Tërheqjes</th>
                   <th className="table-th">Personi</th>
                   <th className="table-th">Statusi i tërheqjes</th>
                   <th className="table-th">Barazuar</th>
@@ -226,6 +260,20 @@ export default function Settlement() {
                       <td className="table-td font-bold text-gray-900 dark:text-white text-xs max-w-[140px] truncate">{p.customer}</td>
                       <td className="table-td text-right font-mono font-bold text-gray-900 dark:text-white">{fmt(p.amount)}</td>
                       <td className="table-td text-xs">{p.method}</td>
+                      <td className="table-td">
+                        <div className="flex items-center gap-1">
+                          <TrackingInput payment={p} onCommit={setTrackingNumber} />
+                          <a
+                            href={TRACK_URLS[p.method]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 flex-shrink-0"
+                            title={`Hap faqen e gjurmimit — ${p.method} (kopjo numrin dhe ngjite atje)`}
+                          >
+                            <ExternalLink size={13} />
+                          </a>
+                        </div>
+                      </td>
                       <td className="table-td text-xs text-gray-500 dark:text-gray-400">{ref || <span className="text-gray-300 dark:text-gray-600">—</span>}</td>
                       <td className="table-td">
                         <div className="inline-flex border border-gray-200 dark:border-gray-700 rounded-full p-0.5 gap-0.5 bg-gray-50 dark:bg-gray-900/50">
