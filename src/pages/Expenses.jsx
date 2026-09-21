@@ -283,7 +283,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
                       ? 'border-red-500 bg-red-500 text-white'
                       : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
                   }`}>
-                  {f === 'Ditore' ? '📅 Ditore' : f === 'Mujore' ? '📆 Mujore' : '🗓 Vjetore'}
+                  {f === 'Ditore' ? '📅 Ditore' : f === 'Javore' ? '🗓️ Javore' : f === 'Mujore' ? '📆 Mujore' : '🗓 Vjetore'}
                 </button>
               ))}
             </div>
