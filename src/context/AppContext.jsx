@@ -4,6 +4,7 @@ import {
   mockPayments, mockTransfers, paymentModes as defaultPaymentModes,
   depositAccounts as defaultDepositAccounts,
   expenseTypes as defaultExpenseTypes,
+  defaultHostCategories,
   currencies, mockUsers, mockActivityLog, mockOrganizations,
 } from '../data/mockData'
 import { supabase } from '../lib/supabase'
@@ -260,6 +261,8 @@ export function AppProvider({ children }) {
   const [paymentModes,    setPaymentModes]    = useState(defaultPaymentModes)
   const [depositAccounts, setDepositAccounts] = useState(defaultDepositAccounts)
   const [expenseTypes,    setExpenseTypes]    = useState(defaultExpenseTypes)
+  // Kategoritë e Hosteve (emër + flamur) — hostet ruhen veç te `hosts` me fushën category = id.
+  const [hostCategories, setHostCategories] = useState(defaultHostCategories)
   // Linqet e gatshme të Stripe Payment Links — thjesht listë për kopjim (jo
   // lidhje me fatura, jo webhook): { id, amount, url, description?, isPopular? }[].
   const [stripeLinks, setStripeLinks] = useState([])
@@ -293,6 +296,7 @@ export function AppProvider({ children }) {
   const prevHosts     = useRef(null)
   const prevReferents = useRef(null)
   const prevET        = useRef(null)
+  const prevHC        = useRef(null)
   const prevUsers     = useRef(null) // null = nuk është inicializuar ende nga Supabase
 
   /* ══════════════════════════════════════════════════════════
@@ -316,6 +320,7 @@ export function AppProvider({ children }) {
       prevHosts.current = []
       prevReferents.current = []
       prevET.current = defaultExpenseTypes
+      prevHC.current = defaultHostCategories
       return
     }
 
@@ -525,12 +530,14 @@ export function AppProvider({ children }) {
         const hs = hostsRow?.value ?? []
         const rf = referentsRow?.value ?? []
         const et = etRow?.value ?? defaultExpenseTypes
+        const hc = sett.data.find(r => r.key === 'hostCategories')?.value ?? defaultHostCategories
         setPaymentModes(pm);    prevPM.current = pm
         setDepositAccounts(da); prevDA.current = da
         setStripeLinks(sl);     prevSL.current = sl
         setHosts(hs);           prevHosts.current = hs
         setPaymentReferents(rf); prevReferents.current = rf
         setExpenseTypes(et);    prevET.current = et
+        setHostCategories(hc);  prevHC.current = hc
       } else {
         prevPM.current = defaultPaymentModes
         prevDA.current = defaultDepositAccounts
@@ -538,6 +545,7 @@ export function AppProvider({ children }) {
         prevHosts.current = []
         prevReferents.current = []
         prevET.current = defaultExpenseTypes
+        prevHC.current = defaultHostCategories
       }
 
       // Organizations — merge Supabase + mockOrganizations (kurrë mos humb ato default)
@@ -634,6 +642,7 @@ export function AppProvider({ children }) {
       prevHosts.current = []
       prevReferents.current = []
       prevET.current = defaultExpenseTypes
+      prevHC.current = defaultHostCategories
       prevUsers.current = _loadedUsers  // fallback — mos sync-o deri sa të jetë online
       setDbLoading(false)
     })
@@ -737,6 +746,13 @@ export function AppProvider({ children }) {
     prevET.current = expenseTypes
     supabase.from('settings').upsert({ key: 'expenseTypes', value: expenseTypes }).then()
   }, [expenseTypes, canSync])
+
+  useEffect(() => {
+    if (!canSync || !supabase) return
+    if (JSON.stringify(prevHC.current) === JSON.stringify(hostCategories)) return
+    prevHC.current = hostCategories
+    supabase.from('settings').upsert({ key: 'hostCategories', value: hostCategories }).then()
+  }, [hostCategories, canSync])
 
   // Sync users — kur ndryshojnë users (shto/edito/fshi), ruhen automatikisht në Supabase
   useEffect(() => {
@@ -1026,6 +1042,7 @@ export function AppProvider({ children }) {
       hosts,           setHosts,
       paymentReferents, setPaymentReferents,
       expenseTypes,    setExpenseTypes,
+      hostCategories,  setHostCategories,
       currency,        setCurrency,
       darkMode,        setDarkMode,
       toast,           setToast,
@@ -1072,6 +1089,7 @@ export function AppProvider({ children }) {
       hosts, setHosts,
       paymentReferents, setPaymentReferents,
       expenseTypes, setExpenseTypes,
+      hostCategories, setHostCategories,
       currency, setCurrency, darkMode, setDarkMode, toast, setToast, modal, setModal, closeModal,
       page, navigate, loading, dbLoading, sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed,
       invoicesHidden, setInvoicesHidden, invoicesExportOpen, setInvoicesExportOpen, invoicesImportOpen, setInvoicesImportOpen,
