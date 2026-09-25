@@ -92,7 +92,7 @@ export function buildDataSnapshot(appContext) {
   const payments = appContext.payments || []
 
   const unpaidInvoices = invoices
-    .filter(i => i.status !== 'paid' && i.status !== 'draft')
+    .filter(i => i.status !== 'paid' && i.status !== 'draft' && i.status !== 'void')
     .slice(0, 1000)
     .map(trimInvoice)
 
