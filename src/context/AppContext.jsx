@@ -92,6 +92,10 @@ async function diffSync(table, curr, prevRef, orgId) {
 /* ══════════════════════════════════════════════════════════
    Provider
 ══════════════════════════════════════════════════════════ */
+// Faqet me vlera monetare që kanë butonin Fshih/Shfaq shumat te header-i (Dashboard dhe
+// Faturat kanë butonat e tyre). Gjendja ruhet për secilën faqe veç, në këtë pajisje.
+export const MONEY_PAGES = ['customers', 'items', 'payments', 'settlement', 'expenses', 'stripe', 'reports', 'subscriptions']
+
 export function AppProvider({ children }) {
 
   /* ── UI states ── */
@@ -130,6 +134,10 @@ export function AppProvider({ children }) {
   const [dashboardHidden, setDashboardHidden] = useState(() => readHidden('xflow_dashboard_hidden'))
   useEffect(() => { try { localStorage.setItem('xflow_invoices_hidden', String(invoicesHidden)) } catch { /* ignore */ } }, [invoicesHidden])
   useEffect(() => { try { localStorage.setItem('xflow_dashboard_hidden', String(dashboardHidden)) } catch { /* ignore */ } }, [dashboardHidden])
+  const [hiddenPages, setHiddenPages] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('xflow_hidden_pages') || '{}') } catch { return {} }
+  })
+  useEffect(() => { try { localStorage.setItem('xflow_hidden_pages', JSON.stringify(hiddenPages)) } catch { /* ignore */ } }, [hiddenPages])
 
   /* ── I njëjti trajtim (shih më lart) për Klientët/Pagesat/Shpenzimet ── */
   const [customersImportOpen, setCustomersImportOpen] = useState(false)
@@ -1003,12 +1011,22 @@ export function AppProvider({ children }) {
     setTimeout(() => setLoading(false), 350)
   }, [currentOrgId])
 
-  const fmt = useCallback(
+  const fmtRaw = useCallback(
     (amount) => currency.symbol + new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount ?? 0),
     [currency]
+  )
+  // Në faqet e listuara te MONEY_PAGES, fmt kthen •••••• kur shumat janë të fshehura (default: të fshehura)
+  const moneyHidden = MONEY_PAGES.includes(page) && hiddenPages[page] !== false
+  const toggleMoneyHidden = useCallback(
+    () => setHiddenPages(h => ({ ...h, [page]: h[page] === false })),
+    [page]
+  )
+  const fmt = useCallback(
+    (amount) => (moneyHidden ? '••••••' : fmtRaw(amount)),
+    [moneyHidden, fmtRaw]
   )
 
   const closeModal = useCallback(() => setModal(null), [])
@@ -1074,7 +1092,7 @@ export function AppProvider({ children }) {
       activityLog,     setActivityLog,
       logActivity,
       showToast,
-      fmt,
+      fmt, fmtRaw, moneyHidden, toggleMoneyHidden, moneyPages: MONEY_PAGES,
       logout,
       isTester,
       isSuperAdmin,
@@ -1101,7 +1119,7 @@ export function AppProvider({ children }) {
       dashboardMonth, setDashboardMonth, dashboardYear, setDashboardYear, dashboardHidden, setDashboardHidden,
       customersImportOpen, setCustomersImportOpen, paymentsExportOpen, setPaymentsExportOpen, paymentsImportOpen, setPaymentsImportOpen, expensesExportOpen, setExpensesExportOpen, expensesImportOpen, setExpensesImportOpen,
       tasksAddOpen, setTasksAddOpen,
-      currentUser, setCurrentUser, activityLog, setActivityLog, logActivity, showToast, fmt, logout,
+      currentUser, setCurrentUser, activityLog, setActivityLog, logActivity, showToast, fmt, fmtRaw, moneyHidden, toggleMoneyHidden, logout,
       isSuperAdmin, currentOrgId, currentOrg, organizations, setOrganizations
     ])
 
