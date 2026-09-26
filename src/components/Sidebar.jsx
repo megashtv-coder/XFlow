@@ -3,7 +3,7 @@ import {
   LayoutDashboard, FileText, Users as UsersIcon, Receipt, BarChart2,
   Package, CreditCard, Settings, ChevronRight, X, Bell,
   Truck, ChevronLeft, UserCog, LogOut, CheckSquare,
-  Zap, Link2, Server, Scale,
+  Zap, Link2, Server, Scale, UserCheck,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
@@ -68,6 +68,7 @@ export default function Sidebar() {
     { id: 'expenses',      icon: Receipt,         label: 'Shpenzimet' },
     { id: 'hosts',         icon: Server,          label: 'Hostet' },
     { id: 'stripe',        icon: Link2,           label: 'Stripe' },
+    { id: 'paymentnames',  icon: UserCheck,       label: 'Emrat për Pagesa' },
     // Suppliers only visible if feature enabled
     ...(canAccessSuppliers ? [{ id: 'suppliers', icon: Truck, label: 'Furnitorët' }] : []),
     { id: 'reports',       icon: BarChart2,       label: 'Raportet' },

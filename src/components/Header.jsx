@@ -24,6 +24,7 @@ const PAGE_TITLES = {
   expenses:      'Shpenzimet',
   stripe:        'Stripe',
   hosts:         'Hostet',
+  paymentnames:  'Emrat për Pagesa',
   settlement:    'Barazimi',
   suppliers:     'Furnitorët',
   reports:       'Raportet',
