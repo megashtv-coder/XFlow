@@ -2037,14 +2037,6 @@ export default function Invoices() {
               <table className="w-full min-w-[500px]" style={{ position: 'relative' }}>
                 <thead className="sticky top-0 z-10">
                   <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
-                    {invoiceColumns.map(col => renderInvoiceColHeader(col, {
-                      sortField, sortDir, toggleSort, draggedCol, dragOverCol,
-                      onColDragStart: setDraggedCol,
-                      onColDragOver: setDragOverCol,
-                      onColDrop: handleColDrop,
-                      onColDragEnd: () => { setDraggedCol(null); setDragOverCol(null) },
-                    }))}
-                    <th className="table-th text-right">Veprimet</th>
                     <th className="table-th w-8 text-center hidden sm:table-cell">
                       <input
                         type="checkbox"
@@ -2054,6 +2046,14 @@ export default function Invoices() {
                         title={selected.size === filtered.length ? "Deselekto të gjitha" : "Selekto të gjitha"}
                       />
                     </th>
+                    {invoiceColumns.map(col => renderInvoiceColHeader(col, {
+                      sortField, sortDir, toggleSort, draggedCol, dragOverCol,
+                      onColDragStart: setDraggedCol,
+                      onColDragOver: setDragOverCol,
+                      onColDrop: handleColDrop,
+                      onColDragEnd: () => { setDraggedCol(null); setDragOverCol(null) },
+                    }))}
+                    <th className="table-th text-right">Veprimet</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2066,6 +2066,14 @@ export default function Invoices() {
                         key={inv.id}
                         className={`hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group ${selected.has(inv.id) ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
                       >
+                        <td className="table-td w-8 text-center hidden sm:table-cell" onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selected.has(inv.id)}
+                            onChange={() => toggleSelectInvoice(inv.id)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </td>
                         {invoiceColumns.map(col => renderInvoiceColCell(col, inv, { isOverdue, fmt, hasLongOverdue, getCustomerType, setPreview }))}
                         <td className="table-td" onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-end">
@@ -2080,14 +2088,6 @@ export default function Invoices() {
                               customers={customers}
                             />
                           </div>
-                        </td>
-                        <td className="table-td w-8 text-center hidden sm:table-cell" onClick={e => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={selected.has(inv.id)}
-                            onChange={() => toggleSelectInvoice(inv.id)}
-                            className="w-4 h-4 cursor-pointer"
-                          />
                         </td>
                       </tr>
                     )
