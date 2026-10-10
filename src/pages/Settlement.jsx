@@ -74,9 +74,12 @@ export default function Settlement() {
     if (monthFilt !== 'all') result = result.filter(p => (p.date || '').startsWith(monthFilt))
     if (search.trim()) {
       const q = search.trim().toLowerCase()
+      // Numri i tërheqjes (MTCN/Ria/MoneyGram) kërkohet pa hapësira e viza: "461 494 6720" = "4614946720"
+      const qTrack = q.replace(/[\s-]/g, '')
       result = result.filter(p =>
         (p.customer || '').toLowerCase().includes(q) ||
-        (p.reference || '').toLowerCase().includes(q)
+        (p.reference || '').toLowerCase().includes(q) ||
+        (qTrack && (p.trackingNumber || '').toLowerCase().replace(/[\s-]/g, '').includes(qTrack))
       )
     }
     return [...result].sort((a, b) => (b.date || '').localeCompare(a.date || ''))
@@ -213,7 +216,7 @@ export default function Settlement() {
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
             className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
-            placeholder="Kërko klient ose person..."
+            placeholder="Kërko klient, person ose numër tërheqjeje..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
