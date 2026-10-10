@@ -8,6 +8,7 @@ import { Modal, FormGroup } from '../components/UI'
 import ReferredBySelect from '../components/ReferredBySelect'
 import CountrySelect from '../components/CountrySelect'
 import { round2 } from '../utils/money'
+import { maxInvoiceNumber } from '../utils/invoicePayments'
 import { ContactImportButton } from '../features/contacts'
 
 /* ─────────────────────────────────────────────────────────────
@@ -447,7 +448,7 @@ function calculateSubscriptionExpiry(baseDate, months) {
    InvoiceModal
 ══════════════════════════════════════════════════════════ */
 export default function InvoiceModal({ initialData, isFormPage, onClose }) {
-  const { invoices, customers, setCustomers, items: products, setInvoices, showToast, closeModal, navigate, representatives, setRepresentatives, logActivity } = useApp()
+  const { invoices, payments, customers, setCustomers, items: products, setInvoices, showToast, closeModal, navigate, representatives, setRepresentatives, logActivity } = useApp()
 
   // Referent combobox options — memoized so typing in any other field (date,
   // discount, notify date, etc.) doesn't re-scan all customers every keystroke
@@ -550,17 +551,9 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
 
   /* ── Generate next sequential invoice number ── */
   const generateNextInvoiceId = () => {
-    // Find the highest invoice number currently in use
-    let maxNum = 0
-    invoices.forEach(inv => {
-      const match = inv.id.match(/INV-(\d+)/)
-      if (match) {
-        const num = parseInt(match[1], 10)
-        if (num > maxNum) maxNum = num
-      }
-    })
-    // Increment and format as 6-digit number
-    const nextNum = maxNum + 1
+    // Numri më i lartë i përdorur ndonjëherë — përfshin edhe numrat që i referohen ende pagesat,
+    // që një faturë e re të mos marrë numrin e një fature të fshirë (pagesat e saj mbeten).
+    const nextNum = maxInvoiceNumber(invoices, payments) + 1
     return `INV-${String(nextNum).padStart(6, '0')}`
   }
 
