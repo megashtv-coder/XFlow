@@ -11,6 +11,7 @@ import {
 import { useApp } from '../context/AppContext'
 import { useFeatures } from '../features/useFeatures'
 import { formatDate } from '../utils/dateFormat'
+import { feeCountedViaNet, FEE_RULE_START } from '../utils/feeExpenses'
 import { normalizeReferenceName } from '../utils/paymentReferenceAliases'
 
 /* ─── konstante ─── */
@@ -231,7 +232,10 @@ function BarazimiTab({ payments, expenses, fmt }) {
     const exps = expenses.filter(e => e.date >= from && e.date <= to)
     return PARTNERS.map(partner => {
       const payItems = pays.filter(p => p.depositedTo === partner)
-      const expItems = exps.filter(e => e.paidBy === partner)
+      // Nga 1 qershori fee zbritet një herë përmes netos së pagesës — shpenzimi automatik i fee-së
+      // nuk numërohet përsëri këtu (mbetet te Shpenzimet).
+      const expItems = exps.filter(e => e.paidBy === partner && !feeCountedViaNet(e))
+      const feeInNet = payItems.filter(p => p.date >= FEE_RULE_START).reduce((s, p) => s + (p.fee || 0), 0)
       const trfOut   = periodTransfers.filter(t => t.from === partner)
       const trfIn    = periodTransfers.filter(t => t.to   === partner)
       const income   = payItems.reduce((s, p) => s + p.net,    0)
@@ -239,7 +243,7 @@ function BarazimiTab({ payments, expenses, fmt }) {
       const tOut     = trfOut.reduce((s, t) => s + t.amount,   0)
       const tIn      = trfIn.reduce( (s, t) => s + t.amount,   0)
       return { partner, income, spent, tOut, tIn, trfOut, trfIn,
-               net: income - spent - tOut + tIn, payItems, expItems }
+               net: income - spent - tOut + tIn, payItems, expItems, feeInNet }
     })
   }, [payments, expenses, periodTransfers, from, to])
 
@@ -396,6 +400,11 @@ function BarazimiTab({ payments, expenses, fmt }) {
                           </div>
                         ))
                     }
+                    {d.feeInNet > 0 && (
+                      <p className="text-[11px] italic text-gray-400 pt-1">
+                        Fee-të e pagesave ({fmt(d.feeInNet)}) janë zbritur një herë te "Të ardhura" (neto) — rregull nga 1 qershori.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
