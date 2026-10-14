@@ -8,7 +8,7 @@ import { Modal, FormGroup } from '../components/UI'
 import ReferredBySelect from '../components/ReferredBySelect'
 import CountrySelect from '../components/CountrySelect'
 import { round2 } from '../utils/money'
-import { maxInvoiceNumber } from '../utils/invoicePayments'
+import { reserveInvoiceId } from '../utils/invoiceNumber'
 import { ContactImportButton } from '../features/contacts'
 
 /* ─────────────────────────────────────────────────────────────
@@ -448,7 +448,7 @@ function calculateSubscriptionExpiry(baseDate, months) {
    InvoiceModal
 ══════════════════════════════════════════════════════════ */
 export default function InvoiceModal({ initialData, isFormPage, onClose }) {
-  const { invoices, payments, customers, setCustomers, items: products, setInvoices, showToast, closeModal, navigate, representatives, setRepresentatives, logActivity } = useApp()
+  const { invoices, payments, currentOrgId, customers, setCustomers, items: products, setInvoices, showToast, closeModal, navigate, representatives, setRepresentatives, logActivity } = useApp()
 
   // Referent combobox options — memoized so typing in any other field (date,
   // discount, notify date, etc.) doesn't re-scan all customers every keystroke
@@ -549,14 +549,6 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     setAddingCustomer(null)
   }
 
-  /* ── Generate next sequential invoice number ── */
-  const generateNextInvoiceId = () => {
-    // Numri më i lartë i përdorur ndonjëherë — përfshin edhe numrat që i referohen ende pagesat,
-    // që një faturë e re të mos marrë numrin e një fature të fshirë (pagesat e saj mbeten).
-    const nextNum = maxInvoiceNumber(invoices, payments) + 1
-    return `INV-${String(nextNum).padStart(6, '0')}`
-  }
-
   /* ── Save ── */
   const save = () => {
     const validItems = lineItems.filter(it => Number(it.unitPrice) > 0)
@@ -601,7 +593,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     }
 
     // Update state in background
-    setTimeout(() => {
+    setTimeout(async () => {
       if (isEdit) {
         // _synced: null forces diffSync (AppContext) to detect the change and
         // push it to Supabase -- otherwise its fast-path comparison sees an
@@ -610,12 +602,13 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         setInvoices(prev => prev.map(i => i.id === initialData.id ? { ...i, ...payload, _synced: null } : i))
         logActivity(`Përditësoi faturën ${initialData.id} — ${form.customer} €${total}`, 'Faturat')
       } else {
-        const newId = generateNextInvoiceId()
-        setInvoices(p => [{
-          ...payload,
-          id:       newId,
-          comments: [],
-        }, ...p])
+        // Numri rezervohet ATOMIKISHT në databazë (shih utils/invoiceNumber.js): dy pajisje s'mund ta
+        // marrin më të njëjtin numër dhe një faturë ekzistuese s'mbishkruhet më heshturazi.
+        const base = { ...payload, comments: [] }
+        const { id: newId } = await reserveInvoiceId({
+          invoices, payments, orgId: currentOrgId, buildInvoice: id => ({ ...base, id }),
+        })
+        setInvoices(p => [{ ...base, id: newId }, ...p])
         logActivity(`Krijoi faturën ${newId} — ${form.customer} €${total}`, 'Faturat')
       }
       setIsSaving(false)
