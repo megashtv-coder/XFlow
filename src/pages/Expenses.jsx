@@ -647,28 +647,28 @@ export default function ExpensesPage() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
           <p className="text-xs text-gray-500 dark:text-gray-400 font-bold mb-1">Totali</p>
-          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-red-400">- {fmt(allTotal)}</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-accent">- {fmt(allTotal)}</p>
           <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{expenses.length} shpenzime</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
             <Users size={12} className="text-red-400" />
             <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Enndy</p>
           </div>
-          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-red-400">- {fmt(enndiTotal)}</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-red-600 dark:text-accent">- {fmt(enndiTotal)}</p>
           <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{Math.round(enndiTotal/allTotal*100)||0}% e totalit</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
             <Users size={12} className="text-purple-400" />
             <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Samki</p>
           </div>
-          <p className="text-2xl font-black font-mono tracking-tight text-purple-600 dark:text-purple-400">- {fmt(samkiTotal)}</p>
+          <p className="text-2xl font-black font-mono tracking-tight text-purple-600 dark:text-[#a5a6ff]">- {fmt(samkiTotal)}</p>
           <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{Math.round(samkiTotal/allTotal*100)||0}% e totalit</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
           <div className="flex items-center gap-1.5 mb-1">
             <RefreshCw size={12} className="text-emerald-500" />
             <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">Të Rregullta</p>
@@ -687,8 +687,8 @@ export default function ExpensesPage() {
             className="flex items-center gap-2 mb-3 group"
           >
             <RefreshCw size={16} className="text-red-500" />
-            <h3 className="text-sm font-bold text-red-600 dark:text-red-400 tracking-tight">Shpenzime të Rregullta</h3>
-            <span className="bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 text-[11px] font-extrabold px-2 py-0.5 rounded-full">{recurringItems.length} aktive</span>
+            <h3 className="text-sm font-bold text-red-600 dark:text-accent tracking-tight">Shpenzime të Rregullta</h3>
+            <span className="bg-red-100 dark:bg-accent/15 dark:border dark:border-accent/30 text-red-600 dark:text-accent-soft text-[11px] font-extrabold px-2 py-0.5 rounded-full">{recurringItems.length} aktive</span>
             <ChevronDown size={15} className={`text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-transform ${recurringOpen ? 'rotate-180' : ''}`} />
           </button>
           {recurringOpen && (
@@ -700,10 +700,10 @@ export default function ExpensesPage() {
                 tabIndex={0}
                 onClick={() => navigate(`expenses:${e.id}:edit`)}
                 onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') navigate(`expenses:${e.id}:edit`) }}
-                className="text-left bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-3.5 py-3 flex items-center justify-between gap-3 hover:shadow-md transition-all cursor-pointer"
+                className="text-left bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] dark:hover:bg-dk-card rounded-2xl border border-gray-200/90 shadow-sm px-3.5 py-3 flex items-center justify-between gap-3 hover:shadow-md transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-accent/10 text-red-500 dark:text-accent-soft flex items-center justify-center flex-shrink-0">
                     <RefreshCw size={15} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -713,7 +713,7 @@ export default function ExpensesPage() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="text-right">
-                    <span className="text-sm font-black font-mono text-red-600 dark:text-red-400 block">- {fmt(e.amount)}</span>
+                    <span className="text-sm font-black font-mono text-red-600 dark:text-accent block">- {fmt(e.amount)}</span>
                     <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md ${FREQ_COLOR[e.recurringFreq] || 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-500'}`}>
                       {e.recurringFreq}
                     </span>
@@ -734,10 +734,10 @@ export default function ExpensesPage() {
       )}
 
       {/* Filtrat */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] p-3 rounded-2xl border border-gray-200/90 shadow-sm mb-5">
         <div className="relative flex-1 min-w-[160px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-          <input className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
+          <input className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
             placeholder="Kërko shpenzime..."
             value={search} onChange={e => { setSearch(e.target.value); setPg(1) }} />
           {search && (
@@ -748,39 +748,39 @@ export default function ExpensesPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={yearFilt} onChange={e => { setYearFilt(e.target.value); setPg(1) }}>
             <option value="all">Të gjitha vitet</option>
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
 
-          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={monthFilt} onChange={e => { setMonthFilt(e.target.value); setPg(1) }}>
             <option value="all">Të gjitha muajt</option>
             {MONTHS.map(m => <option key={m.v} value={m.v}>{m.l}</option>)}
           </select>
 
-          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={partnerFilt} onChange={e => { setPartner(e.target.value); setPg(1) }}>
             <option value="all">Të dy partnerët</option>
             <option value="Enndy">Enndy</option>
             <option value="Samki">Samki</option>
           </select>
 
-          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer max-w-[200px]"
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer max-w-[200px]"
             value={typeFilt} onChange={e => { setType(e.target.value); setPg(1) }}>
             <option value="all">Të gjitha llojet</option>
             {usedTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
 
-          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+          <select className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={recurFilt} onChange={e => { setRecurFilt(e.target.value); setPg(1) }}>
             <option value="all">Të gjitha</option>
             <option value="recurring">Vetëm të rregullta</option>
             <option value="once">Vetëm njëherësh</option>
           </select>
 
-          <select className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+          <select className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}>
             <option value={25}>25 / faqe</option>
             <option value={50}>50 / faqe</option>
@@ -799,7 +799,7 @@ export default function ExpensesPage() {
       {paged.length > 0 && (
         <div className="sm:hidden space-y-2 mb-4">
           {paged.map(e => (
-              <div key={e.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+              <div key={e.id} className="bg-white dark:bg-dk-low rounded-2xl border border-gray-200 dark:border-white/[0.07] shadow-sm p-3">
                 <div className="flex justify-between items-start gap-2">
                   {/* Col 1: Type + Date + Vendor */}
                   <div className="flex-1 min-w-0">
@@ -819,7 +819,7 @@ export default function ExpensesPage() {
                   <div className="text-right">
                     <p className="font-mono font-bold text-red-600 dark:text-red-400 text-sm">- {fmt(e.amount)}</p>
                     <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold mt-0.5 ${
-                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
+                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-accent/10 text-red-600 dark:text-accent-soft dark:border dark:border-accent/20' : 'bg-purple-100 dark:bg-[#8083ff]/15 text-purple-600 dark:text-[#c0c1ff] dark:border dark:border-[#8083ff]/25'
                     }`}>
                       {e.paidBy || '—'}
                     </span>
@@ -877,11 +877,11 @@ export default function ExpensesPage() {
           sub="Regjistro shpenzimin e parë"
           action={<button className="btn btn-primary mt-2" onClick={openAdd}><Plus size={14}/>Shpenzim i ri</button>}/>
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 420px)' }}>
-          <table className="w-full text-sm min-w-[480px]">
+          <table className="cust-tbl w-full text-sm min-w-[480px]">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+              <tr className="border-b border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-side/70">
                 {[
                   { key: 'date',   label: 'Data',     cls: '' },
                   { key: 'type',   label: 'Për çfarë',cls: '' },
@@ -921,7 +921,7 @@ export default function ExpensesPage() {
             </thead>
             <tbody>
               {paged.map(e => (
-                <tr key={e.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group">
+                <tr key={e.id} className="hover:bg-gray-50 dark:hover:bg-dk-card/60 transition-colors group">
                   <td className="table-td font-mono text-xs">{formatDate(e.date)}</td>
                   <td className="table-td">
                     <div className="flex items-center gap-2">
@@ -941,20 +941,20 @@ export default function ExpensesPage() {
                   </td>
                   <td className="table-td">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
+                      e.paidBy === 'Enndy' ? 'bg-red-50 dark:bg-accent/10 text-red-600 dark:text-accent-soft dark:border dark:border-accent/20' : 'bg-purple-100 dark:bg-[#8083ff]/15 text-purple-600 dark:text-[#c0c1ff] dark:border dark:border-[#8083ff]/25'
                     }`}>
                       {e.paidBy || '—'}
                     </span>
                   </td>
-                  <td className="table-td text-right font-mono font-bold text-red-600 dark:text-red-400">
+                  <td className="table-td text-right font-mono font-bold text-red-600 dark:text-accent">
                     - {fmt(e.amount)}
                   </td>
                   <td className="table-td">
                     <div className="flex items-center justify-end gap-1.5">
-                      <button className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors" onClick={() => openEdit(e)} title="Edito">
+                      <button className="p-1.5 rounded-lg bg-gray-100 dark:bg-dk-high text-gray-500 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-dk-line hover:text-red-600 dark:hover:text-white transition-colors" onClick={() => openEdit(e)} title="Edito">
                         ✏
                       </button>
-                      <button className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors" onClick={() => openDelete(e)} title="Fshi">
+                      <button className="p-1.5 rounded-lg bg-red-50 dark:bg-[#93000a]/30 text-red-600 dark:text-[#ffb4ab] hover:bg-red-100 dark:hover:bg-[#93000a]/60 transition-colors" onClick={() => openDelete(e)} title="Fshi">
                         <Trash2 size={14}/>
                       </button>
                     </div>
@@ -967,13 +967,13 @@ export default function ExpensesPage() {
 
           {/* Footer totals - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="hidden sm:flex items-center justify-between px-5 py-2.5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs">
+            <div className="hidden sm:flex items-center justify-between px-5 py-2.5 border-t border-gray-100 dark:border-transparent bg-gray-50/50 dark:bg-dk-side/70 text-xs">
               <div className="flex gap-4 text-gray-400 dark:text-gray-500 font-bold">
-                <span>Enndy: <span className="font-mono text-red-600 dark:text-red-400">- {fmt(filteredEnndiTotal)}</span></span>
-                <span>Samki: <span className="font-mono text-purple-600 dark:text-purple-400">- {fmt(filteredSamkiTotal)}</span></span>
+                <span>Enndy: <span className="font-mono text-red-600 dark:text-accent">- {fmt(filteredEnndiTotal)}</span></span>
+                <span>Samki: <span className="font-mono text-purple-600 dark:text-[#a5a6ff]">- {fmt(filteredSamkiTotal)}</span></span>
               </div>
               <span className="font-bold text-gray-400 dark:text-gray-500">
-                Total: <span className="font-mono text-red-600 dark:text-red-400 text-sm">{fmt(total)}</span>
+                Total: <span className="font-mono text-red-600 dark:text-gray-100 text-sm">{fmt(total)}</span>
               </span>
             </div>
           )}
