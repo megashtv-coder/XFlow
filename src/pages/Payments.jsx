@@ -19,10 +19,10 @@ const ImportExcelModal = lazy(() => import('../components/ImportExcelModal'))
 /* ── method badge colour ── */
 const METHOD_COLOR = {
   'PayPal':          'bg-sky-50 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400',
-  'Transfer Bankar': 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+  'Transfer Bankar': 'bg-gray-100 dark:bg-dk-high text-gray-600 dark:text-gray-300 dark:border dark:border-white/[0.07]',
   'Kesh':            'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-400',
-  'Western Union':   'bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400',
-  'Ria':             'bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400',
+  'Western Union':   'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 dark:border dark:border-amber-800/40',
+  'Ria':             'bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 dark:border dark:border-purple-800/40',
   'Money Gram':      'bg-pink-50 dark:bg-pink-900/40 text-pink-600 dark:text-pink-400',
   'Crypto':          'bg-orange-50 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400',
   'Stripe':          'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400',
@@ -236,8 +236,8 @@ function MethodFilterDropdown({ methods, selected, onChange }) {
         onClick={() => setOpen(o => !o)}
         className={`text-xs px-2.5 py-1.5 rounded-xl border font-semibold outline-none cursor-pointer flex items-center gap-1.5 transition-colors ${
           selected.length > 0
-            ? 'border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'
-            : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 hover:border-red-400'
+            ? 'border-red-300 dark:border-accent/40 bg-red-50 dark:bg-accent/10 text-red-700 dark:text-accent-soft'
+            : 'border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 hover:border-red-400'
         }`}
       >
         {label}
@@ -245,12 +245,12 @@ function MethodFilterDropdown({ methods, selected, onChange }) {
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 min-w-[180px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-64 overflow-y-auto">
+        <div className="absolute z-50 mt-1 min-w-[180px] bg-white dark:bg-dk-high border border-gray-200 dark:border-white/10 rounded-xl shadow-lg max-h-64 overflow-y-auto">
           {selected.length > 0 && (
             <button
               type="button"
               onClick={() => onChange([])}
-              className="w-full text-left px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 border-b border-gray-100 dark:border-gray-700"
+              className="w-full text-left px-3 py-2 text-xs font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-[#93000a]/20 border-b border-gray-100 dark:border-white/10"
             >
               Pastro filtrin
             </button>
@@ -258,7 +258,7 @@ function MethodFilterDropdown({ methods, selected, onChange }) {
           {methods.map(m => (
             <label
               key={m}
-              className="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900/50 cursor-pointer select-none"
+              className="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dk-card cursor-pointer select-none"
             >
               <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
                 selected.includes(m) ? 'bg-red-500 border-red-500' : 'border-gray-300 dark:border-gray-600'
@@ -525,7 +525,7 @@ export default function Payments() {
       {selected.size > 0 && (
         <div className="flex justify-end mb-3">
           <button
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs font-bold"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 dark:bg-[#93000a]/30 text-red-600 dark:text-[#ffb4ab] hover:bg-red-100 dark:hover:bg-[#93000a]/50 transition-colors text-xs font-bold"
             onClick={() => setConfirmDelAll(true)}
           >
             <Trash2 size={14}/> Fshi {selected.size}
@@ -534,11 +534,11 @@ export default function Payments() {
       )}
 
       {/* Filtrat */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] p-3 rounded-2xl border border-gray-200/90 shadow-sm mb-5">
         <div className="relative flex-1 min-w-[160px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
-            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
+            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
             placeholder="Kërko klient, faturë..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPg(1) }}
@@ -552,7 +552,7 @@ export default function Payments() {
 
         <div className="flex flex-wrap items-center gap-2">
           <select
-            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={monthFilt}
             onChange={e => { setMonthFilt(e.target.value); setPg(1) }}
           >
@@ -561,7 +561,7 @@ export default function Payments() {
           </select>
 
           <select
-            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            className="text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={partnerFilt}
             onChange={e => { setPartner(e.target.value); setPg(1) }}
           >
@@ -577,7 +577,7 @@ export default function Payments() {
           />
 
           <select
-            className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
+            className="hidden sm:block text-xs px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-700 dark:text-gray-300 font-semibold outline-none focus:border-red-400 cursor-pointer"
             value={perPage}
             onChange={e => { setPerPage(Number(e.target.value)); setPg(1) }}
           >
@@ -588,7 +588,7 @@ export default function Payments() {
             <option value={300}>300 / faqe</option>
           </select>
 
-          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 font-mono px-2">
+          <span className="text-xs font-bold text-gray-400 dark:text-gray-400 font-mono px-2 dark:bg-dk-card dark:rounded-lg dark:py-1.5 dark:px-2.5">
             {filtered.length}
           </span>
         </div>
@@ -683,11 +683,11 @@ export default function Payments() {
           }
         />
       ) : (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-          <table className="w-full text-sm min-w-[560px]">
+          <table className="cust-tbl w-full text-sm min-w-[560px]">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+              <tr className="border-b border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-side/70">
                 <th className="table-th w-8 text-center hidden sm:table-cell">
                   <input
                     type="checkbox"
@@ -745,7 +745,7 @@ export default function Payments() {
             </thead>
             <tbody>
               {paged.map(p => (
-                <tr key={p.id} className={`hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group ${selected.has(p.id) ? 'bg-red-50 dark:bg-red-900/10' : ''}`}>
+                <tr key={p.id} className={`hover:bg-gray-50 dark:hover:bg-dk-card/60 transition-colors group ${selected.has(p.id) ? 'bg-red-50 dark:bg-accent/10' : ''}`}>
                   <td className="table-td w-8 text-center hidden sm:table-cell" onClick={e => e.stopPropagation()}>
                     <input
                       type="checkbox"
@@ -755,7 +755,7 @@ export default function Payments() {
                     />
                   </td>
                   <td className="table-td font-mono text-xs">{formatDate(p.date)}</td>
-                  <td className="table-td font-mono font-bold text-red-600 dark:text-red-400 text-xs">{p.invoiceId}</td>
+                  <td className="table-td font-mono font-bold text-red-600 dark:text-accent-soft text-xs">{p.invoiceId}</td>
                   <td className="table-td font-bold text-gray-900 dark:text-white text-xs max-w-[140px] truncate">{p.customer}</td>
                   <td className="table-td text-right font-mono font-bold text-gray-900 dark:text-white">{fmt(p.amount)}</td>
                   <td className="table-td text-right font-mono text-amber-600 dark:text-amber-400 text-xs hidden md:table-cell">
@@ -773,8 +773,8 @@ export default function Payments() {
                   <td className="table-td">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                       p.depositedTo === 'Enndy'
-                        ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                        : 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300'
+                        ? 'bg-red-50 dark:bg-accent/10 text-red-600 dark:text-accent-soft dark:border dark:border-accent/20'
+                        : 'bg-purple-100 dark:bg-[#8083ff]/15 text-purple-600 dark:text-[#c0c1ff] dark:border dark:border-[#8083ff]/25'
                     }`}>
                       {p.depositedTo}
                     </span>
@@ -801,14 +801,14 @@ export default function Payments() {
                     ) : (
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-dk-high text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-dk-line hover:text-red-600 dark:hover:text-gray-100 transition-colors"
                           title="Ndrysho pagesën"
                           onClick={() => openEditPayment(p)}
                         >
                           <Pencil size={14} />
                         </button>
                         <button
-                          className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                          className="p-1.5 rounded-lg bg-red-50 dark:bg-dk-high text-red-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-[#93000a] dark:hover:text-[#ffdad6] transition-colors"
                           title="Fshij pagesën"
                           onClick={() => setDeletingId(p.id)}
                         >
@@ -825,7 +825,7 @@ export default function Payments() {
 
           {/* Totals row - hidden on mobile */}
           {filtered.length > 0 && (
-            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2.5 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs font-bold text-gray-400 dark:text-gray-500">
+            <div className="hidden sm:flex items-center justify-end gap-6 px-5 py-2.5 border-t border-gray-100 dark:border-transparent bg-gray-50/50 dark:bg-dk-side/70 text-xs font-bold text-gray-400 dark:text-gray-500">
               <span>Bruto: <span className="font-mono text-gray-900 dark:text-white">{fmt(totalGross)}</span></span>
               <span>Fee: <span className="font-mono text-amber-600 dark:text-amber-400">- {fmt(totalFee)}</span></span>
               <span>Neto: <span className="font-mono text-emerald-600 dark:text-emerald-400 text-sm">{fmt(totalNet)}</span></span>
@@ -840,7 +840,7 @@ export default function Payments() {
 
       {/* Profit split box (kur filtrohet muaj) */}
       {monthFilt !== 'all' && filtered.length > 0 && (
-        <div className="mt-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm p-5">
+        <div className="mt-4 bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm p-5">
           <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             <Users size={15} className="text-red-500" />
             Ndarja e Fitimit — {monthFilt}
