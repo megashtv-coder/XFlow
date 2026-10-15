@@ -355,21 +355,21 @@ export default function Items() {
 
       {/* Stat mini-cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
-          <span className="text-3xl font-black font-mono tracking-tight text-gray-900 dark:text-white block">{totalItems}</span>
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
+          <span className="text-3xl font-black font-mono dark:font-sans dark:font-extrabold tracking-tight text-gray-900 dark:text-white block">{totalItems}</span>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-bold">Artikuj gjithsej</p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
-          <span className="text-3xl font-black font-mono tracking-tight text-red-600 dark:text-red-400 block">{fmt(avgSale.toFixed(2))}</span>
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
+          <span className="text-3xl font-black font-mono dark:font-sans dark:font-extrabold tracking-tight text-red-600 dark:text-accent-soft block">{fmt(avgSale.toFixed(2))}</span>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-bold">Çmimi mesatar shitje</p>
         </div>
         <div
-          className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition-colors flex flex-col justify-between"
+          className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4 cursor-pointer hover:border-gray-300 dark:hover:bg-dk-card transition-colors flex flex-col justify-between"
           onClick={() => !pinUnlocked && setShowPin(true)}
         >
           <div className="flex items-center justify-between">
             {pinUnlocked
-              ? <span className="text-2xl font-black font-mono tracking-tight text-emerald-600 dark:text-emerald-400">{avgMargin.toFixed(1)}%</span>
+              ? <span className="text-2xl font-black font-mono dark:font-sans dark:font-extrabold tracking-tight text-emerald-600 dark:text-[#4edea3]">{avgMargin.toFixed(1)}%</span>
               : <span className="text-2xl font-black font-mono tracking-widest text-gray-300 dark:text-gray-600 select-none">••••</span>
             }
             {pinUnlocked
@@ -385,18 +385,18 @@ export default function Items() {
             }
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm px-4 py-4">
-          <span className="text-3xl font-black font-mono tracking-tight text-gray-900 dark:text-white block">{withVendor}</span>
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm px-4 py-4">
+          <span className="text-3xl font-black font-mono dark:font-sans dark:font-extrabold tracking-tight text-gray-900 dark:text-white block">{withVendor}</span>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-bold">Me furnitor</p>
         </div>
       </div>
 
       {/* Kërkim */}
-      <div className="flex items-center justify-between gap-3 bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm mb-5">
+      <div className="flex items-center justify-between gap-3 bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] p-3 rounded-2xl border border-gray-200/90 shadow-sm mb-5">
         <div className="relative w-full sm:w-80">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
-            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-red-900/20"
+            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-card text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-50 dark:focus:ring-accent/30"
             placeholder="Kërko produkt ose furnitor..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPg(1) }}
@@ -407,7 +407,7 @@ export default function Items() {
             </button>
           )}
         </div>
-        <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 hidden sm:inline flex-shrink-0">{filtered.length} rezultate</span>
+        <span className="text-xs font-semibold text-gray-400 dark:text-gray-400 hidden sm:inline flex-shrink-0 dark:bg-dk-card dark:rounded-lg dark:px-3 dark:py-1.5">{filtered.length} rezultate</span>
       </div>
 
       {/* Tabela */}
@@ -431,7 +431,7 @@ export default function Items() {
               ? ((item.salePrice - item.purchasePrice) / item.salePrice * 100).toFixed(1)
               : null
             return (
-              <div key={item.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+              <div key={item.id} className="bg-white dark:bg-dk-low rounded-2xl border border-gray-200 dark:border-white/[0.07] shadow-sm p-3">
                 <div className="flex justify-between items-start gap-2">
                   {/* Col 1: Emri + llogaria + furnitori */}
                   <div className="flex-1 min-w-0 cursor-pointer" onClick={() => openEdit(item)}>
@@ -484,11 +484,11 @@ export default function Items() {
           <Pagination page={pg} total={filtered.length} perPage={PER_PAGE} onChange={setPg} />
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
+        <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200/90 shadow-sm overflow-hidden hidden sm:block">
           <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 300px)' }}>
-          <table className="w-full text-sm">
+          <table className="cust-tbl w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+              <tr className="border-b border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-side/70">
                 <th className="table-th">
                   <button
                     className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
@@ -551,12 +551,12 @@ export default function Items() {
                 return (
                   <tr
                     key={item.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group"
+                    className="hover:bg-gray-50 dark:hover:bg-dk-card/60 transition-colors group"
                   >
                     {/* Emri */}
                     <td className="table-td">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 flex items-center justify-center flex-shrink-0">
+                        <div className="w-7 h-7 dark:w-8 dark:h-8 rounded-xl dark:rounded-lg bg-red-50 dark:bg-dk-high text-red-500 dark:text-accent-soft flex items-center justify-center flex-shrink-0">
                           <Package size={14} />
                         </div>
                         <div>
@@ -612,14 +612,14 @@ export default function Items() {
                     <td className="table-td">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          className="p-1.5 rounded-lg bg-gray-100 dark:bg-dk-high text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-dk-line hover:text-red-600 dark:hover:text-gray-100 transition-colors"
                           title="Edito"
                           onClick={() => openEdit(item)}
                         >
                           <Pencil size={14} />
                         </button>
                         <button
-                          className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                          className="p-1.5 rounded-lg bg-red-50 dark:bg-dk-high text-red-600 dark:text-gray-400 hover:bg-red-100 dark:hover:bg-[#93000a] dark:hover:text-[#ffdad6] transition-colors"
                           title="Fshi"
                           onClick={() => openDelete(item)}
                         >
