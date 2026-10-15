@@ -57,7 +57,7 @@ function renderInvoiceColHeader(col, { sortField, sortDir, toggleSort, draggedCo
   return (
     <th
       key={col.key}
-      className={`table-th select-none cursor-move relative ${sortable ? 'cursor-pointer hover:text-red-500' : ''} ${respCls} ${isDragging ? 'opacity-30' : ''} ${showDropMark ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+      className={`table-th select-none cursor-move relative ${sortable ? 'cursor-pointer hover:text-red-500 dark:hover:text-gray-100' : ''} ${respCls} ${isDragging ? 'opacity-30' : ''} ${showDropMark ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
       onClick={sortable ? () => toggleSort(col.key) : undefined}
       draggable
       onDragStart={() => onColDragStart(col.key)}
@@ -74,11 +74,11 @@ function renderInvoiceColHeader(col, { sortField, sortDir, toggleSort, draggedCo
 function renderInvoiceColCell(col, inv, { isOverdue, fmt, hasLongOverdue, getCustomerType, setPreview }) {
   switch (col.key) {
     case 'date':
-      return <td key={col.key} className="table-td font-mono text-gray-400 hidden sm:table-cell dark:text-gray-500">{formatDate(inv.date)}</td>
+      return <td key={col.key} className="table-td font-mono text-gray-400 hidden sm:table-cell dark:text-gray-300 dark:font-medium">{formatDate(inv.date)}</td>
     case 'id':
       return (
         <td key={col.key} className="table-td hidden sm:table-cell cursor-pointer" onClick={() => setPreview(inv.id)}>
-          <span className="font-mono font-bold text-xs text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-600">{inv.id}</span>
+          <span className="font-mono font-bold text-xs text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-dk-high px-2 py-0.5 rounded border border-gray-200 dark:border-transparent">{inv.id}</span>
         </td>
       )
     case 'customer':
@@ -99,7 +99,7 @@ function renderInvoiceColCell(col, inv, { isOverdue, fmt, hasLongOverdue, getCus
       return (
         <td key={col.key} className="table-td hidden sm:table-cell text-sm">
           {inv.referent ? (
-            <span className="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 rounded-full text-xs font-medium">
+            <span className="px-2.5 py-1 bg-indigo-50 dark:bg-[#8083ff]/20 text-indigo-700 dark:text-[#c0c1ff] rounded-full dark:rounded-md text-xs font-medium">
               {inv.referent}
             </span>
           ) : (
@@ -111,7 +111,7 @@ function renderInvoiceColCell(col, inv, { isOverdue, fmt, hasLongOverdue, getCus
       return (
         <td key={col.key} className="table-td sm:table-cell lg:table-cell text-sm font-medium">
           {inv.subscriptionExpiry ? (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded font-mono text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 dark:bg-transparent text-red-600 dark:text-accent-soft dark:px-0 dark:font-medium rounded font-mono text-xs">
               {formatDate(inv.subscriptionExpiry)}
             </span>
           ) : (
@@ -357,8 +357,8 @@ const InvoiceListCard = React.memo(function InvoiceListCard({ inv, selected, onC
       <div
         className={`p-3 rounded-xl border cursor-pointer transition-colors ${
           selected
-            ? 'bg-red-200/60 dark:bg-red-900/35 border-red-500 dark:border-red-500'
-            : 'bg-gray-50/50 dark:bg-gray-900/30 border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900/60'
+            ? 'bg-red-200/60 dark:bg-accent/15 border-red-500 dark:border-accent'
+            : 'bg-gray-50/50 dark:bg-dk-card border-gray-100 dark:border-white/[0.07] hover:bg-gray-100 dark:hover:bg-dk-high'
         }`}
         onClick={onClick}
       >
@@ -479,11 +479,11 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
       {isOpen && menuPos && createPortal(
         <div
           ref={menuRef}
-          className="fixed w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden dark:bg-gray-800 dark:border-gray-700"
+          className="fixed w-52 bg-white border border-gray-200 rounded-xl shadow-xl z-[9999] overflow-hidden dark:bg-dk-high dark:border-white/10"
           style={{ left: menuPos.left, ...(menuPos.top != null ? { top: menuPos.top } : { bottom: menuPos.bottom }) }}
         >
           <button
-            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-900/40"
+            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100 dark:text-gray-200 dark:border-transparent dark:hover:bg-dk-card"
             onClick={e => {
               e.stopPropagation()
               navigate(`invoices:${inv.id}:edit`)
@@ -497,7 +497,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://wa.me/${rawPhone}?text=${msg}`}
               target="_blank" rel="noopener noreferrer"
-              className={`block w-full text-left px-3.5 py-2 text-[13px] font-medium hover:bg-green-50 dark:hover:bg-green-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 ${isOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}
+              className={`block w-full text-left px-3.5 py-2 text-[13px] font-medium hover:bg-green-50 dark:hover:bg-dk-card flex items-center gap-2 border-b border-gray-100 dark:border-transparent ${isOverdue ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}
               onClick={handleWhatsAppReminder}
             >
               <MessageCircle size={14}/> Pagesa WA {isOverdue && '🔔'}
@@ -508,7 +508,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://t.me/+${rawPhone}`}
               target="_blank" rel="noopener noreferrer"
-              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-sky-600 dark:text-[#c0c1ff] hover:bg-sky-50 dark:hover:bg-dk-card flex items-center gap-2 border-b border-gray-100 dark:border-transparent"
               onClick={e => {
                 e.stopPropagation()
                 setIsOpen(false)
@@ -522,7 +522,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
             <a
               href={`https://wa.me/${rawPhone}?text=${encodeURIComponent(buildInvoiceMsg(inv))}`}
               target="_blank" rel="noopener noreferrer"
-              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="block w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-500 dark:text-accent-soft hover:bg-red-50 dark:hover:bg-dk-card flex items-center gap-2 border-b border-gray-100 dark:border-transparent"
               onClick={handleWhatsAppInvoice}
             >
               <FileText size={14}/> Dërgo faturën WA
@@ -531,7 +531,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
 
           {(inv.status === 'pending' || inv.status === 'overdue') && (
             <button
-              className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
+              className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-emerald-600 dark:text-[#4edea3] hover:bg-emerald-50 dark:hover:bg-dk-card flex items-center gap-2 border-b border-gray-100 dark:border-white/10"
               onClick={e => {
                 e.stopPropagation()
                 setModal(<PaymentModal invoice={inv} onClose={closeModal}/>)
@@ -543,7 +543,7 @@ const RowActions = React.memo(({ inv, today, getPhone, navigate, setModal, close
           )}
 
           <button
-            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+            className="w-full text-left px-3.5 py-2 text-[13px] font-medium text-red-600 dark:text-[#ffb4ab] hover:bg-red-50 dark:hover:bg-[#93000a]/30 flex items-center gap-2"
             onClick={e => {
               e.stopPropagation()
               setDeletingInvoiceId(inv.id)
@@ -1499,11 +1499,11 @@ export default function Invoices() {
   if (preview) {
     return (
       <div
-        className="-m-3 sm:-m-5 md:-m-6 flex overflow-hidden bg-gray-50 dark:bg-gray-900/50"
+        className="-m-3 sm:-m-5 md:-m-6 flex overflow-hidden bg-gray-50 dark:bg-dk-bg"
         style={{ height: 'calc(100vh - 56px)' }}
       >
         {/* Left: invoice list — hidden on mobile (show only detail panel) */}
-        <div className="hidden md:flex w-[340px] flex-shrink-0 border-r border-gray-200 flex-col overflow-hidden bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div className="hidden md:flex w-[340px] flex-shrink-0 border-r border-gray-200 flex-col overflow-hidden bg-white dark:border-white/5 dark:bg-dk-low">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-700">
             <div>
               <p className="font-extrabold text-sm text-gray-900 dark:text-gray-100">Të gjitha faturat</p>
@@ -1790,80 +1790,80 @@ export default function Invoices() {
             type="button"
             onClick={() => toggleStatusFilter('pending')}
             title="Filtro: fatura në pritje"
-            className={`text-left bg-white dark:bg-gray-800 rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${
+            className={`text-left bg-white dark:bg-dk-low dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 dark:hover:bg-dk-card ${
               statusFilter === 'pending'
                 ? 'border-amber-400 dark:border-amber-500 ring-2 ring-amber-200 dark:ring-amber-900/50'
-                : 'border-amber-200/80 dark:border-amber-900/40'
+                : 'border-amber-200/80 dark:border-white/[0.07]'
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Në pritje</span>
-              <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/40 whitespace-nowrap">
+              <span className="text-[11px] font-bold text-amber-700 dark:text-[#c0c1ff] bg-amber-50 dark:bg-dk-high px-2 py-0.5 rounded-full border border-amber-200 dark:border-transparent whitespace-nowrap">
                 {pendingInvoicesCount} fatura
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{fmt(pendingValue)}</p>
-            <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-1">Presin arkëtim brenda afatit</p>
+            <p className="text-[11px] text-amber-700 dark:text-gray-400 mt-1">Presin arkëtim brenda afatit</p>
           </button>
 
           <button
             type="button"
             onClick={() => toggleStatusFilter('overdue')}
             title="Filtro: fatura të vonuara"
-            className={`text-left bg-white dark:bg-gray-800 rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${
+            className={`text-left bg-white dark:bg-dk-low dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 dark:hover:bg-dk-card ${
               statusFilter === 'overdue'
                 ? 'border-red-400 dark:border-red-500 ring-2 ring-red-200 dark:ring-red-900/50'
-                : 'border-red-200/80 dark:border-red-900/40'
+                : 'border-red-200/80 dark:border-white/[0.07]'
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Të vonuara</span>
-              <span className="text-[11px] font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-900/40 whitespace-nowrap">
+              <span className="text-[11px] font-bold text-red-700 dark:text-[#ffdad6] bg-red-50 dark:bg-[#93000a] px-2 py-0.5 rounded-full border border-red-200 dark:border-transparent whitespace-nowrap">
                 {overdueInvoicesCount} fatura
               </span>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400 mt-2">{fmt(overdueValue)}</p>
-            <p className="text-[11px] text-red-700 dark:text-red-400 mt-1">Kërkojnë ndjekje urgjente</p>
+            <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-accent-soft mt-2">{fmt(overdueValue)}</p>
+            <p className="text-[11px] text-red-700 dark:text-[#ffb4ab] mt-1">Kërkojnë ndjekje urgjente</p>
           </button>
 
           <button
             type="button"
             onClick={toggleSellerFilter}
             title="Filtro: fatura të papaguara të rishitësve"
-            className={`text-left bg-white dark:bg-gray-800 rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${
+            className={`text-left bg-white dark:bg-dk-low dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 dark:hover:bg-dk-card ${
               isSellerFilterActive
                 ? 'border-indigo-400 dark:border-indigo-500 ring-2 ring-indigo-200 dark:ring-indigo-900/50'
-                : 'border-indigo-200/80 dark:border-indigo-900/40'
+                : 'border-indigo-200/80 dark:border-white/[0.07]'
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Papaguara Sellers</span>
-              <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-900/40 whitespace-nowrap">
+              <span className="text-[11px] font-bold text-indigo-700 dark:text-[#e1e0ff] bg-indigo-50 dark:bg-dk-high px-2 py-0.5 rounded-full border border-indigo-200 dark:border-transparent whitespace-nowrap">
                 {sellerInvoices.length} seller
               </span>
             </div>
             <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{fmt(totalUnpaidSellers)}</p>
-            <p className="text-[11px] text-indigo-700 dark:text-indigo-400 mt-1">Bilanci i rishitësve</p>
+            <p className="text-[11px] text-indigo-700 dark:text-gray-400 mt-1">Bilanci i rishitësve</p>
           </button>
 
           <button
             type="button"
             onClick={() => toggleStatusFilter('paid')}
             title="Filtro: fatura të paguara"
-            className={`text-left bg-white dark:bg-gray-800 rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${
+            className={`text-left bg-white dark:bg-dk-low dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl p-4 border shadow-sm cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 dark:hover:bg-dk-card ${
               statusFilter === 'paid'
                 ? 'border-emerald-400 dark:border-emerald-500 ring-2 ring-emerald-200 dark:ring-emerald-900/50'
-                : 'border-emerald-200/80 dark:border-emerald-900/40'
+                : 'border-emerald-200/80 dark:border-white/[0.07]'
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Të paguara</span>
-              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 whitespace-nowrap">
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-[#003824] bg-emerald-50 dark:bg-[#00a572] px-2 py-0.5 rounded-full border border-emerald-200 dark:border-transparent whitespace-nowrap">
                 {paidInvoicesList.length.toLocaleString('en-US')} fatura
               </span>
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">{fmt(paidValue)}</p>
-            <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-1">Likuiduar me sukses</p>
+            <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-[#4edea3] mt-2">{fmt(paidValue)}</p>
+            <p className="text-[11px] text-emerald-700 dark:text-[#4edea3] mt-1">Likuiduar me sukses</p>
           </button>
         </div>
       </div>
@@ -1927,11 +1927,11 @@ export default function Invoices() {
       )}
 
       {/* Filters — kërkimi majtas, statusi dhe tipi si dropdown, gjithçka në një rresht */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 mb-4">
+      <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] rounded-2xl border border-gray-200 shadow-sm p-3 sm:p-4 mb-4">
         <div className="flex flex-wrap items-center gap-2">
 
           {/* Search — e para, majtas */}
-          <div className="w-full sm:w-64 flex items-center gap-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 dark:focus-within:ring-red-900/20 transition-all">
+          <div className="w-full sm:w-64 flex items-center gap-2 bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-3 py-1.5 focus-within:border-red-400 focus-within:ring-2 focus-within:ring-red-50 dark:focus-within:ring-red-900/20 transition-all">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2">
               <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
             </svg>
@@ -1954,7 +1954,7 @@ export default function Invoices() {
 
           {/* Status — dropdown */}
           <select
-            className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+            className="bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
             value={statusFilter}
             onChange={e => { setStatus(e.target.value); setPaginationPage(1) }}
           >
@@ -1970,7 +1970,7 @@ export default function Invoices() {
           {/* Type + per-page — dropdown */}
           <div className="flex items-center gap-2">
             <select
-              className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+              className="bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
               value={typeFilter}
               onChange={e => { setTypeFilter(e.target.value); setPaginationPage(1) }}
             >
@@ -1979,7 +1979,7 @@ export default function Invoices() {
               <option value="reseller">🔄 Reseller</option>
             </select>
             <select
-              className="hidden sm:block bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
+              className="hidden sm:block bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
               value={perPage}
               onChange={e => { setPerPage(Number(e.target.value)); setPaginationPage(1) }}
             >
@@ -2052,7 +2052,7 @@ export default function Invoices() {
       )}
 
       {/* Table - Hidden on Mobile */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden hidden sm:block">
+      <div className="bg-white dark:bg-dk-low dark:border-white/[0.07] rounded-2xl border border-gray-200 shadow-sm overflow-hidden hidden sm:block">
         {paged.length === 0 ? (
           <EmptyState
             icon={FileText}
@@ -2063,9 +2063,9 @@ export default function Invoices() {
         ) : (
           <>
             <div className="overflow-x-visible">
-              <table className="w-full min-w-[500px]" style={{ position: 'relative' }}>
+              <table className="inv-tbl w-full min-w-[500px]" style={{ position: 'relative' }}>
                 <thead className="sticky top-0 z-10">
-                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+                  <tr className="border-b border-gray-200 dark:border-transparent bg-gray-50 dark:bg-dk-side/70">
                     <th className="table-th w-8 text-center hidden sm:table-cell">
                       <input
                         type="checkbox"
@@ -2093,7 +2093,8 @@ export default function Invoices() {
                     return (
                       <tr
                         key={inv.id}
-                        className={`hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors group ${selected.has(inv.id) ? 'bg-red-50 dark:bg-red-900/10' : ''}`}
+                        data-sel={selected.has(inv.id) ? '1' : undefined}
+                        className={`hover:bg-gray-50 dark:hover:bg-dk-card/60 transition-colors group ${selected.has(inv.id) ? 'bg-red-50 dark:bg-accent/10' : ''}`}
                       >
                         <td className="table-td w-8 text-center hidden sm:table-cell" onClick={e => e.stopPropagation()}>
                           <input
