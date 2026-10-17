@@ -642,7 +642,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
   const TB = 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-colors'
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden rep">
 
       {/* ── Action toolbar ── */}
       <div className="flex items-center gap-1.5 px-4 py-3 border-b border-gray-100 bg-white flex-wrap lg:flex-nowrap dark:border-gray-700 dark:bg-gray-800">
@@ -656,7 +656,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
         </div>
 
         <button
-          className={`${TB} border-gray-200 hover:bg-gray-50 text-gray-600 dark:border-gray-700 dark:hover:bg-gray-900/50 dark:text-gray-300`}
+          className={`${TB} border-gray-200 hover:bg-gray-50 text-gray-600 dark:border-transparent dark:bg-dk-card dark:hover:bg-dk-high dark:text-gray-200`}
           onClick={() => navigate(`invoices:${inv.id}:edit`)}
         >
           <Pencil size={13}/> Ndrysho
@@ -696,7 +696,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
 
         {canPay && (
           <button
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm dark:bg-[#00a572] dark:hover:bg-[#00a572]/90 dark:text-[#00311f] dark:shadow-[0_0_16px_-4px_rgba(0,165,114,0.6)] transition-colors"
             onClick={() => setModal(<PaymentModal invoice={inv} onClose={closeModal}/>)}
           >
             <CreditCard size={13}/> Regjistro Pagesën
@@ -705,7 +705,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
 
         {canVoid && (
           <button
-            className={`${TB} border-gray-200 text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-amber-900/20 dark:hover:text-amber-400`}
+            className={`${TB} border-gray-200 text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:border-transparent dark:bg-dk-card dark:text-gray-400 dark:hover:bg-dk-high dark:hover:text-amber-400`}
             onClick={() => setConfirmVoid(true)}
           >
             <XCircle size={13}/> Void
@@ -713,7 +713,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
         )}
 
         <button
-          className={`${TB} border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900/40 dark:text-red-400 dark:hover:bg-red-900/20`}
+          className={`${TB} border-red-200 text-red-600 hover:bg-red-50 dark:border-transparent dark:bg-[#93000a]/20 dark:text-[#ffb4ab] dark:hover:bg-[#93000a]/40`}
           onClick={() => setConfirmDel(true)}
         >
           <Trash2 size={13}/> Fshi
@@ -754,11 +754,11 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4 dark:bg-gray-900/50">
+      <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4 dark:bg-dk-bg">
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden dark:bg-gray-800 dark:border-gray-700">
           <div className="flex justify-end px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700">
             <div className="text-right">
-              <h2 className="text-3xl font-black tracking-wider text-red-500 font-mono dark:text-red-400">Faturë</h2>
+              <h2 className="text-3xl font-black tracking-wider text-red-500 font-mono dark:text-accent">Faturë</h2>
               <p className="text-xs font-semibold text-gray-500 mt-0.5 font-mono dark:text-gray-400">Numri i faturës {inv.id}</p>
             </div>
           </div>
@@ -842,7 +842,7 @@ function InvoiceSidePanel({ invId, onClose, setSelectedCustomer, customerMap, hi
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full text-sm border-collapse min-w-[380px]">
                   <thead>
-                    <tr className="bg-red-500 text-white">
+                    <tr className="bg-red-500 text-white dark:bg-accent dark:text-accent-on">
                       <th className="text-center px-3 py-3 w-8 font-bold uppercase text-xs tracking-wide">#</th>
                       <th className="text-left px-3 py-3 font-bold uppercase text-xs tracking-wide">Artikulli &amp; Përshkrimi</th>
                       <th className="text-right px-3 py-3 w-16 font-bold uppercase text-xs tracking-wide">Sasia</th>
@@ -1629,7 +1629,7 @@ export default function Invoices() {
         </div>
 
         {/* Right: invoice side panel */}
-        <div className="flex-1 flex flex-col overflow-hidden lg:max-w-[900px]">
+        <div className="flex-1 flex flex-col overflow-hidden lg:max-w-[900px] dark:lg:max-w-none">
           <InvoiceSidePanel
             key={preview}
             invId={preview}
