@@ -92,7 +92,7 @@ export default function ReferentSelect({ value, onChange }) {
       </div>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto dark:bg-dk-high dark:border-white/10">
           {filtered.length > 0 ? (
             filtered.map((name, i) => (
               <div
