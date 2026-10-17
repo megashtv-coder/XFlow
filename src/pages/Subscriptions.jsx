@@ -161,7 +161,7 @@ const Section = memo(function Section({ title, color, items, today, onMarkSent, 
 
       {/* Mobile Card View - Hidden on sm+ */}
       {paginatedItems.length > 0 && (
-        <div className="sm:hidden space-y-2 mb-4">
+        <div className="sm:hidden space-y-2 mb-4 rep">
           {paginatedItems.map(inv => {
             const phone = getPhone(inv.customer)
             const msg = encodeURIComponent(`Përshëndetje!\nAbonimit juaj skadon më ${inv.subscriptionExpiry}.\nJu lutem, rinovoni për të vazhduar shërbimin.\nFaleminderit!`)

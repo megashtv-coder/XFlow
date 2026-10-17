@@ -596,7 +596,7 @@ export default function Payments() {
 
       {/* Mobile Card View - Hidden on sm+ */}
       {paged.length > 0 && (
-        <div className="sm:hidden space-y-2 mb-4">
+        <div className="sm:hidden space-y-2 mb-4 rep">
           {paged.map(p => (
             <div key={p.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
               <div className="flex justify-between items-start gap-2">
