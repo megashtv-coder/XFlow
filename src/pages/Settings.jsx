@@ -273,7 +273,7 @@ export default function Settings() {
   ]
 
   return (
-    <div>
+    <div className="rep">
       {/* Titulli "Cilësimet" tani jeton te header-i global (Header.jsx, kur page === 'settings'). */}
       <div className="flex items-center justify-end mb-6">
         <button className="btn btn-primary" onClick={() => showToast('Ndryshimet u ruajtën ✓')}>
@@ -281,7 +281,7 @@ export default function Settings() {
         </button>
       </div>
 
-      <div className="max-w-2xl space-y-5">
+      <div className="max-w-2xl dark:max-w-none space-y-5">
         {sections.map(({ title, icon: Icon, rows }) => {
           const isLockedSection = title === 'Profili i kompanisë' || title === 'Gjuha & Rajoni'
           const isAdmin = currentUser?.role === 'admin' || currentUser?.isSuperAdmin
@@ -296,7 +296,7 @@ export default function Settings() {
                 const fieldKey = row.label.toLowerCase().replace(/\s+/g, '')
                 const isEditing = editingField === `${title}-${i}`
                 return (
-                <div key={i} className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors dark:border-gray-700">
+                <div key={i} className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors dark:border-gray-700 dark:hover:bg-dk-card">
                   <div className="flex-1">
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{row.label}</p>
                     {isEditing && isAdmin && row.type === 'field' ? (
@@ -376,7 +376,7 @@ export default function Settings() {
                       max="90"
                       value={advanceDays}
                       onChange={(e) => setAdvanceDays(Math.max(0, Math.min(90, parseInt(e.target.value) || 0)))}
-                      className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-800 dark:text-gray-100"
+                      className="w-20 px-3 py-2 border border-gray-300 dark:border-white/10 dark:bg-dk-card rounded-lg text-sm font-semibold text-gray-800 dark:text-gray-100"
                     />
                     <span className="text-sm text-gray-600 dark:text-gray-300">ditë më parë</span>
                     <button
@@ -480,13 +480,13 @@ export default function Settings() {
 
         {/* Restore confirmation */}
         {showRestoreConfirm && restoreData && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div className="bg-amber-50 border border-amber-200 dark:bg-[#b45309]/10 dark:border-[#b45309]/30 rounded-xl p-4">
             <div className="mb-4">
-              <p className="text-sm font-semibold text-amber-900 mb-2">⚠️ Konfirmo Rivendosjen</p>
-              <p className="text-xs text-amber-800 mb-3">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">⚠️ Konfirmo Rivendosjen</p>
+              <p className="text-xs text-amber-800 dark:text-amber-300/90 mb-3">
                 Kjo do të zëvendësojë të gjitha të dhënat e tanishme me të dhënat nga backup-i:
               </p>
-              <ul className="text-xs text-amber-800 space-y-1 mb-4">
+              <ul className="text-xs text-amber-800 dark:text-amber-300/90 space-y-1 mb-4">
                 <li>• Faturat: {restoreData.invoices?.length || 0}</li>
                 <li>• Klientët: {restoreData.customers?.length || 0}</li>
                 <li>• Produktet: {restoreData.items?.length || 0}</li>
@@ -496,11 +496,11 @@ export default function Settings() {
                 <li>• Përdoruesit: {restoreData.users?.length || 0}</li>
               </ul>
               {restoreData.tasks?.length > 0 && (
-                <p className="text-xs text-amber-700 mb-3">
+                <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">
                   ℹ️ Backup-i ka {restoreData.tasks.length} detyra — ato NUK rivendosen automatikisht (kërkojnë rivendosje të veçantë, kontakto zhvilluesin).
                 </p>
               )}
-              <p className="text-xs text-red-600 font-semibold">Kjo nuk mund të rikthehej!</p>
+              <p className="text-xs text-red-600 dark:text-[#ffb4ab] font-semibold">Kjo nuk mund të rikthehej!</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -558,7 +558,7 @@ export default function Settings() {
                       </button>
                       <button
                         onClick={() => handleDeleteAutoBackup(idx)}
-                        className="btn btn-outline btn-sm text-xs text-red-600 hover:bg-red-50 flex items-center gap-1"
+                        className="btn btn-outline btn-sm text-xs text-red-600 hover:bg-red-50 dark:text-[#ffb4ab] dark:hover:bg-[#93000a]/25 flex items-center gap-1"
                       >
                         <Trash2 size={12}/>
                       </button>
@@ -572,13 +572,13 @@ export default function Settings() {
 
         {/* Auto-backup restore confirmation */}
         {showAutoBackupConfirm && restoreData && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div className="bg-amber-50 border border-amber-200 dark:bg-[#b45309]/10 dark:border-[#b45309]/30 rounded-xl p-4">
             <div className="mb-4">
-              <p className="text-sm font-semibold text-amber-900 mb-2">⚠️ Konfirmo Rivendosjen e Auto-Backup-it</p>
-              <p className="text-xs text-amber-800 mb-3">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-2">⚠️ Konfirmo Rivendosjen e Auto-Backup-it</p>
+              <p className="text-xs text-amber-800 dark:text-amber-300/90 mb-3">
                 Kjo do të zëvendësojë të gjitha të dhënat e tanishme:
               </p>
-              <ul className="text-xs text-amber-800 space-y-1 mb-4">
+              <ul className="text-xs text-amber-800 dark:text-amber-300/90 space-y-1 mb-4">
                 <li>• Faturat: {restoreData.invoices?.length || 0}</li>
                 <li>• Klientët: {restoreData.customers?.length || 0}</li>
                 <li>• Produktet: {restoreData.items?.length || 0}</li>
@@ -588,11 +588,11 @@ export default function Settings() {
                 <li>• Përdoruesit: {restoreData.users?.length || 0}</li>
               </ul>
               {restoreData.tasks?.length > 0 && (
-                <p className="text-xs text-amber-700 mb-3">
+                <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">
                   ℹ️ Backup-i ka {restoreData.tasks.length} detyra — ato NUK rivendosen automatikisht.
                 </p>
               )}
-              <p className="text-xs text-red-600 font-semibold">Kjo nuk mund të rikthehej!</p>
+              <p className="text-xs text-red-600 dark:text-[#ffb4ab] font-semibold">Kjo nuk mund të rikthehej!</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -620,7 +620,7 @@ export default function Settings() {
           <div className="flex items-center gap-2 mb-2 px-1">
             <p className="text-xs font-bold text-red-400 uppercase tracking-widest">Zona e rrezikshme</p>
           </div>
-          <div className="bg-white rounded-xl border border-red-100 overflow-hidden dark:bg-gray-800">
+          <div className="bg-white rounded-xl border border-red-100 overflow-hidden dark:bg-gray-800 dark:border-[#93000a]/40">
             <div className="flex items-center justify-between px-5 py-3.5">
               <div>
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Dilni nga sistemi</p>
