@@ -171,7 +171,7 @@ function Combobox({
 ───────────────────────────────────────────────────────────── */
 const CUST_COLORS = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2','#be185d','#0f766e']
 
-const FLD = 'text-[10px] text-gray-500 font-bold uppercase tracking-wide block mb-1 dark:text-gray-400'
+const FLD = 'text-[10px] text-gray-500 font-bold uppercase tracking-wide block mb-1 dark:text-[#8b8e99]'
 
 function QuickAddCustomer({ initialName, onSave, onCancel }) {
   const parts = (initialName || '').trim().split(' ')
@@ -202,15 +202,15 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
   }
 
   return (
-    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-4">
+    <div className="sec bg-emerald-50 border border-emerald-200 dark:bg-dk-card dark:border-white/10 rounded-xl p-4 mb-4">
       {/* Header */}
       <div className="flex items-center gap-1.5 mb-3">
-        <UserPlus size={14} className="text-emerald-600" />
-        <span className="text-xs font-bold text-emerald-700">Klient i ri — plotëso të dhënat</span>
+        <UserPlus size={14} className="text-emerald-600 dark:text-[#4edea3]" />
+        <span className="text-xs font-bold text-emerald-700 dark:text-[#4edea3]">Klient i ri — plotëso të dhënat</span>
       </div>
 
       {err && (
-        <div className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-3">{err}</div>
+        <div className="text-xs text-red-600 bg-red-50 border border-red-100 dark:bg-[#93000a]/30 dark:border-transparent dark:text-[#ffb4ab] rounded-lg px-3 py-2 mb-3">{err}</div>
       )}
 
       {/* Lloji */}
@@ -219,13 +219,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
         <div className="flex gap-2">
           <button type="button" onClick={() => set('type', 'individual')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-              !isReseller ? 'border-red-500 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+              !isReseller ? 'border-red-500 bg-red-500 text-white dark:border-accent dark:bg-accent dark:text-accent-on' : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-transparent dark:bg-dk-low dark:text-gray-300 dark:hover:bg-dk-high'
             }`}>
             <User size={12}/> Individual
           </button>
           <button type="button" onClick={() => set('type', 'reseller')}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold border-2 transition-all ${
-              isReseller ? 'border-purple-600 bg-purple-600 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+              isReseller ? 'border-purple-600 bg-purple-600 text-white dark:border-[#8083ff] dark:bg-[#8083ff] dark:text-[#0d0096]' : 'border-gray-200 bg-white text-gray-500 hover:border-purple-300 dark:border-transparent dark:bg-dk-low dark:text-gray-300 dark:hover:bg-dk-high'
             }`}>
             <Users size={12}/> Reseller
           </button>
@@ -236,13 +236,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       <div className="grid grid-cols-2 gap-2 mb-2">
         <div>
           <label className={FLD}>Emri *</label>
-          <input className="form-control text-sm bg-white dark:bg-gray-800" autoFocus
+          <input className="form-control text-sm bg-white" autoFocus
             value={form.firstName} onChange={e => set('firstName', e.target.value)}
             placeholder="p.sh. Ardit" />
         </div>
         <div>
           <label className={FLD}>Mbiemri *</label>
-          <input className="form-control text-sm bg-white dark:bg-gray-800"
+          <input className="form-control text-sm bg-white"
             value={form.lastName} onChange={e => set('lastName', e.target.value)}
             placeholder="p.sh. Krasniqi" />
         </div>
@@ -252,13 +252,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       <div className="grid grid-cols-2 gap-2 mb-2">
         <div>
           <label className={FLD}>Numri i telefonit *</label>
-          <input className="form-control text-sm bg-white dark:bg-gray-800"
+          <input className="form-control text-sm bg-white"
             value={form.phone} onChange={e => set('phone', e.target.value)}
             placeholder="+383 44 000 000" />
         </div>
         <div>
           <label className={FLD}>Email</label>
-          <input className="form-control text-sm bg-white dark:bg-gray-800" type="email"
+          <input className="form-control text-sm bg-white" type="email"
             value={form.email} onChange={e => set('email', e.target.value)}
             placeholder="email@shembull.com" />
         </div>
@@ -276,13 +276,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
           <>
             <div>
               <label className={FLD}>Aplikacioni që përdor</label>
-              <input className="form-control text-sm bg-white dark:bg-gray-800"
+              <input className="form-control text-sm bg-white"
                 value={form.app} onChange={e => set('app', e.target.value)}
                 placeholder="p.sh. Predator IPTV" />
             </div>
             <div>
               <label className={FLD}>MAC Adresa</label>
-              <input className="form-control text-sm bg-white dark:bg-gray-800"
+              <input className="form-control text-sm bg-white"
                 value={form.macAddress} onChange={e => set('macAddress', e.target.value)}
                 placeholder="AA:BB:CC:DD:EE:FF" />
             </div>
@@ -291,13 +291,13 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
           <>
             <div>
               <label className={FLD}>Username</label>
-              <input className="form-control text-sm bg-white dark:bg-gray-800"
+              <input className="form-control text-sm bg-white"
                 value={form.username} onChange={e => set('username', e.target.value)}
                 placeholder="p.sh. ardit_reseller" />
             </div>
             <div>
               <label className={FLD}>Paneli</label>
-              <input className="form-control text-sm bg-white dark:bg-gray-800"
+              <input className="form-control text-sm bg-white"
                 value={form.panel} onChange={e => set('panel', e.target.value)}
                 placeholder="p.sh. panel1.iptv.com" />
             </div>
@@ -324,7 +324,7 @@ function QuickAddCustomer({ initialName, onSave, onCancel }) {
       </div>
 
       {/* Veprimet */}
-      <div className="flex gap-2 justify-end pt-3 border-t border-emerald-200">
+      <div className="flex gap-2 justify-end pt-3 border-t border-emerald-200 dark:border-white/10">
         <button className="btn btn-outline text-xs py-1.5 px-3" onClick={onCancel}>Anulo</button>
         <button className="btn btn-primary text-xs py-1.5 px-3" onClick={handleSave}>
           Shto dhe Zgjidh
