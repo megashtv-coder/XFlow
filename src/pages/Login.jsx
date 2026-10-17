@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, User, Lock, Sun, Moon, ArrowRight } from 'lucide-react'
+import { useApp } from '../context/AppContext'
 
 export default function Login({ users = [], onLogin }) {
+  const { darkMode, setDarkMode } = useApp()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPw,   setShowPw]   = useState(false)
@@ -37,86 +39,117 @@ export default function Login({ users = [], onLogin }) {
 }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <img src="/logo.png" alt="X-Flow" className="w-10 h-10 flex-shrink-0 object-contain" />
-          <div>
-            <p className="text-base font-bold text-gray-900">X-Flow</p>
-            <p className="text-xs text-gray-400">Menaxhimi Financiar</p>
-          </div>
-        </div>
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-slate-50 dark:bg-dk-side">
+      {/* Shkëlqim ambienti */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(244,63,94,0.07),transparent_70%)] dark:bg-[radial-gradient(circle_at_50%_40%,rgba(255,81,106,0.10),transparent_70%)]"
+      />
 
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Kyçu</h1>
-          <p className="text-sm text-gray-500 mt-1">Hyr në llogarinë tuaj</p>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={submit} autoComplete="on" className="space-y-4">
-          {/* Username */}
-          <div>
-            <input
-              id="login-username"
-              name="username"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
-              type="text"
-              autoComplete="username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              placeholder="Emri i përdoruesit"
-              autoFocus
-            />
-          </div>
-
-          {/* Password */}
-          <div className="relative">
-            <input
-              id="login-password"
-              name="password"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 pr-10"
-              type={showPw ? 'text' : 'password'}
-              autoComplete="current-password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Fjalëkalimi"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              onClick={() => setShowPw(v => !v)}
-            >
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded-lg px-3 py-2">
-              <AlertCircle size={14} className="flex-shrink-0" />
-              {error}
-            </div>
-          )}
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Duke u kyçur...
-              </>
-            ) : (
-              'Kyçu në sistem'
-            )}
-          </button>
-        </form>
+      {/* Ndërrimi i temës */}
+      <div className="relative z-10 flex items-center justify-end px-6 py-5">
+        <button
+          type="button"
+          onClick={() => setDarkMode(d => !d)}
+          aria-label="Ndrysho temën"
+          title="Ndrysho temën"
+          className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-red-500 hover:border-red-300 dark:border-white/[0.08] dark:bg-dk-low dark:text-amber-400 dark:hover:border-accent/50 transition-all active:scale-95"
+        >
+          {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
       </div>
+
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 pb-12">
+        <div className="w-full max-w-[430px] rounded-2xl border border-slate-200 bg-white p-8 sm:p-9 shadow-xl shadow-slate-200/60 dark:border-white/[0.08] dark:bg-dk-low dark:shadow-2xl dark:shadow-black/60">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <img src="/logo.png" alt="X-Flow" className="w-10 h-10 flex-shrink-0 object-contain" />
+            <div>
+              <p className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">X-Flow</p>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-[#8b8e99]">Menaxhimi Financiar</p>
+            </div>
+          </div>
+
+          {/* Titulli */}
+          <div className="text-center mb-7">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Kyçu</h1>
+            <p className="text-sm text-gray-500 dark:text-[#8b8e99] mt-1">Hyr në llogarinë tuaj</p>
+          </div>
+
+          <form onSubmit={submit} autoComplete="on" className="space-y-4">
+            {/* Përdoruesi */}
+            <div className="space-y-1.5">
+              <label htmlFor="login-username" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#8b8e99]">Emri i përdoruesit</label>
+              <div className="relative">
+                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 pointer-events-none" />
+                <input
+                  id="login-username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  placeholder="Emri i përdoruesit"
+                  autoFocus
+                  className="w-full py-3 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 dark:border-white/10 dark:bg-dk-card dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-accent dark:focus:ring-accent/30 pl-10 pr-4"
+                />
+              </div>
+            </div>
+
+            {/* Fjalëkalimi */}
+            <div className="space-y-1.5">
+              <label htmlFor="login-password" className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-[#8b8e99]">Fjalëkalimi</label>
+              <div className="relative">
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 pointer-events-none" />
+                <input
+                  id="login-password"
+                  name="password"
+                  type={showPw ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Fjalëkalimi"
+                  className="w-full py-3 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-red-500 focus:ring-2 focus:ring-red-500/20 dark:border-white/10 dark:bg-dk-card dark:text-gray-100 dark:placeholder-gray-500 dark:focus:border-accent dark:focus:ring-accent/30 pl-10 pr-11"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+                  onClick={() => setShowPw(v => !v)}
+                >
+                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Gabimi */}
+            {error && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 dark:bg-[#93000a]/30 dark:border-transparent dark:text-[#ffb4ab] text-xs font-medium rounded-lg px-3 py-2">
+                <AlertCircle size={14} className="flex-shrink-0" />
+                {error}
+              </div>
+            )}
+
+            {/* Hyrja */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-4 rounded-xl bg-red-500 hover:bg-red-600 dark:bg-accent dark:hover:bg-accent/90 text-white dark:text-accent-on font-semibold text-sm shadow-lg shadow-red-500/25 dark:shadow-accent/30 active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Duke u kyçur...
+                </>
+              ) : (
+                <>
+                  {'Kyçu në sistem'}
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </main>
     </div>
   )
 }
