@@ -125,9 +125,9 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
   }
 
   const formContent = (
-    <>
+    <div className="inv-form">
       {err && (
-        <div className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
+        <div className="text-xs text-red-500 bg-red-50 border border-red-100 dark:bg-[#93000a]/30 dark:border-transparent dark:text-[#ffb4ab] rounded-lg px-3 py-2 mb-4">
           {err}
         </div>
       )}
@@ -173,8 +173,8 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
               <button key={opt} type="button" onClick={() => set('paidBy', opt)}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${
                   form.paidBy === opt
-                    ? 'border-red-500 bg-red-500 text-white shadow-sm'
-                    : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                    ? 'border-red-500 bg-red-500 text-white shadow-sm dark:border-[#8083ff] dark:bg-dk-high dark:shadow-md'
+                    : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-transparent dark:bg-dk-card dark:text-gray-300 dark:hover:bg-dk-high'
                 }`}>
                 👤 {opt}
               </button>
@@ -184,7 +184,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
       )}
 
       {/* Recurring */}
-      <div className="border border-gray-100 rounded-xl p-4 bg-gray-50/50 dark:border-gray-700">
+      <div className="sec border border-gray-100 rounded-xl p-4 bg-gray-50/50 dark:border-transparent dark:bg-dk-high">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <RefreshCw size={15} className={form.recurring ? 'text-red-500' : 'text-gray-300'} />
@@ -197,8 +197,8 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
           </div>
           {/* Toggle */}
           <button type="button" onClick={() => set('recurring', !form.recurring)}
-            className={`relative w-11 h-6 rounded-full transition-colors ${form.recurring ? 'bg-red-500' : 'bg-gray-200'}`}>
-            <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform dark:bg-gray-800 ${
+            className={`relative w-11 h-6 rounded-full transition-colors ${form.recurring ? 'bg-red-500 dark:bg-accent' : 'bg-gray-200 dark:bg-dk-line'}`}>
+            <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.recurring ? 'dark:bg-white' : 'dark:bg-dk-bg'} ${
               form.recurring ? 'translate-x-[22px]' : 'translate-x-0.5'
             }`} />
           </button>
@@ -212,8 +212,8 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
                 <button key={f} type="button" onClick={() => set('recurringFreq', f)}
                   className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all ${
                     form.recurringFreq === f
-                      ? 'border-red-500 bg-red-500 text-white'
-                      : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                      ? 'border-red-500 bg-red-500 text-white dark:border-accent dark:bg-accent dark:text-accent-on'
+                      : 'border-gray-200 bg-white text-gray-500 hover:border-red-300 dark:border-transparent dark:bg-dk-card dark:text-gray-300 dark:hover:bg-dk-low'
                   }`}>
                   {f === 'Ditore' ? '📅 Ditore' : f === 'Javore' ? '🗓️ Javore' : f === 'Mujore' ? '📆 Mujore' : '🗓 Vjetore'}
                 </button>
@@ -222,7 +222,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 
   // If rendering as form page (side panel), don't use Modal wrapper
@@ -230,7 +230,7 @@ export function ExpenseModal({ expense, onClose, isFormPage }) {
     return (
       <div className="space-y-4">
         {formContent}
-        <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="inv-actions flex gap-2 pt-4 border-t border-gray-200 dark:border-transparent">
           <button className="btn btn-outline flex-1" onClick={onClose}>Anulo</button>
           <button className="btn btn-primary flex-1" onClick={save}>
             {isEdit ? 'Ruaj ndryshimet' : 'Regjistro'}

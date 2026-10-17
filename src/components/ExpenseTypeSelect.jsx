@@ -92,13 +92,13 @@ export default function ExpenseTypeSelect({ value, onChange }) {
       </div>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+        <div className="absolute z-50 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-52 overflow-y-auto dark:bg-dk-high dark:border-white/10">
           {filtered.length > 0 ? (
             filtered.map((name, i) => (
               <div
                 key={name}
                 className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 transition-colors ${
-                  i === active ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-700 dark:hover:bg-gray-900/50 dark:text-gray-200'
+                  i === active ? 'bg-red-50 text-red-600 dark:bg-accent/10 dark:text-accent-soft' : 'hover:bg-gray-50 text-gray-700 dark:hover:bg-dk-card dark:text-gray-200'
                 }`}
                 onMouseDown={() => select(name)}
                 onMouseEnter={() => setActive(i)}
@@ -111,8 +111,8 @@ export default function ExpenseTypeSelect({ value, onChange }) {
 
           {query.trim() && !filtered.includes(query.trim()) ? (
             <div
-              className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 transition-colors hover:bg-red-50 text-red-500 hover:text-red-600 font-medium ${
-                filtered.length > 0 ? 'border-t border-gray-100 dark:border-gray-700' : ''
+              className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 transition-colors hover:bg-red-50 dark:hover:bg-dk-card text-red-500 dark:text-accent-soft hover:text-red-600 font-medium ${
+                filtered.length > 0 ? 'border-t border-gray-100 dark:border-white/10' : ''
               }`}
               onMouseDown={() => addNew(query.trim())}
               onMouseEnter={() => setActive(filtered.length)}
