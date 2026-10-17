@@ -1,9 +1,9 @@
 import { useState, useRef, useMemo, useEffect, lazy, Suspense } from 'react'
 import {
   Receipt, Trash2, Plus, Search, X, RefreshCw,
-  ChevronLeft, ChevronRight, ChevronDown, Filter, Users, Wallet, FileSpreadsheet, Download,
-} from 'lucide-react'
+  ChevronLeft, ChevronRight, ChevronDown, Filter, Users, Wallet, FileSpreadsheet, Download,, Pencil } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import RowMenu from '../components/RowMenu'
 import { formatDate } from '../utils/dateFormat'
 import { useFeatures } from '../features/useFeatures'
 import { EmptyState, Modal, FormGroup, Pagination } from '../components/UI'
@@ -827,36 +827,10 @@ export default function ExpensesPage() {
 
                   {/* Col 3: Actions - Dropdown */}
                   <div className="relative flex-shrink-0">
-                    <button
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-red-500 hover:text-white transition-colors"
-                      onClick={() => setOpenDropdown(openDropdown === e.id ? null : e.id)}
-                    >
-                      ⋮
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {openDropdown === e.id && (
-                      <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 overflow-hidden">
-                        <button
-                          className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 border-b border-gray-100 dark:border-gray-700"
-                          onClick={() => {
-                            openEdit(e)
-                            setOpenDropdown(null)
-                          }}
-                        >
-                          ✏ Edito
-                        </button>
-                        <button
-                          className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
-                          onClick={() => {
-                            openDelete(e)
-                            setOpenDropdown(null)
-                          }}
-                        >
-                          <Trash2 size={14}/> Fshi
-                        </button>
-                      </div>
-                    )}
+                    <RowMenu items={[
+                        { label: 'Edito', icon: Pencil, onClick: () => openEdit(e) },
+                        { label: 'Fshi', icon: Trash2, danger: true, onClick: () => openDelete(e) },
+                      ]} />
                   </div>
                 </div>
               </div>
@@ -950,13 +924,11 @@ export default function ExpensesPage() {
                     - {fmt(e.amount)}
                   </td>
                   <td className="table-td">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button className="p-1.5 rounded-lg bg-gray-100 dark:bg-dk-high text-gray-500 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-dk-line hover:text-red-600 dark:hover:text-white transition-colors" onClick={() => openEdit(e)} title="Edito">
-                        ✏
-                      </button>
-                      <button className="p-1.5 rounded-lg bg-red-50 dark:bg-[#93000a]/30 text-red-600 dark:text-[#ffb4ab] hover:bg-red-100 dark:hover:bg-[#93000a]/60 transition-colors" onClick={() => openDelete(e)} title="Fshi">
-                        <Trash2 size={14}/>
-                      </button>
+                    <div className="flex items-center justify-end">
+                      <RowMenu items={[
+                        { label: 'Edito', icon: Pencil, onClick: () => openEdit(e) },
+                        { label: 'Fshi', icon: Trash2, danger: true, onClick: () => openDelete(e) },
+                      ]} />
                     </div>
                   </td>
                 </tr>
