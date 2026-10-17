@@ -980,6 +980,26 @@ export function AppProvider({ children }) {
     localStorage.removeItem('xflow_session')
   }, [])
 
+  /* ── Dalje automatike: pas 7 ditësh nga hyrja sistemi të nxjerr jashtë ── */
+  useEffect(() => {
+    const AT_KEY = 'xflow_login_at'
+    const MAX_AGE = 7 * 24 * 60 * 60 * 1000
+    if (!currentUser) { localStorage.removeItem(AT_KEY); return }
+    if (!localStorage.getItem(AT_KEY)) localStorage.setItem(AT_KEY, String(Date.now()))
+    const check = () => {
+      const at = Number(localStorage.getItem(AT_KEY)) || Date.now()
+      if (Date.now() - at > MAX_AGE) {
+        localStorage.setItem('xflow_session_expired', '1')
+        logout()
+      }
+    }
+    check()
+    const id = setInterval(check, 60 * 60 * 1000)
+    const onVisible = () => { if (document.visibilityState === 'visible') check() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVisible) }
+  }, [currentUser, logout])
+
   /* ── Log activity ── */
   const logActivity = useCallback((action, module = 'Sistemi') => {
     if (!currentUser) return
