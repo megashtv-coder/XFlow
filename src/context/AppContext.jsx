@@ -52,6 +52,13 @@ async function diffSync(table, curr, prevRef, orgId) {
     return !old || old !== item
   })
   const toDelete = prev.filter(item => !currIds.has(item.id))
+  // MBROJTJE: produktet fshihen nga UI vetëm një nga një. Nëse sinkronizimi do të fshinte më shumë se 5
+  // produkte njëherësh, s'është fshirje e vërtetë por gjendje lokale e zbrazët/e vjetër (një pajisje që
+  // s'e ngarkoi listën) — nuk e lejojmë, që katalogu të mos humbasë në heshtje (ndodhi më 2026-10-17).
+  const blockMassDelete = table === 'items' && toDelete.length > 5
+  if (blockMassDelete) {
+    console.error(`[diffSync] U BLLOKUA fshirja masive e ${toDelete.length} rreshtave nga '${table}' — nuk u fshi asgjë në databazë`)
+  }
 
   prevRef.current = curr
 
@@ -77,7 +84,7 @@ async function diffSync(table, curr, prevRef, orgId) {
   }
 
   // Delete — vetëm pas upsert
-  if (toDelete.length) {
+  if (toDelete.length && !blockMassDelete) {
     try {
       const { error } = await supabase
         .from(table)
