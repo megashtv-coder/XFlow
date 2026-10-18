@@ -8,6 +8,7 @@ import {
   ChevronDown, Check,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { DualSelect } from '../components/DarkSelect'
 import RowMenu from '../components/RowMenu'
 import { formatDate } from '../utils/dateFormat'
 import { round2 } from '../utils/money'
@@ -2017,7 +2018,7 @@ export default function Invoices() {
           </div>
 
           {/* Status — dropdown */}
-          <select
+          <DualSelect
             className="bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
             value={statusFilter}
             onChange={e => { setStatus(e.target.value); setPaginationPage(1) }}
@@ -2029,11 +2030,11 @@ export default function Invoices() {
             <option value="unpaid">Papaguar (Pritje+Vonuar)</option>
             <option value="draft">Draft</option>
             <option value="void">Void</option>
-          </select>
+          </DualSelect>
 
           {/* Type + per-page — dropdown */}
           <div className="flex items-center gap-2">
-            <select
+            <DualSelect
               className="bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
               value={typeFilter}
               onChange={e => { setTypeFilter(e.target.value); setPaginationPage(1) }}
@@ -2041,8 +2042,8 @@ export default function Invoices() {
               <option value="all">Të gjithë</option>
               <option value="individual">👤 Klientë</option>
               <option value="reseller">🔄 Reseller</option>
-            </select>
-            <select
+            </DualSelect>
+            <DualSelect
               className="hidden sm:block bg-gray-50 dark:bg-dk-card border border-gray-200 dark:border-transparent rounded-xl px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 outline-none focus:border-red-400 cursor-pointer"
               value={perPage}
               onChange={e => { setPerPage(Number(e.target.value)); setPaginationPage(1) }}
@@ -2052,7 +2053,7 @@ export default function Invoices() {
               <option value={50}>50/faqe</option>
               <option value={100}>100/faqe</option>
               <option value={200}>200/faqe</option>
-            </select>
+            </DualSelect>
           </div>
         </div>
       </div>
