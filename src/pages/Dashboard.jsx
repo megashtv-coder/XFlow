@@ -81,7 +81,7 @@ const useDark = () => !!useApp().darkMode
 const DARK_CHART = { '#6366f1': '#c0c1ff', '#dc2626': '#ff516a', '#ef4444': '#ffb2b7' }
 
 function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, deltaTone = 'neutral', ctx, onClick, hidden }) {
-  const base = 'bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-100 p-5 flex flex-col h-full transition-all duration-200'
+  const base = 'bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-[0_2px_4px_rgba(0,0,0,0.02)] p-5 flex flex-col h-full transition-all duration-200'
   const interactive = onClick
     ? 'cursor-pointer hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gray-200/60 dark:hover:shadow-black/20 hover:border-red-100 dark:hover:border-accent/40'
     : 'hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-200/60 dark:hover:shadow-black/20'
@@ -99,13 +99,13 @@ function KpiCard({ icon: Icon, iconBg, iconColor, label, value, delta, deltaUp, 
   return (
     <div className={`${base} ${interactive}`} onClick={onClick}>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">{label}</p>
-        <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+        <p className="text-xs font-medium text-slate-400 dark:text-gray-400 truncate">{label}</p>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
              style={dark ? { background: `${iconColor}26` } : { background: iconBg }}>
           <Icon size={17} style={{ color: dark ? (DARK_ICON[iconColor] || iconColor) : iconColor }} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-2 truncate">{displayValue}</p>
+      <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-gray-100 mt-2 truncate">{displayValue}</p>
       <div className="flex items-center gap-2 mt-auto pt-3 flex-wrap">
         {displayDelta && (
           <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${DELTA_TONE[deltaTone]}`}>
@@ -160,10 +160,10 @@ function YoYChart({ title, sub, data, curKey, prevKey, color: lightColor, softCo
   }
 
   return (
-    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-100 flex flex-col h-full">
-      <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-gray-50 dark:border-transparent flex-wrap">
+    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-sm flex flex-col h-full">
+      <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-transparent flex-wrap">
         <div>
-          <p className="text-sm font-bold text-gray-800 dark:text-gray-100">{title}</p>
+          <p className="text-base font-bold text-slate-900 dark:text-gray-100">{title}</p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>
         </div>
         <div className="flex gap-3 text-[11px] text-gray-500 dark:text-gray-400 font-medium">
@@ -244,13 +244,13 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
   const statusOf = t => t.reminderDate < today ? 'overdue' : t.reminderDate === today ? 'today' : 'soon'
 
   return (
-    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-100 flex flex-col h-full">
-      <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-gray-50 dark:border-transparent">
+    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-sm flex flex-col h-full">
+      <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-transparent">
         <div>
-          <p className="text-sm font-bold text-gray-800 dark:text-gray-100">Detyra afër afatit</p>
+          <p className="text-base font-bold text-slate-900 dark:text-gray-100">Detyra afër afatit</p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Brenda 3 ditësh ose vonuar</p>
         </div>
-        <span className="font-mono text-sm font-bold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-accent text-amber-600 dark:text-accent-on">
+        <span className="font-mono text-sm font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-accent text-amber-800 dark:text-accent-on">
           {hidden ? '••' : urgentTasks.length}
         </span>
       </div>
@@ -264,7 +264,7 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
           preview.map(t => {
             const st = TASK_STATUS_STYLE[statusOf(t)]
             return (
-              <div key={t.id} className="flex gap-2.5 px-1.5 py-2 rounded-lg hover:bg-gray-50 dark:bg-dk-low dark:hover:bg-dk-high dark:mb-2 transition-colors">
+              <div key={t.id} className="flex gap-2.5 px-2 py-2.5 rounded-xl bg-slate-50/70 hover:bg-slate-50 dark:bg-dk-low dark:hover:bg-dk-high mb-2 transition-colors">
                 <span className="w-[3px] self-stretch rounded-full mt-0.5 flex-shrink-0" style={{ background: st.rail }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -608,20 +608,20 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
           { icon: FilePlus, title: 'Krijo Faturë', sub: 'Faturë e re shpejt', action: openInvoiceModal,
-            border: 'border-red-400 dark:border-white/[0.07]', hover: 'hover:bg-red-50 dark:hover:bg-dk-high', icoBg: 'bg-red-50 dark:bg-accent/15', icoFg: 'text-red-500 dark:text-accent' },
+            border: 'border-rose-200/90 hover:border-rose-400 dark:border-white/[0.07]', hover: 'dark:hover:bg-dk-high', icoBg: 'bg-red-50 dark:bg-accent/15', icoFg: 'text-red-500 dark:text-accent' },
           { icon: UserPlus, title: 'Shto Klient', sub: 'Regjistro klient të ri', action: openCustomerModal,
-            border: 'border-emerald-400 dark:border-white/[0.07]', hover: 'hover:bg-emerald-50 dark:hover:bg-dk-high', icoBg: 'bg-emerald-50 dark:bg-emerald-500/15', icoFg: 'text-emerald-500 dark:text-emerald-300' },
+            border: 'border-emerald-200/90 hover:border-emerald-400 dark:border-white/[0.07]', hover: 'dark:hover:bg-dk-high', icoBg: 'bg-emerald-50 dark:bg-emerald-500/15', icoFg: 'text-emerald-500 dark:text-emerald-300' },
           { icon: ReceiptText, title: 'Shpenzim i ri', sub: 'Regjistro shpenzim', action: openExpenseModal,
-            border: 'border-orange-400 dark:border-white/[0.07]', hover: 'hover:bg-orange-50 dark:hover:bg-dk-high', icoBg: 'bg-orange-50 dark:bg-white/10', icoFg: 'text-orange-500 dark:text-accent-soft' },
+            border: 'border-amber-200/90 hover:border-amber-400 dark:border-white/[0.07]', hover: 'dark:hover:bg-dk-high', icoBg: 'bg-amber-50 dark:bg-white/10', icoFg: 'text-amber-500 dark:text-accent-soft' },
         ].map(({ icon: Icon, title, sub, action, border, hover, icoBg, icoFg }) => (
           <button key={title} onClick={action}
-            className={`group flex items-center gap-3 bg-white dark:bg-dk-card dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] border-[1.5px] ${border} ${hover} rounded-2xl p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-200/60 dark:hover:shadow-black/20 active:scale-95`}>
-            <span className={`w-10 h-10 dark:w-12 dark:h-12 rounded-full dark:rounded-xl flex items-center justify-center flex-shrink-0 ${icoBg} ${icoFg} group-hover:scale-110 transition-transform`}>
+            className={`group flex items-center gap-3 bg-white shadow-sm dark:bg-dk-card dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] border ${border} ${hover} rounded-2xl p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-200/60 dark:hover:shadow-black/20 active:scale-95`}>
+            <span className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${icoBg} ${icoFg} group-hover:scale-110 transition-transform`}>
               <Icon size={18} />
             </span>
             <span className="min-w-0">
-              <span className="block text-sm font-bold text-gray-800 dark:text-gray-100 truncate">{title}</span>
-              <span className="block text-xs text-gray-400 dark:text-gray-500 truncate">{sub}</span>
+              <span className="block text-sm font-bold text-slate-800 dark:text-gray-100 truncate">{title}</span>
+              <span className="block text-xs text-slate-400 dark:text-gray-500 truncate">{sub}</span>
             </span>
             <ArrowRight size={18} className="hidden dark:block ml-auto flex-shrink-0 text-gray-500 group-hover:text-gray-100 group-hover:translate-x-1 transition-all" />
           </button>
@@ -714,15 +714,15 @@ export default function Dashboard() {
       </div>
 
       {/* ── Paneli i shpenzimeve ── */}
-      <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-gray-200 p-6">
+      <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-sm p-6">
 
         <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mb-6 border-b border-gray-100 dark:border-transparent">
           <div className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-[9px] bg-red-50 dark:bg-dk-high text-red-600 dark:text-accent-soft flex items-center justify-center flex-shrink-0">
+            <span className="w-9 h-9 rounded-xl bg-red-50 dark:bg-dk-high text-red-600 dark:text-accent-soft flex items-center justify-center flex-shrink-0">
               <PieIcon size={17} />
             </span>
             <div>
-              <p className="text-[17px] font-bold text-gray-900 dark:text-gray-100 leading-tight">
+              <p className="text-base font-bold text-slate-900 dark:text-gray-100 leading-tight">
                 Shpenzime sipas {groupByType ? 'llojit' : 'kategorisë'}
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{periodLabel}</p>
