@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import AIChatFloat from './components/AIChatFloat'
 import AutoTranslate from './i18n/AutoTranslate'
+import WithdrawalFollowUp from './components/WithdrawalFollowUp'
 import { Toast, LoadingSkeleton } from './components/UI'
 import { useEffect, useState, lazy, Suspense } from 'react'
 import BackupService from './services/BackupService'
@@ -217,6 +218,7 @@ export default function App() {
     <TenantProvider>
       <AppProvider>
         <AutoTranslate storageKey="xflow_company_data" />
+        <WithdrawalFollowUp />
         <AuthWrapper />
       </AppProvider>
     </TenantProvider>
