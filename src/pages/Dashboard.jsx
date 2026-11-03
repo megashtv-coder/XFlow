@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 import { useApp } from '../context/AppContext'
 import { supabase } from '../lib/supabase'
+import { isWithdrawalTask, withdrawalShortText, withdrawalEditPage, withdrawalPaymentId } from '../utils/withdrawalTask'
 
 const MONTH_LBL  = ['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','Nën','Dhj']
 const MONTH_FULL = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor']
@@ -229,7 +230,7 @@ const TASK_STATUS_STYLE = {
   soon:    { label: 'Afër',   cls: 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400', rail: '#0284c7' },
 }
 
-function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll }) {
+function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll, onOpen }) {
   const today = new Date().toISOString().slice(0, 10)
   const soonCutoff = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10)
 
@@ -244,7 +245,7 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
   const statusOf = t => t.reminderDate < today ? 'overdue' : t.reminderDate === today ? 'today' : 'soon'
 
   return (
-    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-dk-card dark:border-white/[0.07] dark:shadow-[0_2px_6px_rgba(0,0,0,0.35)] rounded-2xl border border-slate-200/70 shadow-sm flex flex-col h-full min-w-0 overflow-hidden">
       <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-transparent">
         <div>
           <p className="text-base font-bold text-slate-900 dark:text-gray-100">Detyra afër afatit</p>
@@ -264,7 +265,12 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
           preview.map(t => {
             const st = TASK_STATUS_STYLE[statusOf(t)]
             return (
-              <div key={t.id} className="flex gap-2.5 px-2 py-2.5 rounded-xl bg-slate-50/70 hover:bg-slate-50 dark:bg-dk-low dark:hover:bg-dk-high mb-2 transition-colors">
+              <div
+                key={t.id}
+                onClick={isWithdrawalTask(t) ? () => onOpen(t) : undefined}
+                title={isWithdrawalTask(t) ? 'Hap pagesën' : undefined}
+                className={`flex gap-2.5 px-2 py-2.5 rounded-xl bg-slate-50/70 hover:bg-slate-50 dark:bg-dk-low dark:hover:bg-dk-high mb-2 transition-colors min-w-0 ${isWithdrawalTask(t) ? 'cursor-pointer' : ''}`}
+              >
                 <span className="w-[3px] self-stretch rounded-full mt-0.5 flex-shrink-0" style={{ background: st.rail }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -273,14 +279,14 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
                     </span>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${st.cls}`}>{st.label}</span>
                     <button
-                      onClick={() => onToggle(t.id)}
+                      onClick={e => { e.stopPropagation(); onToggle(t.id) }}
                       title="Shëno të kryer"
                       className="w-[21px] h-[21px] flex items-center justify-center rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white transition-colors flex-shrink-0"
                     >
                       <CheckCircle2 size={12} />
                     </button>
                     <button
-                      onClick={() => onDelete(t.id)}
+                      onClick={e => { e.stopPropagation(); onDelete(t.id) }}
                       title="Fshi detyrën"
                       className="w-[21px] h-[21px] flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 transition-colors flex-shrink-0"
                     >
@@ -289,7 +295,7 @@ function TasksUrgentPanel({ tasks, loading, hidden, onToggle, onDelete, onSeeAll
                   </div>
                   {t.description && (
                     <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate mt-0.5">
-                      {hidden ? '••••••••' : t.description}
+                      {hidden ? '••••••••' : isWithdrawalTask(t) ? withdrawalShortText(t) : t.description}
                     </p>
                   )}
                 </div>
@@ -340,6 +346,13 @@ export default function Dashboard() {
     })()
     return () => { cancelled = true }
   }, [])
+
+  // Detyra e kontrollit të tërheqjes → editimi i pagesës së pranuar
+  const handleOpenDashTask = (task) => {
+    const pid = withdrawalPaymentId(task)
+    if (pid && (payments || []).some(p => p.id === pid)) navigate(withdrawalEditPage(task))
+    else showToast?.('Pagesa nuk u gjet — mund të jetë fshirë.')
+  }
 
   const handleToggleDashTask = async (taskId) => {
     const task = dashTasks.find(t => t.id === taskId)
@@ -689,7 +702,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Shitje sipas muajit + Detyra afër afatit, në të njëjtin rresht ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.85fr_1fr] gap-4 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] gap-4 items-stretch">
         <YoYChart title="Shitje sipas muajit" sub={`${filterYear} vs. ${chartPrevYear}`}
           data={salesYoY} curKey="sales" prevKey="salesPrev"
           color="#6366f1" softColor="#c7d2fe" gradId="yoy-sales"
@@ -697,7 +710,7 @@ export default function Dashboard() {
         <TasksUrgentPanel
           tasks={dashTasks} loading={dashTasksLoading} hidden={hideData}
           onToggle={handleToggleDashTask} onDelete={handleDeleteDashTask}
-          onSeeAll={() => navigate('tasks')}
+          onSeeAll={() => navigate('tasks')} onOpen={handleOpenDashTask}
         />
       </div>
 
