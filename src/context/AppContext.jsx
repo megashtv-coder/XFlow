@@ -162,6 +162,8 @@ export function AppProvider({ children }) {
      e veta lokale, kjo është vetëm një sinjal që e thërret handleAddTask() atje kur
      useri klikon "Detyrë e Re" te dropdown-i, edhe nëse s'është ende në faqen Detyrat. ── */
   const [tasksAddOpen, setTasksAddOpen] = useState(false)
+  // Njoftimi i një detyre kontrolli tërheqjeje hap skedën 'auto' te Detyrat (null = mos e ndrysho skedën)
+  const [tasksSectionRequest, setTasksSectionRequest] = useState(null)
 
   /* ── Organizations ── */
   const [organizations, setOrganizations] = useState(mockOrganizations)
@@ -1149,6 +1151,7 @@ export function AppProvider({ children }) {
       expensesExportOpen,  setExpensesExportOpen,
       expensesImportOpen,  setExpensesImportOpen,
       tasksAddOpen, setTasksAddOpen,
+      tasksSectionRequest, setTasksSectionRequest,
       users:           contextUsers,
       setUsers:        isTester ? setTUsers : wrappedSetUsers,
       currentUser,     setCurrentUser,
@@ -1183,6 +1186,7 @@ export function AppProvider({ children }) {
       dashboardMonth, setDashboardMonth, dashboardYear, setDashboardYear, dashboardHidden, setDashboardHidden,
       customersImportOpen, setCustomersImportOpen, paymentsExportOpen, setPaymentsExportOpen, paymentsImportOpen, setPaymentsImportOpen, expensesExportOpen, setExpensesExportOpen, expensesImportOpen, setExpensesImportOpen,
       tasksAddOpen, setTasksAddOpen,
+      tasksSectionRequest, setTasksSectionRequest,
       currentUser, setCurrentUser, activityLog, setActivityLog, logActivity, showToast, fmt, fmtRaw, moneyHidden, toggleMoneyHidden, logout,
       isSuperAdmin, currentOrgId, currentOrg, organizations, setOrganizations
     ])
