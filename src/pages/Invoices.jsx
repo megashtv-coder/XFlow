@@ -1244,6 +1244,7 @@ export default function Invoices() {
   const InvoiceFormPanel = isFormMode ? (
     <div key={`invoice-form-${editInvoiceId || 'create'}`}>
       <FormPageWrapper
+        framed
         title={editInvoice ? `Ndrysho Faturën` : 'Faturë e Re'}
         subtitle={editInvoice ? editInvoice.id : 'Krijo një faturë të re'}
         onBack={() => navigate('invoices')}
