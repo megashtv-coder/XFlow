@@ -108,7 +108,7 @@ function Combobox({
     } else if (e.key === 'ArrowUp') {
       if (open) { e.preventDefault(); setActive(i => Math.max(i - 1, 0)) }
     } else if (e.key === 'Enter') {
-      if (!open) return
+      if (!open || e.ctrlKey || e.metaKey) return
       e.preventDefault()
       if (filtered[active]) pick(filtered[active])
       else if (onAddNew && query.trim()) { onAddNew(query.trim()); close() }
@@ -662,6 +662,19 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
     }, 0)
   }
 
+  // Ctrl+Enter krijon/ruan faturën nga kudo në formë (save() e kontrollon vetë fushat e detyrueshme)
+  const saveRef = useRef(save)
+  saveRef.current = save
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== 'Enter' || !(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey || e.repeat) return
+      e.preventDefault()
+      if (!isSaving) saveRef.current()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [isSaving])
+
   const formContent = (
     <div className="inv-form">
       {error && (
@@ -728,7 +741,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
 
       {/* ── Referenti (Sales Person) - Highlighted ── */}
       <div className="sec bg-yellow-50 border border-yellow-200 dark:bg-dk-card dark:border-white/10 rounded-lg p-3 sm:p-4">
-        <FormGroup label="👤 Referenti (Përfaqësuesi)">
+        <FormGroup label="👤 Referenti">
           <Combobox
             options={referentOptions}
             value={form.referent}
@@ -896,7 +909,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
         {formContent}
         <div className="inv-actions flex gap-2 pt-4 border-t border-gray-200 dark:border-transparent">
           <button className="btn btn-outline flex-1" onClick={handleCancel} disabled={isSaving}>Anulo</button>
-          <button className={`btn btn-primary flex-1 ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving}>
+          <button className={`btn btn-primary flex-1 ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving} title="Ctrl+Enter">
             {isSaving ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2" />
@@ -923,7 +936,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
       onClose={closeModal}
       footer={<>
         <button className="btn btn-outline" onClick={closeModal} disabled={isSaving}>Anulo</button>
-        <button className={`btn btn-primary ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving}>
+        <button className={`btn btn-primary ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`} onClick={save} disabled={isSaving} title="Ctrl+Enter">
           {isSaving ? (
             <>
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2" />
