@@ -928,7 +928,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
                 {isEdit ? 'Duke ruajtur...' : 'Duke krijuar...'}
               </>
             ) : (
-              isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'
+              <>{isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}<kbd className="ml-2 hidden lg:inline-block px-1.5 py-0.5 rounded bg-white/20 text-[11px] font-semibold leading-none align-middle">Ctrl+Enter</kbd></>
             )}
           </button>
         </div>
@@ -955,7 +955,7 @@ export default function InvoiceModal({ initialData, isFormPage, onClose }) {
               {isEdit ? 'Duke ruajtur...' : 'Duke krijuar...'}
             </>
           ) : (
-            isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'
+            <>{isEdit ? 'Ruaj ndryshimet' : 'Krijo Faturën'}<kbd className="ml-2 hidden lg:inline-block px-1.5 py-0.5 rounded bg-white/20 text-[11px] font-semibold leading-none align-middle">Ctrl+Enter</kbd></>
           )}
         </button>
       </>}
