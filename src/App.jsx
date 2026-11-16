@@ -66,6 +66,18 @@ function OrgAppLayout() {
 
   const PageComponent = ORG_PAGES[basePage] || Dashboard
 
+  // Ctrl+I hap formën e faturës së re nga kudo në app (jo kur një formë fature është tashmë e hapur — s'humbet çka po shkruhet)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (!e.ctrlKey || e.shiftKey || e.altKey || e.metaKey || e.repeat || e.key.toLowerCase() !== 'i') return
+      e.preventDefault()
+      if (page.startsWith('invoices:')) return
+      navigate('invoices:create')
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [page, navigate])
+
   // Auto-backup every 48 hours (fixed schedule, not on every refresh)
   useEffect(() => {
     const BACKUP_INTERVAL_MS = 48 * 60 * 60 * 1000 // 48 hours
